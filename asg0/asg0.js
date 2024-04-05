@@ -14,11 +14,17 @@ function main() {
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+  // Set up the event listener for the draw button here
+  var drawButton = document.getElementById('drawButton');
+  drawButton.addEventListener('click', function() {
+      handleDrawEvent(ctx);
+  });
+
   // Instantiate vector v1 with z coordinate set to 0
-  var v1 = new Vector3([2.25, 2.25, 0]);
+  //var v1 = new Vector3([2.25, 2.25, 0]);
 
   // Call drawVector(v1, "red")
-  drawVector(v1, 'red', ctx);
+  //drawVector(v1, 'red', ctx);
 
 }
 
@@ -40,6 +46,27 @@ function drawVector(v, color, ctx) {
 
     // Draw the vector
     ctx.stroke();
+}
+
+function handleDrawEvent(ctx) {
+  // Clear the canvas
+  ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+  // Get the values from the input fields for v1
+  var x1 = parseFloat(document.getElementById('xInputV1').value);
+  var y1 = parseFloat(document.getElementById('yInputV1').value);
+  var v1 = new Vector3([x1, y1, 0]);
+
+  // Get the values from the input fields for v2
+  var x2 = parseFloat(document.getElementById('xInputV2').value);
+  var y2 = parseFloat(document.getElementById('yInputV2').value);
+  var v2 = new Vector3([x2, y2, 0]);
+
+  // Draw v1 in red
+  drawVector(v1, 'red', ctx);
+
+  // Draw v2 in blue
+  drawVector(v2, 'blue', ctx);
 }
 
 /*
