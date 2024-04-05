@@ -103,7 +103,7 @@ function angleBetween(v1, v2) {
 
   let angleDegrees = angle * (180 / Math.PI);
 
-  console.log(`The angle between v1 and v2 is: ${angleDegrees.toFixed(2)} degrees`);
+  console.log(`Angle: ${angleDegrees.toFixed(2)}`);
   return angleDegrees;
 }
 
