@@ -36,7 +36,7 @@ function drawVector(v, color, ctx) {
     ctx.strokeStyle = color;
 
     // Set the line width
-    ctx.lineWidth = 100;
+    ctx.lineWidth = 1;
 
     // Draw the vector
     ctx.stroke();
