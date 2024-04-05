@@ -113,27 +113,29 @@ mul(scalar) {
     }
 
     /**
-      * Calculate the magnitude (or length) of this vector.
-      * @return scalar
-      */
+     * Calculate the magnitude (or length) of this vector.
+     * @return scalar
+     */
     magnitude() {
-        // Insert your code here.
-        let m = 0; // Modify this line to calculate this vector's magnitude.
-
-        // Don't delete the return statement.
-        return m;
+      let x = this.elements[0],
+          y = this.elements[1],
+          z = this.elements[2];
+      return Math.sqrt(x*x + y*y + z*z);
     };
 
     /**
-      * Normalize this vector.
-      * @return this
-      */
+     * Normalize this vector.
+     * @return this
+     */
     normalize() {
-        // Insert your code here.
-        // This function should change this vector (this.elements) and not create a new vector.
-
-        // Don't delete the return statement.
-        return this;
+      let mag = this.magnitude();
+      if (mag > 0) {
+        let invMag = 1 / mag;
+        this.elements[0] *= invMag;
+        this.elements[1] *= invMag;
+        this.elements[2] *= invMag;
+      }
+      return this;
     };
 }
 
