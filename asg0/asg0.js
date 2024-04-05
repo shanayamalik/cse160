@@ -41,49 +41,52 @@ function handleDrawEvent(ctx) {
 }
 
 function handleDrawOperationEvent(ctx) {
+  // Clear the canvas
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   
+  // Get the values from the input fields for v1 and v2
   var x1 = parseFloat(document.getElementById('v1xInput').value);
   var y1 = parseFloat(document.getElementById('v1yInput').value);
-  var v1 = new Vector3([x1, y1, 0]);
-  
   var x2 = parseFloat(document.getElementById('v2xInput').value);
   var y2 = parseFloat(document.getElementById('v2yInput').value);
+  var v1 = new Vector3([x1, y1, 0]);
   var v2 = new Vector3([x2, y2, 0]);
   
-  var operation = document.getElementById('operation').value;
-  var scalar = parseFloat(document.getElementById('scalar').value);
-
+  // Draw v1 in red and v2 in blue
   drawVector(v1, 'red', ctx);
   drawVector(v2, 'blue', ctx);
-
-  switch(operation) {
-    case 'add':
-      var v3 = v1.add(v2);
-      drawVector(v3, 'green', ctx);
-      break;
-    case 'subtract':
-      var v3 = v1.sub(v2);
-      drawVector(v3, 'green', ctx);
-      break;
-    case 'multiply':
-      var v3 = v1.mul(scalar);
-      var v4 = v2.mul(scalar);
+  
+  // Read the selected operation and the scalar value
+  var operation = document.getElementById('operation').value;
+  var scalar = parseFloat(document.getElementById('scalar').value);
+  
+  // Perform the operation and draw the resulting vector(s)
+  if (operation === 'add') {
+    var v3 = new Vector3(v1.elements).add(v2);
+    drawVector(v3, 'green', ctx);
+  } else if (operation === 'subtract') {
+    var v3 = new Vector3(v1.elements).sub(v2);
+    drawVector(v3, 'green', ctx);
+  } else if (operation === 'multiply') {
+    var v3 = new Vector3(v1.elements).mul(scalar);
+    var v4 = new Vector3(v2.elements).mul(scalar);
+    drawVector(v3, 'green', ctx);
+    drawVector(v4, 'green', ctx);
+  } else if (operation === 'divide') {
+    // Avoid division by zero
+    if (scalar !== 0) {
+      var v3 = new Vector3(v1.elements).div(scalar);
+      var v4 = new Vector3(v2.elements).div(scalar);
       drawVector(v3, 'green', ctx);
       drawVector(v4, 'green', ctx);
-      break;
-    case 'divide':
-      var v3 = v1.div(scalar);
-      var v4 = v2.div(scalar);
-      drawVector(v3, 'green', ctx);
-      drawVector(v4, 'green', ctx);
-      break;
+    }
   }
 }
 
-document.getElementById('operationButton').addEventListener('click', function() {
+// Make sure to attach this new function to the second draw button's onclick event
+document.getElementById('operationButton').onclick = function() {
   handleDrawOperationEvent(ctx);
-});
+};
 
 // Invoke the main function to set everything up
 main();
