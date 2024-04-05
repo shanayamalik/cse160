@@ -89,6 +89,9 @@ function handleDrawOperationEvent() {
   } else if (operation === 'angleBetween') {
     angleBetween(v1, v2);
   }
+    else if (operation === 'areaTriangle') {
+    areaTriangle(v1, v2);
+  }
 }
 
 function angleBetween(v1, v2) {
@@ -105,6 +108,17 @@ function angleBetween(v1, v2) {
 
   console.log(`Angle: ${angleDegrees.toFixed(2)}`);
   return angleDegrees;
+}
+
+function areaTriangle(v1, v2) {
+    let crossProduct = Vector3.cross(v1, v2);
+    // The area of the parallelogram is the magnitude of the cross product
+    let areaParallelogram = crossProduct.magnitude();
+    // The area of the triangle is half the area of the parallelogram
+    let areaTriangle = areaParallelogram / 2;
+    console.log(`The area of the triangle is: ${areaTriangle.toFixed(2)}`);
+    
+    return areaTriangle;
 }
 
 main();
