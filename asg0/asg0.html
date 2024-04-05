@@ -6,45 +6,41 @@
   <style>
     body {
       margin: 0;
-      padding: 0;
+      padding: 20px; /* Adds space around the entire content */
       display: flex;
       flex-direction: column;
       align-items: flex-start;
     }
-
     #example {
       display: block;
       background: black;
-      margin-left: 0;
       margin-bottom: 10px;
     }
-
     #vectorInput {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
     }
-
     .input-group {
       display: flex;
       align-items: center;
       margin-bottom: 5px;
     }
-
     .input-group label {
       margin-right: 5px;
     }
-
     .input-group input {
       margin-right: 10px;
     }
-
     #drawButton {
+      margin-top: 10px;
+    }
+    .operation-group {
       margin-top: 10px;
     }
   </style>
 </head>
-<body onload="main()">
+<body>
   <canvas id="example" width="400" height="400"></canvas>
   <div id="vectorInput">
     <div class="input-group">
@@ -60,6 +56,17 @@
       <input id="v2yInput" type="number" placeholder="Y"/>
     </div>
     <button id="drawButton">Draw</button>
+    <!-- Operation Selector and Scalar Input -->
+    <div class="operation-group">
+      <select id="operation">
+        <option value="add">Add</option>
+        <option value="subtract">Subtract</option>
+        <option value="multiply">Multiply</option>
+        <option value="divide">Divide</option>
+      </select>
+      <input id="scalar" type="number" placeholder="Scalar" />
+      <button id="operationButton">Draw Operation</button>
+    </div>
   </div>
   <script src="lib/cuon-matrix-cse160.js"></script>
   <script src="asg0.js"></script>
