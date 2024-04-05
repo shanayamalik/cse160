@@ -1,37 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Draw a Vector on Canvas</title>
-    <style>
-      /* Add styles here for better control over the layout */
-      body {
-        text-align: center; /* Center the content */
-        margin-top: 20px;
-      }
-      #vectorInput {
-        margin-top: 10px; /* Add space above the inputs */
-      }
-      label, input, button {
-        margin: 5px;
-      }
-    </style>
-  </head>
-  <body onload="main()">
-    <canvas id="example" width="400" height="400" style="display: block; margin: auto; background: black;"></canvas>
-    <div id="vectorInput">
-      <!-- Label and input for the X coordinate of the vector -->
-      <label for="xInput">v1: x</label>
-      <input id="xInput" type="number" placeholder="X" style="width: 25px; margin-right: 2px;"/>
+<head>
+  <meta charset="utf-8" />
+  <title>Draw Vector on Canvas</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
 
-      <!-- Label and input for the Y coordinate of the vector -->
-      <label for="yInput">y</label>
-      <input id="yInput" type="number" placeholder="Y" style="width: 25px; margin-right: 2px;"/>
+    #example {
+      display: block;
+      background: black;
+      margin-left: 0;
+      margin-bottom: 10px;
+    }
 
-      <!-- Button for drawing the vector -->
-      <button id="drawButton">Draw</button>
+    #vectorInput {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .input-group label {
+      margin-right: 5px;
+    }
+
+    .input-group input {
+      margin-right: 10px;
+    }
+
+    #drawButton {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body onload="main()">
+  <canvas id="example" width="400" height="400"></canvas>
+  <div id="vectorInput">
+    <div class="input-group">
+      <label for="v1xInput">v1: x</label>
+      <input id="v1xInput" type="number" placeholder="X"/>
+      <label for="v1yInput">y</label>
+      <input id="v1yInput" type="number" placeholder="Y"/>
     </div>
-    <script src="lib/cuon-matrix-cse160.js"></script>
-    <script src="asg0.js"></script>
-  </body>
+    <div class="input-group">
+      <label for="v2xInput">v2: x</label>
+      <input id="v2xInput" type="number" placeholder="X"/>
+      <label for="v2yInput">y</label>
+      <input id="v2yInput" type="number" placeholder="Y"/>
+    </div>
+    <button id="drawButton">Draw</button>
+  </div>
+  <script src="lib/cuon-matrix-cse160.js"></script>
+  <script src="asg0.js"></script>
+</body>
 </html>
