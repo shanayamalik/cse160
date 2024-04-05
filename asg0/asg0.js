@@ -88,8 +88,7 @@ function handleDrawOperationEvent() {
     drawVector(v2, 'green');
   } else if (operation === 'angleBetween') {
     angleBetween(v1, v2);
-  }
-    else if (operation === 'areaTriangle') {
+  } else if (operation === 'areaTriangle') {
     areaTriangle(v1, v2);
   }
 }
