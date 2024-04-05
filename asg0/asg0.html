@@ -2,21 +2,35 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Draw a blue rectangle (canvas version)</title>
+    <title>Draw a Vector on Canvas</title>
+    <style>
+      /* Add styles here for better control over the layout */
+      body {
+        text-align: center; /* Center the content */
+        margin-top: 20px;
+      }
+      #vectorInput {
+        margin-top: 10px; /* Add space above the inputs */
+      }
+      label, input, button {
+        margin: 5px;
+      }
+    </style>
   </head>
   <body onload="main()">
-    <canvas id="example" width="400" height="400">
-    Please use a browser that supports "canvas"
-    </canvas>
-    <!-- Input for the X coordinate of the vector -->
-    <input id="xInput" type="number" placeholder="Enter X" />
+    <canvas id="example" width="400" height="400" style="display: block; margin: auto; background: black;"></canvas>
+    <div id="vectorInput">
+      <!-- Label and input for the X coordinate of the vector -->
+      <label for="xInput">v1: x</label>
+      <input id="xInput" type="number" placeholder="X" style="width: 25px; margin-right: 2px;"/>
 
-    <!-- Input for the Y coordinate of the vector -->
-    <input id="yInput" type="number" placeholder="Enter Y" />
+      <!-- Label and input for the Y coordinate of the vector -->
+      <label for="yInput">y</label>
+      <input id="yInput" type="number" placeholder="Y" style="width: 25px; margin-right: 2px;"/>
 
-    <!-- Button for drawing the vector -->
-    <button id="drawButton">Draw</button>
-
+      <!-- Button for drawing the vector -->
+      <button id="drawButton">Draw</button>
+    </div>
     <script src="lib/cuon-matrix-cse160.js"></script>
     <script src="asg0.js"></script>
   </body>
