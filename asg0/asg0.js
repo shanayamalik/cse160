@@ -1,4 +1,6 @@
 // asg0.js
+var ctx;
+
 function main() {
   var canvas = document.getElementById('example');
   if (!canvas) {
@@ -6,17 +8,22 @@ function main() {
     return false;
   }
   
-  var ctx = canvas.getContext('2d');
+  ctx = canvas.getContext('2d'); // Assign to global variable
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   var drawButton = document.getElementById('drawButton');
   drawButton.addEventListener('click', function() {
-    handleDrawEvent(ctx);
+    handleDrawEvent();
+  });
+
+  var operationButton = document.getElementById('operationButton');
+  operationButton.addEventListener('click', function() {
+    handleDrawOperationEvent();
   });
 }
 
-function drawVector(v, color, ctx) {
+function drawVector(v, color) {
   ctx.beginPath();
   ctx.moveTo(200, 200);
   ctx.lineTo(200 + v.elements[0] * 20, 200 - v.elements[1] * 20);
@@ -25,7 +32,7 @@ function drawVector(v, color, ctx) {
   ctx.stroke();
 }
 
-function handleDrawEvent(ctx) {
+function handleDrawEvent() {
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   
   var x1 = parseFloat(document.getElementById('v1xInput').value);
@@ -36,11 +43,11 @@ function handleDrawEvent(ctx) {
   var y2 = parseFloat(document.getElementById('v2yInput').value);
   var v2 = new Vector3([x2, y2, 0]);
 
-  drawVector(v1, 'red', ctx);
-  drawVector(v2, 'blue', ctx);
+  drawVector(v1, 'red');
+  drawVector(v2, 'blue');
 }
 
-function handleDrawOperationEvent(ctx) {
+function handleDrawOperationEvent() {
   // Clear the canvas
   ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
   
@@ -53,8 +60,8 @@ function handleDrawOperationEvent(ctx) {
   var v2 = new Vector3([x2, y2, 0]);
   
   // Draw v1 in red and v2 in blue
-  drawVector(v1, 'red', ctx);
-  drawVector(v2, 'blue', ctx);
+  drawVector(v1, 'red');
+  drawVector(v2, 'blue');
   
   // Read the selected operation and the scalar value
   var operation = document.getElementById('operation').value;
@@ -63,30 +70,24 @@ function handleDrawOperationEvent(ctx) {
   // Perform the operation and draw the resulting vector(s)
   if (operation === 'add') {
     var v3 = new Vector3(v1.elements).add(v2);
-    drawVector(v3, 'green', ctx);
+    drawVector(v3, 'green');
   } else if (operation === 'subtract') {
     var v3 = new Vector3(v1.elements).sub(v2);
-    drawVector(v3, 'green', ctx);
+    drawVector(v3, 'green');
   } else if (operation === 'multiply') {
     var v3 = new Vector3(v1.elements).mul(scalar);
     var v4 = new Vector3(v2.elements).mul(scalar);
-    drawVector(v3, 'green', ctx);
-    drawVector(v4, 'green', ctx);
+    drawVector(v3, 'green');
+    drawVector(v4, 'green');
   } else if (operation === 'divide') {
     // Avoid division by zero
     if (scalar !== 0) {
       var v3 = new Vector3(v1.elements).div(scalar);
       var v4 = new Vector3(v2.elements).div(scalar);
-      drawVector(v3, 'green', ctx);
-      drawVector(v4, 'green', ctx);
+      drawVector(v3, 'green');
+      drawVector(v4, 'green');
     }
   }
 }
 
-// Make sure to attach this new function to the second draw button's onclick event
-document.getElementById('operationButton').onclick = function() {
-  handleDrawOperationEvent(ctx);
-};
-
-// Invoke the main function to set everything up
 main();
