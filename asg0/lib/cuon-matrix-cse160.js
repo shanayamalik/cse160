@@ -88,12 +88,15 @@ mul(scalar) {
 };
 
     /**
-      * Calcualte the dop product between this vector and other.
-      * @return scalar
+      * Calculate the dot product between this vector and other.
+      * @param {Vector3} other1 - The first vector.
+      * @param {Vector3} other2 - The second vector.
+      * @return {Number} The dot product of the two vectors.
       */
     static dot(other1, other2) {
-        // Insert your code here.
-        let d = 0; // Modify this line to calculate this vector's magnitude.
+        let d = other1.elements[0] * other2.elements[0] + 
+                other1.elements[1] * other2.elements[1] + 
+                other1.elements[2] * other2.elements[2];
 
         // Don't delete the return statement.
         return d;
