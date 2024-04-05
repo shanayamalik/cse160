@@ -103,13 +103,20 @@ mul(scalar) {
     }
 
     /**
-      * Calcualte the cross product between this vector and other.
-      * @return new vector
+      * Calculate the cross product between two vectors.
+      * @param {Vector3} other1 - The first vector.
+      * @param {Vector3} other2 - The second vector.
+      * @return {Vector3} The cross product vector.
       */
     static cross(other1, other2) {
-        // Insert your code here.
-        // This function should create and return a new vector.
-        let v3 = new Vector3(); // Modify this line to calculate cross product between other1 and other2.
+        let x1 = other1.elements[0], y1 = other1.elements[1], z1 = other1.elements[2];
+        let x2 = other2.elements[0], y2 = other2.elements[1], z2 = other2.elements[2];
+
+        let x = y1 * z2 - z1 * y2;
+        let y = z1 * x2 - x1 * z2;
+        let z = x1 * y2 - y1 * x2;
+    
+        let v3 = new Vector3([x, y, z]);
 
         // Don't delete the return statement.
         return v3;
