@@ -39,53 +39,53 @@ class Vector3 {
         return this;
     }
 
-    /**
-      * Add other to this vector.
-      * @return this
-      */
-    add(other) {
-        // Insert your code here.
-        // This function should change this vector (this.elements) and not create a new vector.
+/**
+  * Add other to this vector.
+  * @return this
+  */
+add(other) {
+    this.elements[0] += other.elements[0];
+    this.elements[1] += other.elements[1];
+    this.elements[2] += other.elements[2];
+    return this;
+};
 
-        // Don't delete the return statement.
-        return this;
-    };
+/**
+  * Subtract other from this vector.
+  * @return this
+  */
+sub(other) {
+    this.elements[0] -= other.elements[0];
+    this.elements[1] -= other.elements[1];
+    this.elements[2] -= other.elements[2];
+    return this;
+};
 
-    /**
-      * Subtract other from this vector.
-      * @return this
-      */
-    sub(other) {
-        // Insert your code here.
-        // This function should change this vector (this.elements) and not create a new vector.
+/**
+  * Divide this vector by a scalar.
+  * @return this
+  */
+div(scalar) {
+    if (scalar !== 0) {
+        this.elements[0] /= scalar;
+        this.elements[1] /= scalar;
+        this.elements[2] /= scalar;
+    } else {
+        console.error("Division by zero.");
+    }
+    return this;
+};
 
-        // Don't delete the return statement.
-        return this;
-    };
-
-    /**
-      * Divide this vector by a scalar.
-      * @return this
-      */
-    div(scalar) {
-        // Insert your code here.
-        // This function should change this vector (this.elements) and not create a new vector.
-
-        // Don't delete the return statement.
-        return this;
-    };
-
-    /**
-      * Multiply this vector by a scalar.
-      * @return this
-      */
-    mul(scalar) {
-        // Insert your code here.
-        // This function should change this vector (this.elements) and not create a new vector.
-
-        // Don't delete the return statement.
-        return this;
-    };
+/**
+  * Multiply this vector by a scalar.
+  * @return this
+  */
+mul(scalar) {
+    this.elements[0] *= scalar;
+    this.elements[1] *= scalar;
+    this.elements[2] *= scalar;
+    return this;
+};
 
     /**
       * Calcualte the dop product between this vector and other.
