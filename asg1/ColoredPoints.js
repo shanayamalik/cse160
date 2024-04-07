@@ -101,6 +101,7 @@ function convertCoordinatesEventToGL(ev) {
   return([x,y]);
 }
 
+function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -116,4 +117,5 @@ function convertCoordinatesEventToGL(ev) {
     // Draw
     gl.drawArrays(gl.POINTS, 0, 1);
   }
+  
 }
