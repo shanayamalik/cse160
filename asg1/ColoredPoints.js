@@ -55,12 +55,12 @@ function connectVariablesToGLSL() {
   }
 }
 
-let g_selectedColor=[1.0,1.0,1.0,1.0]
+let g_selectedColor=[1.0,1.0,1.0,1.0];
 
-function addActionsForHtmlUI(){
+function addActionsForHtmlUI() {
   // Button Events
-  document.getElementByID('green').onclick = function() {g.selectedColor = [0.0,1.0,0.0,1.0]; };
-  document.getElementByID('red').onclick = function() {g.selectedColor = [1.0,0.0,0.0,1.0]; };
+  document.getElementById('green').onclick = function() {g_selectedColor = [0.0,1.0,0.0,1.0]; };
+  document.getElementById('red').onclick = function() {g_selectedColor = [1.0,0.0,0.0,1.0]; };
 }
 
 function main() {
@@ -89,7 +89,7 @@ function click(ev) {
   // Store the coordinates to g_points array
   g_points.push([x, y]);
 
-  g_colors.push(g.selectedColor);
+  g_colors.push(g_selectedColor);
 
   // Store the coordinates to g_points array
   //if (x >= 0.0 && y >= 0.0) {      // First quadrant
