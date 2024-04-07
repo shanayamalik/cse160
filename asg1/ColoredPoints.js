@@ -2,9 +2,10 @@
 // Vertex shader program
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
+  'uniform float u_Size;\n +
   'void main() {\n' +
   '  gl_Position = a_Position;\n' +
-  '  gl_PointSize = 10.0;\n' +
+  '  gl_PointSize = u_Size;\n' +
   '}\n';
 
 // Fragment shader program
@@ -55,7 +56,9 @@ function connectVariablesToGLSL() {
   }
 }
 
+// Global Variables Related to UI Elements
 let g_selectedColor=[1.0,1.0,1.0,1.0];
+let g_size=5;
 
 function addActionsForHtmlUI() {
   // Button Events
@@ -65,6 +68,9 @@ function addActionsForHtmlUI() {
   document.getElementById('redSlide').addEventListener('mouseup', function() {g_selectedColor[0] = this.value/100; });
   document.getElementById('greenSlide').addEventListener('mouseup', function() {g_selectedColor[1] = this.value/100; });  
   document.getElementById('blueSlide').addEventListener('mouseup', function() {g_selectedColor[2] = this.value/100; });
+
+  document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_size = this.value; });
+
 }
 
 function main() {
@@ -86,6 +92,7 @@ function main() {
 
 var g_points = [];  // The array for the position of a mouse press
 var g_colors = [];  // The array to store the color of a point
+var g_sizes = [];
 
 function click(ev) {
   let [x,y] = convertCoordinatesEventToGL(ev);
