@@ -98,7 +98,7 @@ function main() {
 
 var g_points = [];  // The array for the position of a mouse press
 var g_colors = [];  // The array to store the color of a point
-var g_selectedSize = [];
+var g_sizes = [];
 
 function click(ev) {
   let [x,y] = convertCoordinatesEventToGL(ev);
@@ -106,7 +106,9 @@ function click(ev) {
   // Store the coordinates to g_points array
   g_points.push([x, y]);
 
-  g_colors.push(g_selectedSize);
+  g_colors.push(g_selectedColor.slice());
+
+  g_size.push(g_selectedSize);
 
   // Store the coordinates to g_points array
   //if (x >= 0.0 && y >= 0.0) {      // First quadrant
