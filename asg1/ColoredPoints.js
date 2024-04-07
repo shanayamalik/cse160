@@ -89,8 +89,6 @@ function main() {
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = click;
 
-  gl.uniform1f(u_Size, g_selectedSize);
-
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
