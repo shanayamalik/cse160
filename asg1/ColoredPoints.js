@@ -33,8 +33,7 @@ function setupWebGL() {
   }
 }
 
-function main() {
-  setupWebGL();
+function connectVariablesToGLSL() {
   // Initialize shaders
   if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
@@ -54,6 +53,11 @@ function main() {
     console.log('Failed to get the storage location of u_FragColor');
     return;
   }
+}
+
+function main() {
+  setupWebGL();
+  connectVariablestoGLSL();
 
   // Register function (event handler) to be called on a mouse press
   canvas.onmousedown = function(ev){ click(ev, gl, canvas, a_Position, u_FragColor) };
