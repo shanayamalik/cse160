@@ -9,7 +9,7 @@ var VSHADER_SOURCE =
 // Fragment shader program
 var FSHADER_SOURCE = '
   void main() { +
-    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0);\n' + // Set the point color
+    gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); // Set the point color
   }';
 
 function main() {
