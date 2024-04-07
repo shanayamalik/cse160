@@ -37,6 +37,8 @@ function main() {
     return;
   }
 
+  let xpos = 0.5;
+
   // Pass vertex position to attribute variable
   gl.vertexAttrib3f(a_Position, 0.0, 0.0, 0.0);
 
