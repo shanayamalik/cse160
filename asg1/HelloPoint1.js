@@ -14,7 +14,7 @@ var FSHADER_SOURCE =
 
 function main() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl160');
+  var canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
   var gl = getWebGLContext(canvas);
