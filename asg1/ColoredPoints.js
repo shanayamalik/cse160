@@ -10,7 +10,7 @@ var VSHADER_SOURCE =
 // Fragment shader program
 var FSHADER_SOURCE =
   'precision mediump float;\n' +
-  'uniform vec4 u_FragColor;\n' +  // uniform変数
+  'uniform vec4 u_FragColor;\n' +  // uniform
   'void main() {\n' +
   '  gl_FragColor = u_FragColor;\n' +
   '}\n';
@@ -60,7 +60,7 @@ let g_selectedColor=[1.0,1.0,1.0,1.0]
 function addActionsForHtmlUI(){
   // Button Events
   document.getElementByID('green').onclick = function() {g.selectedColor = [0.0,1.0,0.0,1.0]; };
-  document.getElementByID('red').onclick = function() {g.selectedColor = [1.0,1.0,0.0,1.0]; };
+  document.getElementByID('red').onclick = function() {g.selectedColor = [1.0,0.0,0.0,1.0]; };
 }
 
 function main() {
@@ -84,19 +84,21 @@ var g_points = [];  // The array for the position of a mouse press
 var g_colors = [];  // The array to store the color of a point
 
 function click(ev) {
-  [x,y] = convertCoordinatesEventToGL(ev);
+  let [x,y] = convertCoordinatesEventToGL(ev);
   
   // Store the coordinates to g_points array
   g_points.push([x, y]);
 
+  g_colors.push(g.selectedColor);
+
   // Store the coordinates to g_points array
-  if (x >= 0.0 && y >= 0.0) {      // First quadrant
-    g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
-  } else if (x < 0.0 && y < 0.0) { // Third quadrant
-    g_colors.push([0.0, 1.0, 0.0, 1.0]);  // Green
-  } else {                         // Others
-    g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
-  }
+  //if (x >= 0.0 && y >= 0.0) {      // First quadrant
+    //g_colors.push([1.0, 0.0, 0.0, 1.0]);  // Red
+  //} else if (x < 0.0 && y < 0.0) { // Third quadrant
+    //g_colors.push([0.0, 1.0, 0.0, 1.0]);  // Green
+  //} else {                         // Others
+    //g_colors.push([1.0, 1.0, 1.0, 1.0]);  // White
+  //}
 
   renderAllShapes();
 }
