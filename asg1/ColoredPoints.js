@@ -108,7 +108,7 @@ function click(ev) {
 
   g_colors.push(g_selectedColor.slice());
 
-  g_size.push(g_selectedSize);
+  g_sizes.push(g_selectedSize);
 
   // Store the coordinates to g_points array
   //if (x >= 0.0 && y >= 0.0) {      // First quadrant
@@ -148,7 +148,7 @@ function renderAllShapes() {
     // Pass the color of a point to u_FragColor variable
     gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
 
-    gl.uniform4f(u_Size, size);    
+    gl.uniform1f(u_Size, size);    
 
     // Draw
     gl.drawArrays(gl.POINTS, 0, 1);
