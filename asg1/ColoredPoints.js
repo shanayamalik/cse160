@@ -15,6 +15,12 @@ var FSHADER_SOURCE =
   '  gl_FragColor = u_FragColor;\n' +
   '}\n';
 
+// Global Variables
+let canvas;
+let gl;
+let a_position;
+let u_FragColor;
+
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
