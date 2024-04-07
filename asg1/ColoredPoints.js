@@ -21,17 +21,20 @@ let gl;
 let a_position;
 let u_FragColor;
 
-function main() {
+function setupWebGL() {
   // Retrieve <canvas> element
-  var canvas = document.getElementById('webgl');
+  canvas = document.getElementById('webgl');
 
   // Get the rendering context for WebGL
-  var gl = getWebGLContext(canvas);
+  gl = getWebGLContext(canvas);
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
+}
 
+function main() {
+  setupWebGL();
   // Initialize shaders
   if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
     console.log('Failed to intialize shaders.');
