@@ -158,7 +158,7 @@ function renderAllShapes() {
   var len = g_shapesList.length;  
 
   for(var i = 0; i < len; i++) {
-    shape.render();
+    //shape.render();
 
     var xy = g_shapesList[i].position;
     var rgba = g_shapesList[i].color;
