@@ -97,9 +97,20 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 }
 
-var g_points = [];  // The array for the position of a mouse press
-var g_colors = [];  // The array to store the color of a point
-var g_sizes = [];
+class Point {
+  constructor() {
+    this.type='point';
+    this.position = [0.0, 0.0, 0.0];
+    this.color = [1.0,1.0,1.0,1.0];
+    this.size = 5.0;
+   }
+}
+
+var g_shapesList = [];
+
+//var g_points = [];  // The array for the position of a mouse press
+//var g_colors = [];  // The array to store the color of a point
+//var g_sizes = [];
 
 function click(ev) {
   let [x,y] = convertCoordinatesEventToGL(ev);
