@@ -30,11 +30,11 @@ function main() {
   }
 
   // Write the positions of vertices to a vertex shader
-  var n = initVertexBuffers(gl);
-  if (n < 0) {
-    console.log('Failed to set the positions of the vertices');
-    return;
-  }
+  //var n = initVertexBuffers(gl);
+  //if (n < 0) {
+    //console.log('Failed to set the positions of the vertices');
+    //return;
+  //}
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0, 0, 0, 1);
@@ -42,8 +42,9 @@ function main() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  // Draw the rectangle
-  gl.drawArrays(gl.TRIANGLES, 0, n);
+  // Draw the triangle
+  drawTriangle([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
+  //gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
 function initVertexBuffers(gl) {
