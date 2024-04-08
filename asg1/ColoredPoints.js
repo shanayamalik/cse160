@@ -149,7 +149,7 @@ function renderAllShapes() {
   var len = g_shapesList.length;  
 
   for(var i = 0; i < len; i++) {
-    g_shapesList.render();
+    g_shapesList.render(); //Bug
   }
   
 }
