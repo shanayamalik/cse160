@@ -155,9 +155,11 @@ function renderAllShapes() {
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   //var len = g_points.length;
-  var len = g_ShapesList.length;  
+  var len = g_shapesList.length;  
 
   for(var i = 0; i < len; i++) {
+    shape.render();
+
     var xy = g_shapesList[i].position;
     var rgba = g_shapesList[i].color;
     var size = g_shapesList[i].size;
