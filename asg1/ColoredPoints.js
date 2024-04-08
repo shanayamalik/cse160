@@ -64,6 +64,10 @@ function connectVariablesToGLSL() {
   }  
 }
 
+// Constants
+const POINT = 0;
+const TRIANGLE = 1;
+
 // Global Variables Related to UI Elements
 let g_selectedColor=[1.0,1.0,1.0,1.0];
 let g_selectedSize=5;
