@@ -115,12 +115,17 @@ var g_shapesList = [];
 function click(ev) {
   let [x,y] = convertCoordinatesEventToGL(ev);
   
+  // Create and store the new point
+  let point = new Point();
+  point.position = [x,y];
+  point.color = g_selectedColor.slice();
+  point.size = g_selectedSize;
+  g_shapesList.push(point);
+
   // Store the coordinates to g_points array
-  g_points.push([x, y]);
-
-  g_colors.push(g_selectedColor.slice());
-
-  g_sizes.push(g_selectedSize);
+  //g_points.push([x, y]);
+  //g_colors.push(g_selectedColor.slice());
+  //g_sizes.push(g_selectedSize);
 
   // Store the coordinates to g_points array
   //if (x >= 0.0 && y >= 0.0) {      // First quadrant
@@ -149,11 +154,16 @@ function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  var len = g_points.length;
+  //var len = g_points.length;
+  var len = g_ShapesList.length;  
+
   for(var i = 0; i < len; i++) {
-    var xy = g_points[i];
-    var rgba = g_colors[i];
-    var size = g_sizes[i];
+    var xy = g_shapesList[i].position;
+    var rgba = g_shapesList[i].color;
+    var size = g_shapesList[i].size;
+    //var xy = g_points[i];
+    //var rgba = g_colors[i];
+    //var size = g_sizes[i];
 
     // Pass the position of a point to a_Position variable
     gl.vertexAttrib3f(a_Position, xy[0], xy[1], 0.0);
