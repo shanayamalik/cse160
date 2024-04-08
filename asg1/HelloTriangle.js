@@ -12,8 +12,6 @@ var FSHADER_SOURCE =
   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
   '}\n';
 
-var gl;
-
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
@@ -32,11 +30,11 @@ function main() {
   }
 
   // Write the positions of vertices to a vertex shader
-  //var n = initVertexBuffers(gl);
-  //if (n < 0) {
-    //console.log('Failed to set the positions of the vertices');
-    //return;
-  //}
+  var n = initVertexBuffers(gl);
+  if (n < 0) {
+    console.log('Failed to set the positions of the vertices');
+    return;
+  }
 
   // Specify the color for clearing <canvas>
   gl.clearColor(0, 0, 0, 1);
@@ -44,17 +42,14 @@ function main() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  // Draw the triangle
-  drawTriangle([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
-  drawTriangle([0.8, 0.9,   .7, .8,   .8, .7]);
-  drawTriangle([0.0, 0.0,   .5, 0,   .5, .5]);
-  //gl.drawArrays(gl.TRIANGLES, 0, n);
+  // Draw the rectangle
+  gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
-function drawTriangle(vertices) {
-  //var vertices = new Float32Array([
-    //0, 0.5,   -0.5, -0.5,   0.5, -0.5
-  //]);
+function initVertexBuffers(gl) {
+  var vertices = new Float32Array([
+    0, 0.5,   -0.5, -0.5,   0.5, -0.5
+  ]);
   var n = 3; // The number of vertices
 
   // Create a buffer object
@@ -67,8 +62,7 @@ function drawTriangle(vertices) {
   // Bind the buffer object to target
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   // Write date into the buffer object
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-  //gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   if (a_Position < 0) {
@@ -81,6 +75,5 @@ function drawTriangle(vertices) {
   // Enable the assignment to a_Position variable
   gl.enableVertexAttribArray(a_Position);
 
-  gl.drawArrays(gl.TRIANGLES, 0, n);
-  //return n;
+  return n;
 }
