@@ -12,6 +12,8 @@ var FSHADER_SOURCE =
   '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
   '}\n';
 
+var gl;
+
 function main() {
   // Retrieve <canvas> element
   var canvas = document.getElementById('webgl');
