@@ -64,7 +64,7 @@ function connectVariablesToGLSL() {
 
 // Global Variables Related to UI Elements
 let g_selectedColor=[1.0,1.0,1.0,1.0];
-//let g_selectedSize=5;
+let g_selectedSize=5;
 
 function addActionsForHtmlUI() {
   // Button Events
@@ -75,7 +75,7 @@ function addActionsForHtmlUI() {
   document.getElementById('greenSlide').addEventListener('mouseup', function() {g_selectedColor[1] = this.value/100; });  
   document.getElementById('blueSlide').addEventListener('mouseup', function() {g_selectedColor[2] = this.value/100; });
 
-  document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_size = this.value; });
+  document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_selectedSize = this.value; });
 
 }
 
@@ -108,7 +108,7 @@ function click(ev) {
 
   g_colors.push(g_selectedColor.slice());
 
-  g_sizes.push(g_size);
+  g_sizes.push(g_selectedSize);
 
   // Store the coordinates to g_points array
   //if (x >= 0.0 && y >= 0.0) {      // First quadrant
