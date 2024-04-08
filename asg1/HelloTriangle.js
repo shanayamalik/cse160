@@ -81,6 +81,4 @@ function drawTriangle(vertices) {
 
   gl.drawArrays(gl.TRIANGLES, 0, n);
   //return n;
-  
-  return n;
 }
