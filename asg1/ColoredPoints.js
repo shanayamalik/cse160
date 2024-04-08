@@ -29,7 +29,7 @@ function setupWebGL() {
 
   // Get the rendering context for WebGL
   //gl = getWebGLContext(canvas);
-  gl = canvas.GetContext("webgl", { preserveDrawingBuffer: true});
+  gl = canvas.GetContext("webgl160", { preserveDrawingBuffer: true});
   if (!gl) {
     console.log('Failed to get the rendering context for WebGL');
     return;
