@@ -21,6 +21,7 @@ let canvas;
 let gl;
 let a_position;
 let u_FragColor;
+let u_Size;
 
 function setupWebGL() {
   // Retrieve <canvas> element
