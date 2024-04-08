@@ -145,14 +145,28 @@ function convertCoordinatesEventToGL(ev) {
 }
 
 function renderAllShapes() {
+  var StartTime = performance.now();
+  
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
   //var len = g_points.length;
-  var len = g_shapesList.length;  
-
-  for(var i = 0; i < len; i++) {
-    g_shapesList[i].render(); 
+  var len = g_shapesList.length;
+  for (var i = 0; i < len; i++) {
+    g_shapesList[i].render();
   }
-  
+
+  var duration = performance.now() - StartTime;
+  sendTextToHTML("numdot: " + len + " ms: " + Math.floor(duration) + " fps: " + Math.floor(1000/duration)/10, "numdot");
+
+}
+
+// Set the text of a HTML element
+function sendTextToHTML(text, htmlID) {
+  var htmlElm - document.getElementById(htmlID);
+  if (!htmlElm) {
+      console.log("Failed to get " + htmlID + " from HTML");
+      return;
+  }
+htmlElm. innerHTML = text;
 }
