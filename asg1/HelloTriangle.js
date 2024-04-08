@@ -44,6 +44,8 @@ function main() {
 
   // Draw the triangle
   drawTriangle([0, 0.5,   -0.5, -0.5,   0.5, -0.5]);
+  drawTriangle([0.8, 0.9,   0.7, 0.8,   0.8, 0.7]);
+  drawTriangle([0.0, 0.0,   0.5, 0,   0.5, 0.5]);
   //gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
@@ -77,5 +79,8 @@ function drawTriangle(vertices) {
   // Enable the assignment to a_Position variable
   gl.enableVertexAttribArray(a_Position);
 
+  gl.drawArrays(gl.TRIANGLES, 0, n);
+  //return n;
+  
   return n;
 }
