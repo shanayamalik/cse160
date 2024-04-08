@@ -47,10 +47,10 @@ function main() {
   //gl.drawArrays(gl.TRIANGLES, 0, n);
 }
 
-function initVertexBuffers(gl) {
-  var vertices = new Float32Array([
-    0, 0.5,   -0.5, -0.5,   0.5, -0.5
-  ]);
+function drawTriangle(vertices) {
+  //var vertices = new Float32Array([
+    //0, 0.5,   -0.5, -0.5,   0.5, -0.5
+  //]);
   var n = 3; // The number of vertices
 
   // Create a buffer object
@@ -63,7 +63,8 @@ function initVertexBuffers(gl) {
   // Bind the buffer object to target
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
   // Write date into the buffer object
-  gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+  //gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
   var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
   if (a_Position < 0) {
