@@ -163,7 +163,7 @@ function renderAllShapes() {
 
 // Set the text of a HTML element
 function sendTextToHTML(text, htmlID) {
-  var htmlElm - document.getElementById(htmlID);
+  var htmlElm = document.getElementById(htmlID);
   if (!htmlElm) {
       console.log("Failed to get " + htmlID + " from HTML");
       return;
