@@ -18,8 +18,9 @@ class Point {
     gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
     gl.uniform1f(u_Size, size);    
 
-    // Draw
-    gl.drawArrays(gl.POINTS, 0, 1);
+   // Draw
+   //gl.drawArrays(gl.POINTS, 0, 1);
+   drawTriangle([xy[0], xy[1], xy[0]+.1, xy[1], xy[0], xy[1]+.1]);
    }
   
 }
