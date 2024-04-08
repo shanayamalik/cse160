@@ -111,7 +111,7 @@ function click(ev) {
   let [x,y] = convertCoordinatesEventToGL(ev);
   
   // Create and store the new point
-  let point = new Point();
+  let point = new Triangle();
   point.position = [x,y];
   point.color = g_selectedColor.slice();
   point.size = g_selectedSize;
