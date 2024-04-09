@@ -101,6 +101,7 @@ function addActionsForHtmlUI() {
   document.getElementById('segmentSlide').addEventListener('mouseup', function() {g_selectedSegments = this.value; });
   document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_selectedSize = this.value; });
 
+  document.getElementById('recreate').onclick = function() {g_shapesList = []; renderAllShapes(); importGraphic(); };
 }
 
 function main() {
