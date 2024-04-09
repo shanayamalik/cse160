@@ -123,7 +123,7 @@ function click(ev) {
   if (g_selectedType==POINT) {
     point = new Point();
   } else {
-    point = new triangle();
+    point = new Triangle();
   }
 
   point.position = [x,y];
