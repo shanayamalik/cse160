@@ -1,5 +1,5 @@
 class Circle {
-    constructor() {
+    constructor(segments) {
         this.type = 'circle';
         this.position = [0.0, 0.0, 0.0];
         this.color = [1.0, 1.0, 1.0, 1.0];
