@@ -130,7 +130,7 @@ function click(ev) {
   } else if (g_selectedType == TRIANGLE) {
     point = new Triangle();
   } else if (g_selectedType == CIRCLE) {
-    point = new Circle();
+    point = new Circle(g_selectedSegments);
   }
   
   point.position = [x,y];
