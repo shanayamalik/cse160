@@ -90,7 +90,7 @@ function addActionsForHtmlUI() {
   document.getElementById('greenSlide').addEventListener('mouseup', function() {g_selectedColor[1] = this.value/100; });  
   document.getElementById('blueSlide').addEventListener('mouseup', function() {g_selectedColor[2] = this.value/100; });
   
-  document.getElementById('segmentSlide').addEventListener('mouseup', function() {g_selectedSegments = this.value; })'
+  document.getElementById('segmentSlide').addEventListener('mouseup', function() {g_selectedSegments = this.value; });
   document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_selectedSize = this.value; });
 
 }
