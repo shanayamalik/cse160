@@ -119,17 +119,18 @@ var g_shapesList = [];
 //var g_sizes = [];
 
 function click(ev) {
-  let [x,y] = convertCoordinatesEventToGL(ev);
-  
+  let [x, y] = convertCoordinatesEventToGL(ev);
+
   // Create and store the new point
   let point;
-  if (g_selectedType==POINT) {
+  if (g_selectedType == POINT) {
     point = new Point();
-  } else {
+  } else if (g_selectedType == TRIANGLE) {
     point = new Triangle();
-  } else {
+  } else if (g_selectedType == CIRCLE) {
     point = new Circle();
   }
+  
   point.position = [x,y];
   point.color = g_selectedColor.slice();
   point.size = g_selectedSize;
