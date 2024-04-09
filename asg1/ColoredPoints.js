@@ -22,7 +22,7 @@ let gl;
 let a_position;
 let u_FragColor;
 let u_Size;
-let g_selectedSegments;
+let g_selectedSegments=10;
 
 function setupWebGL() {
   // Retrieve <canvas> element
