@@ -126,7 +126,6 @@ function click(ev) {
   } else {
     point = new Triangle();
   }
-
   point.position = [x,y];
   point.color = g_selectedColor.slice();
   point.size = g_selectedSize;
