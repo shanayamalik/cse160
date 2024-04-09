@@ -22,7 +22,7 @@ let gl;
 let a_position;
 let u_FragColor;
 let u_Size;
-let g_selectedSegments;
+let g_selectedSegments = 10;
 
 function setupWebGL() {
   // Retrieve <canvas> element
@@ -130,7 +130,7 @@ function click(ev) {
   } else if (g_selectedType == TRIANGLE) {
     point = new Triangle();
   } else if (g_selectedType == CIRCLE) {
-    point = new Circle(g_selectedSegments);
+    point = new Circle(g_selectedSegments); 
   }
   
   point.position = [x,y];
