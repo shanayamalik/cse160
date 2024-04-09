@@ -101,7 +101,15 @@ function addActionsForHtmlUI() {
   document.getElementById('segmentSlide').addEventListener('mouseup', function() {g_selectedSegments = this.value; });
   document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_selectedSize = this.value; });
 
-  document.getElementById('recreate').onclick = function() {g_shapesList = []; renderAllShapes(); importGraphic(); };
+  document.getElementById('recreate').onclick = function() {
+    g_shapesList = [];
+    renderAllShapes(); 
+    var destinationCanvas = document.getElementById('webgl');
+    var destCtx = destinationCanvas.getContext('2d');
+    // Copy the content from the source canvas to the destination canvas
+    destCtx.drawImage(document.getElementById('photo'), 0, 0);
+
+  };
 }
 
 function main() {
@@ -121,6 +129,13 @@ function main() {
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
+ 
+  var img = new Image();
+  img.src = "Tortoise.png"; 
+  var ctx = document.getElementById('photo').getContext('2d');
+  img.onload = function() {
+    ctx.drawImage(img, 0, 0);
+  };
 }
 
 var g_shapesList = [];
