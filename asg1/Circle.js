@@ -4,7 +4,7 @@ class Circle {
         this.position = [0.0, 0.0, 0.0];
         this.color = [1.0, 1.0, 1.0, 1.0];
         this.size = 5.0;
-        this.segments = segments;
+        this.segments = 10;
     }
 
     render() {
