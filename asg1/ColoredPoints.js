@@ -104,11 +104,9 @@ function addActionsForHtmlUI() {
   document.getElementById('recreate').onclick = function() {
     g_shapesList = [];
     renderAllShapes(); 
-    var destinationCanvas = document.getElementById('webgl');
-    var destCtx = destinationCanvas.getContext('2d');
+    var destCtx = document.getElementById('backing').getContext('2d');
     // Copy the content from the source canvas to the destination canvas
     destCtx.drawImage(document.getElementById('photo'), 0, 0);
-
   };
 }
 
@@ -125,7 +123,7 @@ function main() {
   canvas.onmousemove = function(ev) { if(ev.buttons == 1) { click(ev) } };
   
   // Specify the color for clearing <canvas>
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearColor(0.0, 0.0, 0.0, 0.0);
 
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);

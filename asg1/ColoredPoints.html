@@ -8,13 +8,11 @@
   <body onload="main()">
     </canvas>
     <div id="canvasContainer" style="position: relative; width: 640px; height: 480px;">
-      <canvas id="backing" width="400" height="400" style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+      <canvas id="backing" width="400" height="400" style="position: absolute; left: 0; top: 0; z-index: 0; background-color: black;"></canvas>
       <canvas id="webgl" width="400" height="400" style="position: absolute; left: 0; top: 0; z-index: 1; background-color: transparent;">
         Please use a browser that supports "canvas"
       </canvas>
     </div>
-    <p>
-
     <p id="numdot"> XXX </p>
       
     <button type="button" id="green">Green</button>
