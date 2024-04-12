@@ -129,7 +129,7 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT);
  
   var img = new Image();
-  img.src = "Tortoise.png"; 
+  img.src = "Turtle.png"; 
   var ctx = document.getElementById('photo').getContext('2d');
   img.onload = function() {
     ctx.drawImage(img, 0, 0);
