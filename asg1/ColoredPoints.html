@@ -7,7 +7,7 @@
 
   <body onload="main()">
     </canvas>
-    <div id="canvasContainer" style="position: relative; width: 640px; height: 480px;">
+    <div id="canvasContainer" style="position: relative; width: 400px; height: 400px;">
       <canvas id="backing" width="400" height="400" style="position: absolute; left: 0; top: 0; z-index: 0; background-color: black;"></canvas>
       <canvas id="webgl" width="400" height="400" style="position: absolute; left: 0; top: 0; z-index: 1; background-color: transparent;">
         Please use a browser that supports "canvas"
@@ -24,6 +24,7 @@
     <button type="button" id="pointButton">Point</button>
     <button type="button" id="triButton">Triangle</button>
     <button type="button" id="circleButton">Circle</button>
+    <button type="button" id="plotButton">Plot</button>
     
     <p>
     Red <input type="range" min="0" max="100" value="100" class="slider" id="redSlide">
