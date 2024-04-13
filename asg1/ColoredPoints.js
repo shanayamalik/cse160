@@ -101,7 +101,7 @@ function addActionsForHtmlUI() {
   document.getElementById('segmentSlide').addEventListener('mouseup', function() {g_selectedSegments = this.value; });
   document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_selectedSize = this.value; });
 
-  document.getElementById('recreate').onclick = function() {
+  document.getElementById('copyButton').onclick = function() {
     g_shapesList = [];
     renderAllShapes(); 
     var destCtx = document.getElementById('backing').getContext('2d');
@@ -109,7 +109,7 @@ function addActionsForHtmlUI() {
     destCtx.drawImage(document.getElementById('photo'), 0, 0);
   };
 
-  document.getElementById('plotButton').onclick = function() {
+  document.getElementById('recreateButton').onclick = function() {
     const vertexBuffer = gl.createBuffer(); // Create a buffer object
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer); // Bind the buffer object to target
 
@@ -124,10 +124,33 @@ function addActionsForHtmlUI() {
       // Draw the triangle
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
-
     gl.bindBuffer(gl.ARRAY_BUFFER, null); // Clean up
-  }
 
+
+
+for (let i = 0; i < verticesList.length; i += 6) {
+    // Extract the vertices of the current triangle
+    const x1 = verticesList[i], y1 = verticesList[i+1],
+          x2 = verticesList[i+2], y2 = verticesList[i+3],
+          x3 = verticesList[i+4], y3 = verticesList[i+5];
+
+    // Calculate the lengths of the sides of the triangle
+    const a = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    const b = Math.sqrt(Math.pow(x3 - x2, 2) + Math.pow(y3 - y2, 2));
+    const c = Math.sqrt(Math.pow(x1 - x3, 2) + Math.pow(y1 - y3, 2));
+
+    // Find the longest side
+    const longestSide = Math.max(a, b, c);
+
+    // Use Heron's formula to calculate the area of the triangle
+    const s = (a + b + c) / 2;
+    const area = Math.sqrt(s * (s - a) * (s - b) * (s - c));
+
+    // Output the results
+    console.log(`Triangle vertices: [(${x1}, ${y1}), (${x2}, ${y2}), (${x3}, ${y3})] Area: ${area.toFixed(4)} Longest side: ${longestSide.toFixed(4)}`);
+}
+
+  }
 }
 
 const verticesList = [
@@ -159,13 +182,13 @@ const verticesList = [
 -0.125, -0.705,
 -0.04, -0.72,
 
-//0.025, -0.82,
-//-0.115, -0.815,
-//-0.03, -0.73,
+0.025, -0.82,
+-0.115, -0.815,
+-0.03, -0.73,
 
-//0.025, -0.82,
-//-0.12, -0.575,
-//0.02, -0.635,
+0.025, -0.82,
+-0.12, -0.575,
+0.02, -0.635,
 
 0.02, -0.635,
 0.165, -0.565,
@@ -331,9 +354,9 @@ const verticesList = [
 0.13, -0.4,
 0.255, -0.465,
 
-0.17, -0.54,
-0.09, 0.01,
-0.03, -0.1,
+//0.17, -0.54,
+//0.09, 0.01,
+//0.03, -0.1,
 
 -0.065, 0.015,
 -0.005, -0.1,
@@ -414,7 +437,6 @@ const verticesList = [
 -0.45, 0.31,
 -0.3, 0.305,
 -0.39, 0.2,
--0.39, 0.2,
 
 -0.3, 0.305,
 -0.27, 0.285,
@@ -441,12 +463,10 @@ const verticesList = [
 -0.54, -0.07,
 
 -0.135, 0.4,
--0.135, 0.4,
 -0.085, 0.34,
 -0.12, 0.285,
 
 -0.11, 0.295,
--0.03, 0.35,
 -0.03, 0.35,
 -0.05, 0.275,
 
