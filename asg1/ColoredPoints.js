@@ -184,6 +184,13 @@ for (let i = 0; i < verticesList.length; i += 6) {
       gl.bindBuffer(gl.ARRAY_BUFFER, null);
   };
 
+  document.getElementById('sparkleButton').onclick = async function() {
+    for (let i = 0; i < 500000; i++) {
+      document.getElementById('recreateButton').click();
+      gl.finish();
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+  };
 }
 
 const verticesList = [

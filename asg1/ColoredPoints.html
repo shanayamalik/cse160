@@ -13,34 +13,32 @@
         Please use a browser that supports "canvas"
       </canvas>
     </div>
-    <p id="numdot"> XXX </p>
+    <p id="numdot"> Click on the Canvas above to Draw </p>
       
     <button type="button" id="green">Green</button>
     <button type="button" id="red">Red</button>
 
     <button type="button" id="clearButton">Clear</button>
-    <br>
-    <br>
+    <!-- <br>
+    <br> -->
     <button type="button" id="pointButton">Point</button>
     <button type="button" id="triButton">Triangle</button>
     <button type="button" id="circleButton">Circle</button>
     
     <p>
     Red <input type="range" min="0" max="100" value="100" class="slider" id="redSlide">
-    <p>
     Green <input type="range" min="0" max="100" value="100" class="slider" id="greenSlide">
-    <p>
     Blue <input type="range" min="0" max="100" value="100" class="slider" id="blueSlide">
     <p>
     Size <input type="range" min="5" max="40" value="5" class="slider" id="sizeSlide">
-    <p>
     Circle Segments <input type="range" min="3" max="100" value="10" class="slider" id="segmentSlide">
-    </p>
+    <p>
     
-    <canvas id="photo" width="400" height="400"></canvas>
-    <br>
     <button type="button" id="copyButton">Copy Drawing into Background</button>  
     <button type="button" id="recreateButton">Recreate Drawing</button>
+    <button type="button" id="sparkleButton">Sparkle Colors</button>
+    <br>
+    <canvas id="photo" width="400" height="400"></canvas>
 
     <script src="lib/webgl-utils.js"></script>
     <script src="lib/webgl-debug.js"></script>
