@@ -109,6 +109,7 @@ function addActionsForHtmlUI() {
     destCtx.drawImage(document.getElementById('photo'), 0, 0);
   };
 
+/*
   document.getElementById('recreateButton').onclick = function() {
     const vertexBuffer = gl.createBuffer(); // Create a buffer object
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer); // Bind the buffer object to target
@@ -125,8 +126,6 @@ function addActionsForHtmlUI() {
       gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     gl.bindBuffer(gl.ARRAY_BUFFER, null); // Clean up
-
-
 
 for (let i = 0; i < verticesList.length; i += 6) {
     // Extract the vertices of the current triangle
@@ -151,6 +150,40 @@ for (let i = 0; i < verticesList.length; i += 6) {
 }
 
   }
+*/
+
+  document.getElementById('recreateButton').onclick = function() {
+      const vertexBuffer = gl.createBuffer(); // Create a buffer object for vertices
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+  
+      for (let i = 0; i < verticesList.length; i += 6) {
+          // Get the six vertices for the current triangle
+          const triangleVertices = verticesList.slice(i, i + 6);
+  
+          // Create a random color for the current triangle
+          const color = new Float32Array([
+              Math.random(), // R
+              Math.random(), // G
+              Math.random(), // B
+              1.0            // A
+          ]);
+  
+          // Pass the vertices of a triangle to the buffer object
+          gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(triangleVertices), gl.STATIC_DRAW);
+          // Assign the buffer object to the position variable
+          gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+          gl.enableVertexAttribArray(a_Position);
+  
+          // Set the color for the current triangle
+          gl.uniform4fv(u_FragColor, color);
+  
+          // Draw the triangle 
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
+      // Clean up
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
+  };
+
 }
 
 const verticesList = [
