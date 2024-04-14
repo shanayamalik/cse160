@@ -105,12 +105,15 @@ function addActionsForHtmlUI() {
     g_shapesList = [];
     renderAllShapes(); 
     var destCtx = document.getElementById('backing').getContext('2d');
-    // Copy the content from the source canvas to the destination canvas
+    //Copy the content from the source canvas to the destination canvas
     destCtx.drawImage(document.getElementById('photo'), 0, 0);
   };
 
 /*
   document.getElementById('recreateButton').onclick = function() {
+    //g_shapesList = []; 
+    //renderAllShapes(); 
+    //var destCtx = document.getElementById('backing').getContext('2d');
     const vertexBuffer = gl.createBuffer(); // Create a buffer object
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer); // Bind the buffer object to target
 
