@@ -101,6 +101,7 @@ function addActionsForHtmlUI() {
   document.getElementById('segmentSlide').addEventListener('mouseup', function() {g_selectedSegments = this.value; });
   document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_selectedSize = this.value; });
 
+/*
   document.getElementById('copyButton').onclick = function() {
     g_shapesList = [];
     renderAllShapes(); 
@@ -108,6 +109,7 @@ function addActionsForHtmlUI() {
     //Copy the content from the source canvas to the destination canvas
     destCtx.drawImage(document.getElementById('photo'), 0, 0);
   };
+*/
 
 /*
   document.getElementById('recreateButton').onclick = function() {
