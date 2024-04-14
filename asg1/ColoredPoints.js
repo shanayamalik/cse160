@@ -88,7 +88,7 @@ function addActionsForHtmlUI() {
     document.getElementById('redSlide').value=100;
     document.getElementById('blueSlide').value=0;
   };
-  document.getElementById('clearButton').onclick = function() {g_shapesList = []; renderAllShapes(); };
+  document.getElementById('clearButton').onclick = function() {gl.clear(gl.COLOR_BUFFER_BIT); g_shapesList = []; renderAllShapes(); };
 
   document.getElementById('pointButton').onclick = function() {g_selectedType=POINT};
   document.getElementById('triButton').onclick = function() {g_selectedType=TRIANGLE};
@@ -707,7 +707,7 @@ function renderAllShapes() {
   var StartTime = performance.now();
   
   // Clear <canvas>
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  //gl.clear(gl.COLOR_BUFFER_BIT);
 
   //var len = g_points.length;
   var len = g_shapesList.length;
