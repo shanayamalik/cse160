@@ -88,6 +88,12 @@ function addActionsForHtmlUI() {
     document.getElementById('redSlide').value=100;
     document.getElementById('blueSlide').value=0;
   };
+  document.getElementById('blue').onclick = function() {g_selectedColor = [0.0,0.0,1.0,1.0];
+    document.getElementById('greenSlide').value=0;
+    document.getElementById('redSlide').value=0;
+    document.getElementById('blueSlide').value=100;
+  };  
+
   document.getElementById('clearButton').onclick = function() {gl.clear(gl.COLOR_BUFFER_BIT); g_shapesList = []; renderAllShapes(); };
 
   document.getElementById('pointButton').onclick = function() {g_selectedType=POINT};
