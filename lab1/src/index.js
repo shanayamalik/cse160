@@ -45,6 +45,7 @@ if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
 }
 
 // Set clear color
-gl.clearColor(0.0, 0.0, 0.0, 1.0);
+//gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.clearColor(0.2, 0.2, 0.2, 1.0) //Set gray color
 
 gl.clear(gl.COLOR_BUFFER_BIT);
