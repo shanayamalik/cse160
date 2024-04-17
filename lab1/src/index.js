@@ -44,6 +44,8 @@ if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
   console.log("Failed to intialize shaders.");
 }
 
+const vertices = new Float32Array([-0.5, -0.5, 0.5, -0.5, -0.5, 0.5]);
+
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clearColor(0.2, 0.2, 0.2, 1.0) //Set gray color
