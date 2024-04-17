@@ -70,7 +70,7 @@ if (aPosPtr < 0) {
 gl.vertexAttribPointer(aPosPtr, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(aPosPtr);
 
-
+const M = new Matrix4();
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clearColor(0.2, 0.2, 0.2, 1.0) //Set gray color
