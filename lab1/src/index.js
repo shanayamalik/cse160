@@ -44,7 +44,14 @@ if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
   console.log("Failed to intialize shaders.");
 }
 
+//Defined triangle's vertices
 const vertices = new Float32Array([-0.5, -0.5, 0.5, -0.5, -0.5, 0.5]);
+
+//Create a buffer to store the vertex data
+const vertexBuffer = gl.createBuffer();
+if (!vertexBuffer) {
+console. log("Failed to create the buffer object");
+}
 
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
