@@ -73,7 +73,7 @@ gl.enableVertexAttribArray(aPosPtr);
 const M = new Matrix4();
 
 function drawSpaceship(gl, matrix) {
-  
+  const uModelMatrixPtr = gl.getUniformLocation(gl.program, "uModelMatrix");
 }
 
 // Set clear color
