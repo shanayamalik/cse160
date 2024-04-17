@@ -15,10 +15,11 @@ import { Matrix4, Vector3 } from "../lib/cuon-matrix-cse160";
 // Vertex shader program
 const VSHADER_SOURCE = `
   attribute vec2 aPosition;
+  uniform mat4 uModelMatrix;
   void main() {
-    gl_Position = vec4(aPosition, 0.0, 1.0);
+    gl_Position = uModelMatrix * vec4(aPosition, 0.0, 1.0);
   }
-  `;
+`;
 
 // Fragment shader program
 const FSHADER_SOURCE = `
