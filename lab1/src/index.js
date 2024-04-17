@@ -53,6 +53,12 @@ if (!vertexBuffer) {
 console. log("Failed to create the buffer object");
 }
 
+// Bind the buffer object to the gl.ARRAY_BUFFER target
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+
+// Write the vertices data into the buffer object
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clearColor(0.2, 0.2, 0.2, 1.0) //Set gray color
