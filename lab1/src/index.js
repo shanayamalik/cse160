@@ -59,6 +59,14 @@ gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 // Write the vertices data into the buffer object
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 
+// Get the storage location of the aPosition attribute variable
+const aPosPtr = gl.getAttribLocation(gl.program, "aPosition");
+
+// Check if the attribute location was retrieved successfully
+if (aPosPtr < 0) {
+  console.error("Could not find aPosition ptr");
+}
+
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clearColor(0.2, 0.2, 0.2, 1.0) //Set gray color
