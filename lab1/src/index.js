@@ -78,7 +78,9 @@ function drawSpaceship(gl, matrix) {
 
   // Create a new Matrix4 object that can be safely modified
   const M1 = new Matrix4();
-  
+
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M1.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
 // Set clear color
