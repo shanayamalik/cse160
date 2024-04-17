@@ -71,6 +71,11 @@ gl.vertexAttribPointer(aPosPtr, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(aPosPtr);
 
 const M = new Matrix4();
+
+function drawSpaceship(gl, matrix) {
+  
+}
+
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clearColor(0.2, 0.2, 0.2, 1.0) //Set gray color
