@@ -75,6 +75,10 @@ const M = new Matrix4();
 
 function drawSpaceship(gl, matrix) {
   const uModelMatrixPtr = gl.getUniformLocation(gl.program, "uModelMatrix");
+
+  // Create a new Matrix4 object that can be safely modified
+  const M1 = new Matrix4();
+  
 }
 
 // Set clear color
