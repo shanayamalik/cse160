@@ -51,7 +51,7 @@ const vertices = new Float32Array([-0.5, -0.5, 0.5, -0.5, -0.5, 0.5]);
 //Create a buffer to store the vertex data
 const vertexBuffer = gl.createBuffer();
 if (!vertexBuffer) {
-console. log("Failed to create the buffer object");
+  console.log("Failed to create the buffer object");
 }
 
 // Bind the buffer object to the gl.ARRAY_BUFFER target
@@ -79,19 +79,26 @@ function drawSpaceship(gl, matrix) {
   // Create a new Matrix4 object that can be safely modified
   const M1 = new Matrix4();
   // Reset to the original matrix
-  M1.set(matrix); 
+  M1.set(matrix);
 
-  M1.translate(0, 0, 0); 
-  M1.rotate(45, 0, 0, 1); 
-  M1.scale(1, 1, 1); 
-  
+  M1.translate(0, 0, 0);
+  M1.rotate(40, 0, 0, 1);
+  M1.scale(0.5, 0.5, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M1.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  const M2 = new Matrix4();
+  M2.set(matrix);
+  M2.translate(0.0, 0, 0);
+  M2.rotate(220, 0, 0, 1);
+  M2.scale(0.5, 0.5, 2);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M2.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
-gl.clearColor(0.2, 0.2, 0.2, 1.0) //Set gray color
+gl.clearColor(0.2, 0.2, 0.2, 1.0); //Set gray color
 
 gl.clear(gl.COLOR_BUFFER_BIT);
 
