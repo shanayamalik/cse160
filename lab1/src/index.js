@@ -91,8 +91,25 @@ function drawSpaceship(gl, matrix) {
   M2.set(matrix);
   M2.translate(0.0, 0, 0);
   M2.rotate(220, 0, 0, 1);
-  M2.scale(0.5, 0.5, 2);
+  M2.scale(0.5, 0.5, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M2.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  // Create a new Matrix4 object for the smaller triangle
+  const M3 = new Matrix4();
+  M3.set(matrix);
+  M3.translate(0, -0.75, 0);
+  M3.rotate(-90, 0, 0, 1);
+  M3.scale(0.25, 0.25, 1);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M3.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  const M4 = new Matrix4();
+  M4.set(matrix);
+  M4.translate(0, -0.75, 0);
+  M4.rotate(90, 0, 0, 1);
+  M4.scale(0.25, 0.25, 1);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M4.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
