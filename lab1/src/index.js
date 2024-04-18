@@ -79,6 +79,7 @@ function drawSpaceship(gl, matrix) {
   // Create a new Matrix4 object that can be safely modified
   const M1 = new Matrix4();
 
+  M1.rotate(45, 0, 0, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M1.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
