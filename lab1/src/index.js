@@ -105,8 +105,8 @@ gl.clearColor(0.2, 0.2, 0.2, 1.0); //Set gray color
 gl.clear(gl.COLOR_BUFFER_BIT);
 
 drawSpaceshipMS(gl, M, 0, 0.5, 0);
-drawSpaceshipMS(gl, M, 0, 0.5, 0.5);
+//drawSpaceshipMS(gl, M, 0, 0.5, 0.5);
 drawSpaceshipMS(gl, M, -1, 0.5, 0.5);
 drawSpaceshipMS(gl, M, 1, 0.5, 0.5);
 drawSpaceshipMS(gl, M, 1, 0.5, 0);
-drawSpaceshipMS(gl, M, 1, 0.5, -0.5);
+//drawSpaceshipMS(gl, M, 1, 0.5, -0.5);
