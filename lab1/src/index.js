@@ -121,7 +121,7 @@ function drawSpaceship(gl, matrix) {
 
   const M6 = new Matrix4();
   M6.set(matrix);
-  M6.translate(-0.5, -0.35, 0);
+  M6.translate(-0.35, -0.2, 0);
   M6.rotate(-90, 0, 0, 1);
   M6.scale(0.2, 0.2, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M6.elements);
@@ -129,10 +129,26 @@ function drawSpaceship(gl, matrix) {
 
   const M7 = new Matrix4();
   M7.set(matrix);
-  M7.translate(-0.5, -0.35, 0);
-  M7.rotate(-90, 0, 0, 1);
-  M7.scale(0.2, 0.2, 1);
+  M7.translate(0.18, 0.18, 0);
+  M7.rotate(-180, 0, 0, 1);
+  M7.scale(0.35, 0.35, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M7.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  const M8 = new Matrix4();
+  M8.set(matrix);
+  M8.translate(-0.56, -0.2, 0);
+  M8.rotate(-270, 0, 0, 1);
+  M8.scale(0.2, 0.2, 1);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M8.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  const M9 = new Matrix4();
+  M9.set(matrix);
+  M9.translate(-0.2, -0.56, 0);
+  M9.rotate(270, 0, 0, 1);
+  M9.scale(0.2, 0.2, 1);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M9.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
