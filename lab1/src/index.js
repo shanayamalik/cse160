@@ -72,93 +72,31 @@ gl.vertexAttribPointer(aPosPtr, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(aPosPtr);
 
 const M = new Matrix4();
-M.setTranslate(0.5, -0.25, 0);
-M.scale(0.46, 0.46, 0.46);
-M.rotate(45, 0, 0, 1);
-drawSpaceship(gl, M);
 
-M.setTranslate(-0.15, 0.25, 0);
-M.scale(0.75, 0.75, 0.75);
-M.rotate(39, 0, 0, 1);
-drawSpaceship(gl, M);
-
-function drawSpaceship(gl, matrix) {
+function drawSpaceshipMS(gl, matrix, d, s, y) {
   const uModelMatrixPtr = gl.getUniformLocation(gl.program, "uModelMatrix");
 
-  // Create a new Matrix4 object that can be safely modified
-  const M1 = new Matrix4();
-  // Reset to the original matrix
-  M1.set(matrix);
+  // Helper function to create a matrix, apply transformations and draw
+  function setupAndDraw(tx, ty, tz, rotAngle, sx, sy, sz) {
+    const M = new Matrix4();
+    M.set(matrix);
+    M.translate(tx * s, ty * s + y, tz * s); // Apply scaling and vertical offset
+    M.rotate(rotAngle, 0, 0, 1);
+    M.scale(sx * s, sy * s, sz * s); // Apply the scaling parameter
+    gl.uniformMatrix4fv(uModelMatrixPtr, false, M.elements);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
 
-  M1.translate(0, 0, 0);
-  M1.rotate(45, 0, 0, 1);
-  M1.scale(0.5, 0.5, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M1.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M2 = new Matrix4();
-  M2.set(matrix);
-  M2.translate(0.0, 0, 0);
-  M2.rotate(225, 0, 0, 1);
-  M2.scale(0.5, 0.5, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M2.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M3 = new Matrix4();
-  M3.set(matrix);
-  M3.translate(-0.25, -0.25, 0);
-  M3.rotate(-45, 0, 0, 1);
-  M3.scale(0.2, 0.2, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M3.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M4 = new Matrix4();
-  M4.set(matrix);
-  M4.translate(-0.25, -0.25, 0);
-  M4.rotate(135, 0, 0, 1);
-  M4.scale(0.2, 0.2, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M4.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M5 = new Matrix4();
-  M5.set(matrix);
-  M5.translate(-0.2, -0.35, 0);
-  M5.rotate(90, 0, 0, 1);
-  M5.scale(0.2, 0.2, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M5.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M6 = new Matrix4();
-  M6.set(matrix);
-  M6.translate(-0.35, -0.2, 0);
-  M6.rotate(-90, 0, 0, 1);
-  M6.scale(0.2, 0.2, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M6.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M7 = new Matrix4();
-  M7.set(matrix);
-  M7.translate(0.18, 0.18, 0);
-  M7.rotate(-180, 0, 0, 1);
-  M7.scale(0.35, 0.35, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M7.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M8 = new Matrix4();
-  M8.set(matrix);
-  M8.translate(-0.56, -0.2, 0);
-  M8.rotate(-270, 0, 0, 1);
-  M8.scale(0.2, 0.2, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M8.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-  const M9 = new Matrix4();
-  M9.set(matrix);
-  M9.translate(-0.2, -0.56, 0);
-  M9.rotate(270, 0, 0, 1);
-  M9.scale(0.2, 0.2, 1);
-  gl.uniformMatrix4fv(uModelMatrixPtr, false, M9.elements);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  // Adjust the setupAndDraw calls with new vertical offset
+  setupAndDraw(d, 0, 0, 45, 0.5, 0.5, 1);
+  setupAndDraw(d, 0, 0, 225, 0.5, 0.5, 1);
+  setupAndDraw(d - 0.25, -0.25, 0, -45, 0.2, 0.2, 1);
+  setupAndDraw(d - 0.25, -0.25, 0, 135, 0.2, 0.2, 1);
+  setupAndDraw(d - 0.2, -0.35, 0, 90, 0.2, 0.2, 1);
+  setupAndDraw(d - 0.35, -0.2, 0, -90, 0.2, 0.2, 1);
+  setupAndDraw(d + 0.18, 0.18, 0, -180, 0.35, 0.35, 1);
+  setupAndDraw(d - 0.56, -0.2, 0, -270, 0.2, 0.2, 1);
+  setupAndDraw(d - 0.2, -0.56, 0, 270, 0.2, 0.2, 1);
 }
 
 // Set clear color
@@ -166,4 +104,9 @@ function drawSpaceship(gl, matrix) {
 gl.clearColor(0.2, 0.2, 0.2, 1.0); //Set gray color
 gl.clear(gl.COLOR_BUFFER_BIT);
 
-drawSpaceship(gl, M);
+drawSpaceshipMS(gl, M, 0, 0.5, 0);
+drawSpaceshipMS(gl, M, 0, 0.5, 0.5);
+drawSpaceshipMS(gl, M, -1, 0.5, 0.5);
+drawSpaceshipMS(gl, M, 1, 0.5, 0.5);
+drawSpaceshipMS(gl, M, 1, 0.5, 0);
+drawSpaceshipMS(gl, M, 1, 0.5, -0.5);
