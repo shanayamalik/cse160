@@ -1,43 +1,51 @@
 import * as THREE from 'three';
 
-function main() {
-    const canvas = document.querySelector('#c');
-    const renderer = new THREE.WebGLRenderer({canvas});
+// Existing setup for renderer and camera
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = 5;
 
-    const fov = 75;
-    const aspect = 2;  // canvas default
-    const near = 0.1;
-    const far = 5;
-    const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-    camera.position.z = 2;
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-    const scene = new THREE.Scene();
+// Existing Cube
+const geometryCube = new THREE.BoxGeometry();
+const materialCube = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
+const cube = new THREE.Mesh(geometryCube, materialCube);
+cube.position.x = -2; // position it to the left
+scene.add(cube);
 
-    const boxWidth = 1;
-    const boxHeight = 1;
-    const boxDepth = 1;
-    const geometry = new THREE.BoxGeometry(boxWidth, boxHeight, boxDepth);
-    const material = new THREE.MeshPhongMaterial({color: 0x44aa88});
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+// Sphere
+const geometrySphere = new THREE.SphereGeometry(0.5, 32, 32);
+const materialSphere = new THREE.MeshPhongMaterial({ color: 0xff0000 });
+const sphere = new THREE.Mesh(geometrySphere, materialSphere);
+sphere.position.x = 0; // center
+scene.add(sphere);
 
-    const color = 0xFFFFFF;
-    const intensity = 1;
-    const light = new THREE.DirectionalLight(color, intensity);
-    light.position.set(-1, 2, 4);
-    scene.add(light);
+// Cylinder
+const geometryCylinder = new THREE.CylinderGeometry(0.5, 0.5, 2, 32);
+const materialCylinder = new THREE.MeshPhongMaterial({ color: 0x0000ff });
+const cylinder = new THREE.Mesh(geometryCylinder, materialCylinder);
+cylinder.position.x = 2;  
+scene.add(cylinder);
 
-    function render(time) {
-        time *= 0.001;  // convert time to seconds
+// Directional Light
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(-1, 2, 4);
+scene.add(light);
 
-        cube.rotation.x = time;
-        cube.rotation.y = time;
+// Animation function
+function animate() {
+    requestAnimationFrame(animate);
 
-        renderer.render(scene, camera);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
 
-        requestAnimationFrame(render);
-    }
-    requestAnimationFrame(render);
+    sphere.rotation.x += 0.01; // also animate the sphere
+    sphere.rotation.y += 0.01;
+
+    renderer.render(scene, camera);
 }
 
-main();
+animate();
