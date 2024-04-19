@@ -82,7 +82,7 @@ function drawSpaceship(gl, matrix) {
   M1.set(matrix);
 
   M1.translate(0, 0, 0);
-  M1.rotate(40, 0, 0, 1);
+  M1.rotate(45, 0, 0, 1);
   M1.scale(0.5, 0.5, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M1.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
@@ -90,26 +90,49 @@ function drawSpaceship(gl, matrix) {
   const M2 = new Matrix4();
   M2.set(matrix);
   M2.translate(0.0, 0, 0);
-  M2.rotate(220, 0, 0, 1);
+  M2.rotate(225, 0, 0, 1);
   M2.scale(0.5, 0.5, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M2.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-  // Create a new Matrix4 object for the smaller triangle
   const M3 = new Matrix4();
   M3.set(matrix);
-  M3.translate(0, -0.75, 0);
-  M3.rotate(-90, 0, 0, 1);
-  M3.scale(0.25, 0.25, 1);
+  M3.translate(-0.25, -0.25, 0);
+  M3.rotate(-45, 0, 0, 1);
+  M3.scale(0.2, 0.2, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M3.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 
   const M4 = new Matrix4();
   M4.set(matrix);
-  M4.translate(0, -0.75, 0);
-  M4.rotate(90, 0, 0, 1);
-  M4.scale(0.25, 0.25, 1);
+  M4.translate(-0.25, -0.25, 0);
+  M4.rotate(135, 0, 0, 1);
+  M4.scale(0.2, 0.2, 1);
   gl.uniformMatrix4fv(uModelMatrixPtr, false, M4.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  const M5 = new Matrix4();
+  M5.set(matrix);
+  M5.translate(-0.2, -0.35, 0);
+  M5.rotate(90, 0, 0, 1);
+  M5.scale(0.2, 0.2, 1);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M5.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  const M6 = new Matrix4();
+  M6.set(matrix);
+  M6.translate(-0.5, -0.35, 0);
+  M6.rotate(-90, 0, 0, 1);
+  M6.scale(0.2, 0.2, 1);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M6.elements);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+  const M7 = new Matrix4();
+  M7.set(matrix);
+  M7.translate(-0.5, -0.35, 0);
+  M7.rotate(-90, 0, 0, 1);
+  M7.scale(0.2, 0.2, 1);
+  gl.uniformMatrix4fv(uModelMatrixPtr, false, M7.elements);
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 }
 
