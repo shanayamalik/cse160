@@ -72,6 +72,15 @@ gl.vertexAttribPointer(aPosPtr, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(aPosPtr);
 
 const M = new Matrix4();
+M.setTranslate(0.5, -0.25, 0);
+M.scale(0.46, 0.46, 0.46);
+M.rotate(45, 0, 0, 1);
+drawSpaceship(gl, M);
+
+M.setTranslate(-0.15, 0.25, 0);
+M.scale(0.75, 0.75, 0.75);
+M.rotate(39, 0, 0, 1);
+drawSpaceship(gl, M);
 
 function drawSpaceship(gl, matrix) {
   const uModelMatrixPtr = gl.getUniformLocation(gl.program, "uModelMatrix");
@@ -155,7 +164,6 @@ function drawSpaceship(gl, matrix) {
 // Set clear color
 //gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clearColor(0.2, 0.2, 0.2, 1.0); //Set gray color
-
 gl.clear(gl.COLOR_BUFFER_BIT);
 
 drawSpaceship(gl, M);
