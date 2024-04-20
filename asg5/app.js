@@ -46,9 +46,8 @@ function animate() {
     sphere.rotation.x += 0.01;
     sphere.rotation.y += 0.01;
 
-    // Rotate the cylinder faster
-    cylinder.rotation.x += 0.02; // Adjusted to rotate faster
-    cylinder.rotation.y += 0.02; // Adjusted to rotate faster
+    cylinder.rotation.x += 0.02; 
+    cylinder.rotation.y += 0.03; 
 
     // Render the scene
     renderer.render(scene, camera);
