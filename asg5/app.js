@@ -1,5 +1,5 @@
-import * as THREE from 'three';
-import { Water } from 'three/examples/jsm/objects/Water.js';
+import * as THREE from './build/three.module.js';
+import { Water } from './examples/jsm/objects/Water.js';
 
 // Setup for renderer and camera
 const scene = new THREE.Scene();
@@ -12,7 +12,7 @@ document.body.appendChild(renderer.domElement);
 
 // Load water normals texture
 const waterNormalsTexture = new THREE.TextureLoader().load(
-  'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/waternormals.jpg',
+  './textures/waternormals.jpg', // Ensure this path correctly points to where you have the texture
   function (texture) {
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
   }
