@@ -7,7 +7,15 @@
 </head>
 <body>
     <canvas id="c"></canvas>
-    <!-- Only include the main JavaScript module. All other modules will be imported in app.js -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js",
+        "Water": "./examples/objects/Water.js",
+        "OrbitControls": "./examples/jsm/controls/OrbitControls.js"
+      }
+    }
+    </script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
