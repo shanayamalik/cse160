@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { Water } from 'Water';  // Import Water module
+import { OrbitControls } from 'OrbitControls';  // Import OrbitControls module
 
 // Existing setup for renderer and camera
 const scene = new THREE.Scene();
