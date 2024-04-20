@@ -35,16 +35,22 @@ const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(-1, 2, 4);
 scene.add(light);
 
-// Animation function
 function animate() {
     requestAnimationFrame(animate);
 
+    // Rotate the cube
     cube.rotation.x += 0.01;
     cube.rotation.y += 0.01;
 
-    sphere.rotation.x += 0.01; // also animate the sphere
+    // Rotate the sphere
+    sphere.rotation.x += 0.01;
     sphere.rotation.y += 0.01;
 
+    // Rotate the cylinder faster
+    cylinder.rotation.x += 0.02; // Adjusted to rotate faster
+    cylinder.rotation.y += 0.02; // Adjusted to rotate faster
+
+    // Render the scene
     renderer.render(scene, camera);
 }
 
