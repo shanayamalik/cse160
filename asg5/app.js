@@ -36,24 +36,24 @@ const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(-1, 2, 4);
 scene.add(light);
 
-// Setup for water
+// Water setup
 const waterGeometry = new THREE.PlaneBufferGeometry(1000, 1000);
 const water = new Water(
-    waterGeometry,
-    {
-        textureWidth: 512,
-        textureHeight: 512,
-        waterNormals: new THREE.TextureLoader().load('./waternormals.jpg', function (texture) {
-            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        }),
-        alpha: 1.0,
-        sunDirection: light.position.clone().normalize(),
-        waterColor: 0x001e0f,
-        distortionScale: 3.7,
-        fog: scene.fog !== undefined
-    }
+  waterGeometry,
+  {
+    textureWidth: 512,
+    textureHeight: 512,
+    waterNormals: waterNormalsTexture,
+    alpha: 1.0,
+    sunDirection: new THREE.Vector3(1, 1, 1),
+    sunColor: 0xffffff,
+    waterColor: 0x001e0f,
+    distortionScale: 3.7,
+    fog: scene.fog !== undefined
+  }
 );
-water.rotation.x = -Math.PI / 2;
+
+water.rotation.x = - Math.PI / 2;
 scene.add(water);
 
 // Animation function
