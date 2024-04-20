@@ -16,18 +16,18 @@ const cube = new THREE.Mesh(geometryCube, materialCube);
 cube.position.x = -2; // position it to the left
 scene.add(cube);
 
-// New Sphere
+// Sphere
 const geometrySphere = new THREE.SphereGeometry(0.5, 32, 32);
 const materialSphere = new THREE.MeshPhongMaterial({ color: 0xff0000 });
 const sphere = new THREE.Mesh(geometrySphere, materialSphere);
 sphere.position.x = 0; // center
 scene.add(sphere);
 
-// New Cylinder
+// Cylinder
 const geometryCylinder = new THREE.CylinderGeometry(0.5, 0.5, 2, 32);
 const materialCylinder = new THREE.MeshPhongMaterial({ color: 0x0000ff });
 const cylinder = new THREE.Mesh(geometryCylinder, materialCylinder);
-cylinder.position.x = 2; // position it to the right
+cylinder.position.x = 2;  
 scene.add(cylinder);
 
 // Directional Light
@@ -45,7 +45,6 @@ function animate() {
     sphere.rotation.x += 0.01; // also animate the sphere
     sphere.rotation.y += 0.01;
 
-    // Cylinder is static in this example
     renderer.render(scene, camera);
 }
 
