@@ -10,6 +10,14 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Load water normals texture
+const waterNormalsTexture = new THREE.TextureLoader().load(
+  'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/textures/waternormals.jpg',
+  function (texture) {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  }
+);
+
 // Setup for cube
 const geometryCube = new THREE.BoxGeometry();
 const materialCube = new THREE.MeshPhongMaterial({ color: 0x44aa88 });
@@ -45,14 +53,12 @@ const water = new Water(
     textureHeight: 512,
     waterNormals: waterNormalsTexture,
     alpha: 1.0,
-    sunDirection: new THREE.Vector3(1, 1, 1),
-    sunColor: 0xffffff,
+    sunDirection: light.position.clone().normalize(),
     waterColor: 0x001e0f,
     distortionScale: 3.7,
     fog: scene.fog !== undefined
   }
 );
-
 water.rotation.x = - Math.PI / 2;
 scene.add(water);
 
