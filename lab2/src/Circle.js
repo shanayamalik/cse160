@@ -5,6 +5,8 @@ export default class Circle {
     this.color = [1.0, 1.0, 1.0, 1.0];
     this.size = 5.0;
     this.segments = 10;
+
+    this.buffer = null;
   }
 
   render(gl) {
@@ -27,11 +29,11 @@ export default class Circle {
       let angle2 = angle + angleStep;
       let vec1 = [
         Math.cos((angle1 * Math.PI) / 180) * d,
-        Math.sin((angle1 * Math.PI) / 180) * d
+        Math.sin((angle1 * Math.PI) / 180) * d,
       ];
       let vec2 = [
         Math.cos((angle2 * Math.PI) / 180) * d,
-        Math.sin((angle2 * Math.PI) / 180) * d
+        Math.sin((angle2 * Math.PI) / 180) * d,
       ];
       let pt1 = [centerPt[0] + vec1[0], centerPt[1] + vec1[1]];
       let pt2 = [centerPt[0] + vec2[0], centerPt[1] + vec2[1]];
