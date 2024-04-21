@@ -95,7 +95,7 @@ clearBtn.onclick = function () {
 };
 
 // start render loop
-// tick();
+tick();
 
 /**
  * RENDER LOOP
