@@ -40,17 +40,19 @@ export default class Circle {
 
       let vertices = [x, y, pt1[0], pt1[1], pt2[0], pt2[1]];
 
-      // Create a buffer object
-      var vertexBuffer = gl.createBuffer();
-      if (!vertexBuffer) {
-        console.log("Failed to create the buffer object");
-        return -1;
+      if (this.buffer === null) {
+        // Create a buffer object
+        this.buffer = gl.createBuffer();
+        if (!this.buffer) {
+          console.log("Failed to create the buffer object");
+          return -1;
+        }
       }
 
       // Bind the buffer object to target
-      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
-      // Write date into the buffer object
+      // Write data into the buffer object
       gl.bufferData(
         gl.ARRAY_BUFFER,
         new Float32Array(vertices),
