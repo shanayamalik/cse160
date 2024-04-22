@@ -53,8 +53,12 @@ varying vec2 vUv;
 void main() {
    vec4 image0 = texture2D(uTexture0, vUv);
    vec4 image1 = texture2D(uTexture1, vUv);
-   vec4 color = mix(image0, image1, 0.5);
-   gl_FragColor = color;
+
+   // Use the alpha of image1 to blend image1 and image0
+   vec3 color = mix(image0.rgb, image1.rgb, image1.a);
+
+   // The resulting color will have full opacity
+   gl_FragColor = vec4(color, 1.0);
 }
 `;
 
