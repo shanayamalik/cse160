@@ -13,6 +13,7 @@ import Stats from "stats.js";
 import Cube from "./Cube";
 import Camera from "./Camera";
 import RotateControls from "./Controls";
+import uvImg from "./img/uvCoords.png";
 
 const stats = new Stats();
 document.body.append(stats.dom);
