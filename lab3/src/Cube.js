@@ -7,6 +7,7 @@ export default class Cube {
     this.vertexBuffer = null;
     this.uvBuffer = null;
     this.texture0 = null;
+    this.texture1 = null;
 
     this.position = new Vector3([0, 0, 0]);
     this.rotation = new Vector3([0, 0, 0]);
@@ -17,30 +18,70 @@ export default class Cube {
     this.setUvs();
   }
 
-  setImage(gl, imagePath) {
-    if (this.texture0 === null) {
-      this.texture0 = gl.createTexture();
+  setImage(gl, imagePath, index) {
+    // Handle texture slot 0
+    if (index === 0) {
+      if (this.texture0 === null) {
+        this.texture0 = gl.createTexture();
+      }
+
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+      const uTexture0 = gl.getUniformLocation(gl.program, "uTexture0");
+      if (uTexture0 < 0) {
+        console.warn("could not get uniform location for texture 0");
+      }
+
+      const img0 = new Image();
+      img0.onload = () => {
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture0);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          img0
+        );
+        gl.uniform1i(uTexture0, 0);
+      };
+
+      img0.crossOrigin = "anonymous";
+      img0.src = imagePath;
     }
+    // Handle texture slot 1
+    else if (index === 1) {
+      if (this.texture1 === null) {
+        this.texture1 = gl.createTexture();
+      }
 
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
-    const uTexture0 = gl.getUniformLocation(gl.program, "uTexture0");
-    if (uTexture0 < 0) {
-      console.warn("could not get uniform location");
+      const uTexture1 = gl.getUniformLocation(gl.program, "uTexture1");
+      if (!uTexture1)
+        console.error("Could not get uniform location for texture 1");
+
+      const img1 = new Image();
+      img1.onload = () => {
+        gl.activeTexture(gl.TEXTURE1);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture1);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          img1
+        );
+        gl.uniform1i(uTexture1, 1);
+      };
+
+      img1.crossOrigin = "anonymous";
+      img1.src = imagePath;
     }
-
-    const img = new Image();
-
-    img.onload = () => {
-      gl.activeTexture(gl.TEXTURE0);
-      gl.bindTexture(gl.TEXTURE_2D, this.texture0);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-      gl.uniform1i(uTexture0, 0);
-    };
-
-    img.crossOrigin = "anonymous";
-    img.src = imagePath;
   }
 
   setVertices() {
