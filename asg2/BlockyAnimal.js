@@ -2,10 +2,9 @@
 // Vertex shader program
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
-  'uniform float u_Size;\n' +
+  'uniform mat4 u_ModelMatrix;\n' +
   'void main() {\n' +
-  '  gl_Position = a_Position;\n' +
-  '  gl_PointSize = u_Size;\n' +
+  '  gl_Position = u_ModelMatrix * a_Position;\n' +
   '}\n';
 
 // Fragment shader program
@@ -19,10 +18,10 @@ var FSHADER_SOURCE =
 // Global Variables
 let canvas;
 let gl;
-let a_position;
+let a_Position;
 let u_FragColor;
 let u_Size;
-let g_selectedSegments=10;
+let u_ModelMatrix;
 
 function setupWebGL() {
   // Retrieve <canvas> element
@@ -58,11 +57,15 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  u_Size = gl.getUniformLocation(gl.program, 'u_Size');
-  if (!u_Size) {
-    console.log('Failed to get the storage location of u_Size');
+  // Get the storage location of u_ModelMatrix
+  u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
+  if (!u_ModelMatrix) {
+    console.log('Failed to get the storage location of u_ModelMatrix');
     return;
-  }  
+  }
+
+  var identityM = new Matrix4();
+  gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
 }
 
 // Constants
@@ -168,19 +171,23 @@ function renderAllShapes() {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT);
 
-  //var len = g_points.length;
-  //var len = g_shapesList.length;
-  //for (var i = 0; i < len; i++) {
-    //g_shapesList[i].render();
-  //}
-
   drawTriangle3D([-1.0,0.0,0.0,  -0.5,-1.0,0.0,   0.0,0.0,0.0]);
 
   //Draw a cube
   var body = new Cube();
   body.color = [1.0, 0.0, 0.0, 1.0];
+  body.matrix.translate(-0.25, -0.5, 0.0);
+  body.matrix.scale(0.5, 1, 0.5);
   body.render();
 
+  //Draw a left arm 
+  var leftArm = new Cube();
+  leftArm.color = [1, 1, 0, 1];
+  leftArm.matrix.setTranslate(0.7, 0, 0.0);
+  leftArm.matrix.rotate(45, 0, 0, 1);
+  leftArm.matrix.scale(0.25, 0.7, 0.5);
+  leftArm.render();
+  
   var duration = performance.now() - StartTime;
   sendTextToHTML("ms: " + Math.floor(duration) + " fps: " + Math.floor(1000/duration)/10, "numdot");
 
