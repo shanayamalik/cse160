@@ -66,6 +66,9 @@ gl.clearColor(0.1, 0.1, 0.125, 1.0);
 
 const camera = new Camera();
 const cube = new Cube();
+
+cube.setImage(gl, uvImg);
+
 const controls = new RotateControls(gl, cube);
 
 var curTime = Date.now();
