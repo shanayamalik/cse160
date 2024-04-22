@@ -2,19 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>CSE 160: Assignment 1 - Painting</title>
+    <title>CSE 160: Assignment 2 - Blocky Animal</title>
   </head>
 
   <body onload="main()">
-    </canvas>
-    <div id="canvasContainer" style="position: relative; width: 400px; height: 400px;">
-      <canvas id="backing" width="400" height="400" style="position: absolute; left: 0; top: 0; z-index: 0; background-color: black;"></canvas>
-      <canvas id="webgl" width="400" height="400" style="position: absolute; left: 0; top: 0; z-index: 1; background-color: transparent;">
+    <canvas id="webgl" width="400" height="400">
         Please use a browser that supports "canvas"
-      </canvas>
-    </div>
-    <p id="numdot"> Click on the Canvas above to Draw </p>
-      
+    </canvas>
+    <p id="numdot"> xxx </p>
     <button type="button" id="green">Green</button>
     <button type="button" id="red">Red</button>
     <button type="button" id="blue">Blue</button>
@@ -35,14 +30,10 @@
     Circle Segments <input type="range" min="3" max="100" value="10" class="slider" id="segmentSlide">
     <p>
 
-    <button type="button" id="recreateButton">Recreate Drawing</button>
-    <button type="button" id="sparkleButton">Sparkle Colors</button>
-    <br>
-    <canvas id="photo" width="400" height="400"></canvas>
-
     <script src="lib/webgl-utils.js"></script>
     <script src="lib/webgl-debug.js"></script>
     <script src="lib/cuon-utils.js"></script>
+    <script src="lib/cuon-matrix-cse160.js"></script>
     <script src="Point.js"></script>
     <script src="Triangle.js"></script>
     <script src="Circle.js"></script>
