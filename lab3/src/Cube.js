@@ -17,7 +17,31 @@ export default class Cube {
     this.setUvs();
   }
 
-  setImage(gl, imagePath) {}
+  setImage(gl, imagePath) {
+    if (this.texture0 === null) {
+      this.texture0 = gl.createTexture();
+    }
+
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+    const uTexture0 = gl.getUniformLocation(gl.program, "uTexture0");
+    if (uTexture0 < 0) {
+      console.warn("could not get uniform location");
+    }
+
+    const img = new Image();
+
+    img.onload = () => {
+      gl.activeTexture(gl.TEXTURE0);
+      gl.bindTexture(gl.TEXTURE_2D, this.texture0);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      gl.uniform1i(uTexture0, 0);
+    };
+
+    img.crossOrigin = "anonymous";
+    img.src = imagePath;
+  }
 
   setVertices() {
     // prettier-ignore
