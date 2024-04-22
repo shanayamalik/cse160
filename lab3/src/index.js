@@ -66,9 +66,10 @@ if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
 gl.clearColor(0.1, 0.1, 0.125, 1.0);
 
 const camera = new Camera();
-const cube = new Cube();
 
-cube.setImage(gl, uvImg);
+const cube = new Cube();
+cube.setImage(gl, uvImg, 0);
+cube.setImage(gl, diceImg, 1);
 
 const controls = new RotateControls(gl, cube);
 
