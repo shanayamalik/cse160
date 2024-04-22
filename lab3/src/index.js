@@ -39,19 +39,19 @@ const VSHADER_SOURCE = `
   `;
 
 // Fragment shader program
-const FSHADER_SOURCE = `
-  #ifdef GL_ES
-  precision mediump float;
-  #endif
+const FSHADER_SOURCE = `#ifdef GL_ES
+   precision mediump float;
+   #endif
 
-  uniform sampler2D uTexture0;
-  uniform sampler2D uTexture1;
+   uniform sampler2D uTexture0;
+   uniform sampler2D uTexture1;
 
-  varying vec2 vUv;
+   varying vec2 vUv;
 
-  void main() {
-    gl_FragColor = vec4(1.0, vUv.x, vUv.y, 1.0);
-  }
+   void main() {
+     vec4 image0 = texture2D(uTexture0, vUv); // add this
+     gl_FragColor = image0; // set this
+   }
   `;
 
 const gl = getContext();
