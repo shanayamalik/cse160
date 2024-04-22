@@ -6,6 +6,7 @@ export default class Cube {
     this.uvs = null;
     this.vertexBuffer = null;
     this.uvBuffer = null;
+    this.texture0 = null;
 
     this.position = new Vector3([0, 0, 0]);
     this.rotation = new Vector3([0, 0, 0]);
@@ -15,6 +16,8 @@ export default class Cube {
     this.setVertices();
     this.setUvs();
   }
+
+  setImage(gl, imagePath) {}
 
   setVertices() {
     // prettier-ignore
