@@ -14,6 +14,7 @@ import Cube from "./Cube";
 import Camera from "./Camera";
 import RotateControls from "./Controls";
 import uvImg from "./img/uvCoords.png";
+import diceImg from "./img/dice.png";
 
 const stats = new Stats();
 document.body.append(stats.dom);
