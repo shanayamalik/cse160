@@ -3,9 +3,10 @@
 var VSHADER_SOURCE =
   'attribute vec4 a_Position;\n' +
   'uniform mat4 u_ModelMatrix;\n' +
+  'uniform mat4 u_GlobalRotateMatrix;\n' +
   'void main() {\n' +
-  '  gl_Position = u_ModelMatrix * a_Position;\n' +
-  '}\n';
+  '  gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;\n' +
+  '}';
 
 // Fragment shader program
 var FSHADER_SOURCE =
@@ -22,6 +23,7 @@ let a_Position;
 let u_FragColor;
 let u_Size;
 let u_ModelMatrix;
+let u_GlobalRotateMatrix;
 
 function setupWebGL() {
   // Retrieve <canvas> element
@@ -34,6 +36,7 @@ function setupWebGL() {
     console.log('Failed to get the rendering context for WebGL');
     return;
   }
+  gl.enable(gl.DEPTH_TEST);
 }
 
 function connectVariablesToGLSL() {
@@ -64,6 +67,12 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  u_GlobalRotateMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotateMatrix');
+  if (!u_GlobalRotateMatrix) {
+    console.log('Failed to get the storage location of u_GlobalRotateMatrix');
+    return;
+  }
+  
   var identityM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
 }
@@ -77,6 +86,7 @@ const CIRCLE = 2;
 let g_selectedColor=[1.0,1.0,1.0,1.0];
 let g_selectedSize=5;
 let g_selectedType=POINT;
+let g_globalAngle=0; 
 //let g_selectedType=TRIANGLE;
 
 function addActionsForHtmlUI() {
@@ -107,8 +117,7 @@ function addActionsForHtmlUI() {
   document.getElementById('greenSlide').addEventListener('mouseup', function() {g_selectedColor[1] = this.value/100; });  
   document.getElementById('blueSlide').addEventListener('mouseup', function() {g_selectedColor[2] = this.value/100; });
   
-  document.getElementById('segmentSlide').addEventListener('mouseup', function() {g_selectedSegments = this.value; });
-  document.getElementById('sizeSlide').addEventListener('mouseup', function() {g_selectedSize = this.value; });
+  document.getElementById('angleSlide').addEventListener('mousemove', function() {g_globalAngle = this.value; renderAllShapes(); });
 
 }
 
@@ -167,11 +176,16 @@ function convertCoordinatesEventToGL(ev) {
 
 function renderAllShapes() {
   var StartTime = performance.now();
+
+  // Pass the matrix to u_ModelMatrix attribute
+  var globalRotMat=new Matrix4().rotate(g_globalAngle, 0, 1, 0);
+  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
   
   // Clear <canvas>
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  //gl.clear(gl.COLOR_BUFFER_BIT);
 
-  drawTriangle3D([-1.0,0.0,0.0,  -0.5,-1.0,0.0,   0.0,0.0,0.0]);
+  //drawTriangle3D([-1.0,0.0,0.0,  -0.5,-1.0,0.0,   0.0,0.0,0.0]);
 
   //Draw a cube
   var body = new Cube();
@@ -187,6 +201,14 @@ function renderAllShapes() {
   leftArm.matrix.rotate(45, 0, 0, 1);
   leftArm.matrix.scale(0.25, 0.7, 0.5);
   leftArm.render();
+
+  // Test box
+  var box = new Cube();
+  box.color = [1, 0, 1, 1];
+  box.matrix.translate(0, 0, -0.50, 0);
+  box.matrix.rotate(-30, 1, 0, 0);
+  box.matrix.scale(.5, .5, .5);
+  box.render();
   
   var duration = performance.now() - StartTime;
   sendTextToHTML("ms: " + Math.floor(duration) + " fps: " + Math.floor(1000/duration)/10, "numdot");
