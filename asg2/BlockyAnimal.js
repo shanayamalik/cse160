@@ -83,28 +83,60 @@ let g_vertAngle=-10;
 let g_neckAngle=0;
 let g_headAngle=0;
 let g_legsAngle=0;
+let g_earsAngle=0;
+let g_seconds=0;
 let g_neckAnimation=false;
 let g_headAnimation=false;
 let g_legsAnimation=false;
-let g_seconds=0;
+let g_earsAnimation=false;
 let dragging = false;
-let currentAngleX = 0;
-let currentAngleY = 0;
+let currentAngleX=0;
+let currentAngleY=0;
+let g_modelY=0;
+let g_pokeAnimation = false;
+let g_pokeTime = 0;  
 
 function addActionsForHtmlUI() {
 document.getElementById('neckSlide').addEventListener('mousemove', function() {g_neckAngle = this.value; renderAllShapes(); });
+  
 document.getElementById('headSlide').addEventListener('mousemove', function() {g_headAngle = this.value; renderAllShapes(); });
+  
 document.getElementById('legsSlide').addEventListener('mousemove', function() {g_legsAngle = this.value; renderAllShapes(); });
+  
+document.getElementById('earsSlide').addEventListener('mousemove', function() {g_earsAngle = this.value; renderAllShapes(); });
+  
 document.getElementById('animationneckOnButton').onclick = function() {g_neckAnimation=true;};
+  
 document.getElementById('animationneckOffButton').onclick = function() {g_neckAnimation=false;};
+  
 document.getElementById('animationheadOnButton').onclick = function() {g_headAnimation=true;};
+  
 document.getElementById('animationheadOffButton').onclick = function() {g_headAnimation=false;};
+  
 document.getElementById('animationlegsOnButton').onclick = function() {g_legsAnimation=true;};
+  
 document.getElementById('animationlegsOffButton').onclick = function() {g_legsAnimation=false;};
+
+document.getElementById('animationearsOnButton').onclick = function() {g_earsAnimation=true;};
+
+document.getElementById('animationearsOffButton').onclick = function() {g_earsAnimation=false;};
+  document.getElementById('angleSlide').addEventListener('input', function() {
+      g_globalAngle = this.value;
+      renderAllShapes();
+  });
+
+  document.getElementById('vertSlide').addEventListener('input', function() {
+      g_vertAngle = this.value;
+      renderAllShapes();
+  });
+
 document.getElementById('angleSlide').addEventListener('mousemove', function() {g_globalAngle = this.value; renderAllShapes(); });
+  
 document.getElementById('vertSlide').addEventListener('mousemove', function() {g_vertAngle = this.value; renderAllShapes(); });
 
   canvas.onmousedown = function(ev) {
+    ev.preventDefault();  // Prevent any default action
+    ev.stopPropagation(); 
     let x = ev.clientX;
     let y = ev.clientY;
     // Check if the cursor is inside the canvas bounds
@@ -113,6 +145,12 @@ document.getElementById('vertSlide').addEventListener('mousemove', function() {g
       lastX = x;
       lastY = y;
       dragging = true;
+
+      if (ev.shiftKey) {
+          g_pokeAnimation = true;
+          g_pokeTime = 0; // Reset animation time
+          renderAllShapes();
+      }
     }
   };
 
@@ -124,7 +162,7 @@ document.getElementById('vertSlide').addEventListener('mousemove', function() {g
     let x = ev.clientX;
     let y = ev.clientY;
     if (dragging) {
-      let factor = 10 / canvas.height; // Adjust rotation speed
+      let factor = 500 / canvas.height; // Adjust rotation speed
       let dx = factor * (x - lastX);
       let dy = factor * (y - lastY);
       // Passing the angles to rotate the scene
@@ -139,6 +177,18 @@ function rotateScene(dx, dy) {
   currentAngleX += dx;
   currentAngleY += dy;
   renderAllShapes(); // Update the scene rendering
+}
+
+function updatePokeAnimation() {
+    if (g_pokeAnimation) {
+        g_pokeTime += 0.02; // Increment time
+        g_modelY = Math.abs(Math.sin(g_pokeTime * Math.PI * 2) * 0.5); // Sin wave for jump
+        if (g_pokeTime > 1) { // Animation lasts 1 second
+            g_pokeAnimation = false;
+            g_modelY = 0; // Reset position
+        }
+        renderAllShapes();
+    }
 }
 
 function main() {
@@ -161,7 +211,8 @@ function tick() {
     //console.log(performance.now());
 
     updateAnimationAngles();
-  
+    
+    updatePokeAnimation();
     // Draw everything
     renderAllShapes();
 
@@ -171,13 +222,16 @@ function tick() {
 
 function updateAnimationAngles() {
     if (g_neckAnimation) {
-        g_neckAngle = (45 * Math.sin(g_seconds));
+        g_neckAngle = (20 * Math.sin(g_seconds));
     }
     if (g_headAnimation) {
-        g_headAngle = (45 * Math.sin(3 * g_seconds));
+        g_headAngle = (25 * Math.sin(3 * g_seconds));
     }
     if (g_legsAnimation) {
           g_legsAngle = (25 * Math.sin(3 * g_seconds));
+    }
+    if (g_earsAnimation) {
+        g_earsAngle = (5 * Math.sin(4 * g_seconds));
     }
 }
 
@@ -186,7 +240,7 @@ function renderAllShapes() {
 
   // Pass the matrix to u_ModelMatrix attribute
   var globalRotMat=new Matrix4()
-  globalRotMat.rotate(g_globalAngle, 0, 1, 0);
+  globalRotMat.setRotate(g_globalAngle, 0, 1, 0);
   globalRotMat.rotate(g_vertAngle, 1, 0, 0);
   globalRotMat.translate(0, 0, -0.5);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
@@ -196,13 +250,13 @@ function renderAllShapes() {
   globalRotMat.rotate(currentAngleX, 0, 1, 0); // Rotation about Y-axis
   globalRotMat.translate(0, 0, -0.5); // Existing translation
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-  
+
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Draw the body cube
   var body = new Cube();
-  body.color = [0.8, 0.8, 0.8, 1.0];
+  body.color = [0.65, 0.75, 0.75, 1.0];
   body.matrix.setTranslate(-0.25, -0.25, 0.0);
   var bodyCoordinatesMat=new Matrix4(body.matrix);
   body.matrix.scale(0.5, .5, .75);
@@ -210,7 +264,7 @@ function renderAllShapes() {
 
   // Draw the tail
   var tail = new Cube();
-  tail.color = [0.35, 0.55, 0.55, 1.0];
+  tail.color = [1, 0.65, 0.65, 1.0];
   tail.matrix = bodyCoordinatesMat;
   tail.matrix.translate(0.075, 0.10, 0.75);
   tail.matrix.scale(0.35, 0.5, 0.5);
@@ -250,20 +304,23 @@ function renderAllShapes() {
   // Draw ears
   var ear = new Tetrahedron(); // Left ear
   ear.color = [1, 0, 0, 1.0];
+  ear.matrix = neckCoordinatesMat;
   ear.matrix = headCoordinatesMat;
-  ear.matrix.translate(0.75, 2.75, -0.10);
-  ear.matrix.scale(0.75, 0.75, 0.5);
-  ear.matrix.rotate(-g_legsAngle,1,0,0);
+  ear.matrix.translate(0.85, 2.65, -0.20);
+  ear.matrix.scale(0.85, 0.75, 0.85);
+  ear.matrix.rotate(-g_earsAngle,1,0,0);
+  //var earsCoordinatesMat=new Matrix4(ears.matrix);
   ear.render();
-
+  
   var ear2 = new Tetrahedron(); // Right ear
   ear2.color = [0, 1, 0, 1.0];
   ear2.matrix = headCoordinatesMat;
-  ear2.matrix.translate(-1.25, 0.05, -0.10);
-  ear2.matrix.scale(0.75, 0.75, 0.75);
-  ear2.matrix.rotate(-g_legsAngle,1,0,0);  
+  ear2.matrix.translate(-1.25, -0.1, -0.10);
+  ear2.matrix.scale(0.85, 0.75, 0.85);
+  ear2.matrix.rotate(-g_earsAngle,1,0,0);  
+  //var earsCoordinatesMat=new Matrix4(ears.matrix);
   ear2.render();
-
+  
   // Draw four legs
   var leg = new Cube(); // Front left
   leg.color = [0.6, 0.6, 0.7, 1.0];
