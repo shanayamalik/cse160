@@ -78,8 +78,8 @@ function connectVariablesToGLSL() {
 }
 
 // Global Variables Related to UI Elements
-let g_globalAngle=45; 
-let g_vertAngle=-10;
+let g_globalAngle=0; 
+let g_vertAngle=0;
 let g_neckAngle=0;
 let g_headAngle=0;
 let g_legsAngle=0;
@@ -95,6 +95,10 @@ let currentAngleY=0;
 let g_modelY=0;
 let g_pokeAnimation = false;
 let g_pokeTime = 0;  
+
+let g_color_1 = [1, 0, 0, 1.0];
+let g_color_2 = [0, 1, 0, 1.0];
+//let g_color_3 = [0.65, 0.75, 0.75, 1.0];
 
 function addActionsForHtmlUI() {
 document.getElementById('neckSlide').addEventListener('mousemove', function() {g_neckAngle = this.value; renderAllShapes(); });
@@ -120,19 +124,10 @@ document.getElementById('animationlegsOffButton').onclick = function() {g_legsAn
 document.getElementById('animationearsOnButton').onclick = function() {g_earsAnimation=true;};
 
 document.getElementById('animationearsOffButton').onclick = function() {g_earsAnimation=false;};
-  document.getElementById('angleSlide').addEventListener('input', function() {
-      g_globalAngle = this.value;
-      renderAllShapes();
-  });
 
-  document.getElementById('vertSlide').addEventListener('input', function() {
-      g_vertAngle = this.value;
-      renderAllShapes();
-  });
-
-document.getElementById('angleSlide').addEventListener('mousemove', function() {g_globalAngle = this.value; renderAllShapes(); });
+document.getElementById('angleSlide').addEventListener('mousemove', function() {currentAngleX = this.value; renderAllShapes(); });
   
-document.getElementById('vertSlide').addEventListener('mousemove', function() {g_vertAngle = this.value; renderAllShapes(); });
+document.getElementById('vertSlide').addEventListener('mousemove', function() {currentAngleY = this.value; renderAllShapes(); });
 
   canvas.onmousedown = function(ev) {
     ev.preventDefault();  // Prevent any default action
@@ -147,6 +142,8 @@ document.getElementById('vertSlide').addEventListener('mousemove', function() {g
       dragging = true;
 
       if (ev.shiftKey) {
+          //console.log("shift key")
+          resetRotation();
           g_pokeAnimation = true;
           g_pokeTime = 0; // Reset animation time
           renderAllShapes();
@@ -162,7 +159,7 @@ document.getElementById('vertSlide').addEventListener('mousemove', function() {g
     let x = ev.clientX;
     let y = ev.clientY;
     if (dragging) {
-      let factor = 500 / canvas.height; // Adjust rotation speed
+      let factor = canvas.height / 100; // Adjust rotation speed
       let dx = factor * (x - lastX);
       let dy = factor * (y - lastY);
       // Passing the angles to rotate the scene
@@ -173,19 +170,63 @@ document.getElementById('vertSlide').addEventListener('mousemove', function() {g
   };
 }
 
+/*
 function rotateScene(dx, dy) {
   currentAngleX += dx;
   currentAngleY += dy;
   renderAllShapes(); // Update the scene rendering
 }
+*/
+
+function resetRotation() {
+  currentAngleX = 0;
+  currentAngleY = 0;
+  console.log('Rotation Reset');
+  applyRotation();
+}
+
+function rotateScene(dx, dy) {
+  // Update angles based on mouse movement
+  currentAngleX += dx;
+  currentAngleY += dy;
+
+  let smoothingFactor = 0.1;  
+  let targetAngleX = currentAngleX + dx;  
+  let targetAngleY = currentAngleY + dy;
+
+  currentAngleX = smoothingFactor * targetAngleX + (1 - smoothingFactor) * currentAngleX;
+  currentAngleY = smoothingFactor * targetAngleY + (1 - smoothingFactor) * currentAngleY;
+  
+  // Consolidate and apply rotation
+  applyRotation();
+}
+
+function applyRotation() {
+  var globalRotMat = new Matrix4();
+  globalRotMat.setRotate(currentAngleY, 1, 0, 0);
+  globalRotMat.rotate(currentAngleX, 0, 1, 0);
+  globalRotMat.translate(0, 0, -0.5);
+  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
+
+  renderAllShapes();  // Update the scene rendering
+}
 
 function updatePokeAnimation() {
     if (g_pokeAnimation) {
-        g_pokeTime += 0.02; // Increment time
-        g_modelY = Math.abs(Math.sin(g_pokeTime * Math.PI * 2) * 0.5); // Sin wave for jump
-        if (g_pokeTime > 1) { // Animation lasts 1 second
+        console.log("poke", g_pokeTime)
+        g_pokeTime += 1
+        g_pokeTime++; // Increment the tick counter
+
+      // Switch colors every 10 ticks
+      if (g_pokeTime % 20 < 10) {
+          g_color_1 = [1, 0, 0, 1.0];
+      } else {
+          g_color_1 = [0, 1, 0, 1.0]; 
+      }
+        if (g_pokeTime > 1000) { // Animation lasts 1 second
+            console.log("poke stop")
             g_pokeAnimation = false;
-            g_modelY = 0; // Reset position
+            g_color_1 = [1,0,0,1.0]
         }
         renderAllShapes();
     }
@@ -195,13 +236,14 @@ function main() {
   setupWebGL();
   connectVariablesToGLSL();
 
+  console.log("start")
   // Set up actions for HTML UI 
   addActionsForHtmlUI();
   
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   g_startTime=performance.now()/1000.0;
-  //renderAllShapes();
+  renderAllShapes();
   requestAnimationFrame(tick);
 }
 
@@ -211,7 +253,6 @@ function tick() {
     //console.log(performance.now());
 
     updateAnimationAngles();
-    
     updatePokeAnimation();
     // Draw everything
     renderAllShapes();
@@ -237,26 +278,21 @@ function updateAnimationAngles() {
 
 function renderAllShapes() {
   var StartTime = performance.now();
-
-  // Pass the matrix to u_ModelMatrix attribute
-  var globalRotMat=new Matrix4()
-  globalRotMat.setRotate(g_globalAngle, 0, 1, 0);
-  globalRotMat.rotate(g_vertAngle, 1, 0, 0);
-  globalRotMat.translate(0, 0, -0.5);
-  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-
+  
   var globalRotMat = new Matrix4();
   globalRotMat.setRotate(currentAngleY, 1, 0, 0); // Rotation about X-axis
   globalRotMat.rotate(currentAngleX, 0, 1, 0); // Rotation about Y-axis
   globalRotMat.translate(0, 0, -0.5); // Existing translation
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-
+  
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
   // Draw the body cube
   var body = new Cube();
   body.color = [0.65, 0.75, 0.75, 1.0];
+  //body.color = g_color_3;
+  //ear.color = g_color_1;
   body.matrix.setTranslate(-0.25, -0.25, 0.0);
   var bodyCoordinatesMat=new Matrix4(body.matrix);
   body.matrix.scale(0.5, .5, .75);
@@ -303,20 +339,20 @@ function renderAllShapes() {
 
   // Draw ears
   var ear = new Tetrahedron(); // Left ear
-  ear.color = [1, 0, 0, 1.0];
+  ear.color = g_color_1;
   ear.matrix = neckCoordinatesMat;
   ear.matrix = headCoordinatesMat;
-  ear.matrix.translate(0.85, 2.65, -0.20);
-  ear.matrix.scale(0.85, 0.75, 0.85);
+  ear.matrix.translate(1.0, 2.65, -0.20);
+  ear.matrix.scale(0.4, 1.5, 0.85);
   ear.matrix.rotate(-g_earsAngle,1,0,0);
   //var earsCoordinatesMat=new Matrix4(ears.matrix);
   ear.render();
-  
+
   var ear2 = new Tetrahedron(); // Right ear
-  ear2.color = [0, 1, 0, 1.0];
+  ear2.color = g_color_1;
   ear2.matrix = headCoordinatesMat;
-  ear2.matrix.translate(-1.25, -0.1, -0.10);
-  ear2.matrix.scale(0.85, 0.75, 0.85);
+  ear2.matrix.translate(-2.5, 0, -0.10);
+  ear2.matrix.scale(0.8, 1.0, 0.85);
   ear2.matrix.rotate(-g_earsAngle,1,0,0);  
   //var earsCoordinatesMat=new Matrix4(ears.matrix);
   ear2.render();
