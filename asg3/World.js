@@ -14,6 +14,7 @@ var VSHADER_SOURCE =
   // v_UV = a_UV;\n'
   '}';
 
+
 // Fragment shader program
 var FSHADER_SOURCE =
   'precision mediump float;\n' +
@@ -63,6 +64,13 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  // Get the storage location of a_UV
+    a_UV = gl.getAttribLocation(gl.program, 'a_UV');
+  if (a_UV < 0) {
+    console.log('Failed to get the storage location of a_UV');
+    return;
+  }
+
   // Get the storage location of u_FragColor
   u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
   if (!u_FragColor) {
@@ -80,6 +88,18 @@ function connectVariablesToGLSL() {
   u_GlobalRotateMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotateMatrix');
   if (!u_GlobalRotateMatrix) {
     console.log('Failed to get the storage location of u_GlobalRotateMatrix');
+    return;
+  }
+
+  u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
+  if (!u_ProjectionMatrix) {
+    console.log('Failed to get the storage location of u_ProjectionMatrix');
+    return;
+  }
+  
+  u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
+  if (!u_ViewMatrix) {
+    console.log('Failed to get the storage location of u_ViewMatrix');
     return;
   }
   
@@ -202,7 +222,11 @@ function renderAllShapes() {
   yellow.matrix.rotate(-5,1,0,0);
   yellow.matrix.rotate(-g_yellowAngle,0,0,1);
   
-
+  //if (g_yellowAnimation) {
+      //yellow.matrix.rotate(45*Math.sin(g_seconds), 0,0,1);
+  //} else {
+      //yellow.matrix.rotate(-g_yellowAngle, 0,0,1);
+  //}
   
   var yellowCoordinatesMat=new Matrix4(yellow.matrix);
   yellow.matrix.scale(0.25, 0.7, 0.5);
