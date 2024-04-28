@@ -191,11 +191,7 @@ function renderAllShapes() {
   yellow.matrix.rotate(-5,1,0,0);
   yellow.matrix.rotate(-g_yellowAngle,0,0,1);
   
-  //if (g_yellowAnimation) {
-      //yellow.matrix.rotate(45*Math.sin(g_seconds), 0,0,1);
-  //} else {
-      //yellow.matrix.rotate(-g_yellowAngle, 0,0,1);
-  //}
+
   
   var yellowCoordinatesMat=new Matrix4(yellow.matrix);
   yellow.matrix.scale(0.25, 0.7, 0.5);
