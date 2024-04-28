@@ -90,13 +90,14 @@ let g_headAnimation=false;
 let g_legsAnimation=false;
 let g_earsAnimation=false;
 let dragging = false;
-let currentAngleX=0;
+let currentAngleX=-10;
 let currentAngleY=0;
 let g_modelY=0;
 let g_pokeAnimation = false;
 let g_pokeTime = 0;  
+let g_nose_size = 2;
 
-let g_color_1 = [1, 0, 0, 1.0];
+let g_color_1 = [0.851, 0.475, 0.043, 1.0];
 let g_color_2 = [0, 1, 0, 1.0];
 //let g_color_3 = [0.65, 0.75, 0.75, 1.0];
 
@@ -215,22 +216,34 @@ function updatePokeAnimation() {
     if (g_pokeAnimation) {
         console.log("poke", g_pokeTime)
         g_pokeTime += 1
+        g_legsAnimation = 1
         g_pokeTime++; // Increment the tick counter
 
       // Switch colors every 10 ticks
       if (g_pokeTime % 20 < 10) {
-          g_color_1 = [1, 0, 0, 1.0];
+          g_color_1 = [0.761, 0.424, 0.035, 1.0];
+
       } else {
-          g_color_1 = [0, 1, 0, 1.0]; 
+          g_color_1 = [0.851, 0.475, 0.043, 1.0];
       }
+      // Switch colors every 10 ticks
+      if (g_pokeTime % 60 < 10) {
+          g_nose_size = 1
+      } else {
+          g_nose_size = 2
+      }
+
+      
         if (g_pokeTime > 1000) { // Animation lasts 1 second
             console.log("poke stop")
-            g_pokeAnimation = false;
+          g_legsAnimation = 0
+          g_pokeAnimation = false;
             g_color_1 = [1,0,0,1.0]
         }
         renderAllShapes();
     }
 }
+
 
 function main() {
   setupWebGL();
@@ -276,13 +289,20 @@ function updateAnimationAngles() {
     }
 }
 
+function cloneMatrix4(matrix) {
+    var newMatrix = new Matrix4();
+    newMatrix.elements = new Float32Array(matrix.elements);   
+    return newMatrix;
+}
+
+
 function renderAllShapes() {
   var StartTime = performance.now();
   
   var globalRotMat = new Matrix4();
   globalRotMat.setRotate(currentAngleY, 1, 0, 0); // Rotation about X-axis
   globalRotMat.rotate(currentAngleX, 0, 1, 0); // Rotation about Y-axis
-  globalRotMat.translate(0, 0, -0.5); // Existing translation
+  globalRotMat.translate(0, 0, -0.5); 
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
   
   // Clear <canvas>
@@ -290,7 +310,7 @@ function renderAllShapes() {
 
   // Draw the body cube
   var body = new Cube();
-  body.color = [0.65, 0.75, 0.75, 1.0];
+  body.color = [0.776, 0.525, 0.259, 1.0];
   //body.color = g_color_3;
   //ear.color = g_color_1;
   body.matrix.setTranslate(-0.25, -0.25, 0.0);
@@ -301,14 +321,21 @@ function renderAllShapes() {
   // Draw the tail
   var tail = new Cube();
   tail.color = [1, 0.65, 0.65, 1.0];
-  tail.matrix = bodyCoordinatesMat;
+  tail.matrix = cloneMatrix4(bodyCoordinatesMat);
   tail.matrix.translate(0.075, 0.10, 0.75);
   tail.matrix.scale(0.35, 0.5, 0.5);
-  tail.render();
+
+  // Draw the tail
+  var tail2 = new Cube();
+  tail2.color =[0.945, 0.761, 0.490, 1.0];
+  tail2.matrix = bodyCoordinatesMat;
+  tail2.matrix.translate(0.075, 0.10, 0.75);
+  tail2.matrix.scale(0.15, 0.55, 0.15);
+  tail2.render();
 
   // Draw a neck
   var neck = new Cube();
-  neck.color = [0.7, 0.7, 0.7, 1.0];
+  neck.color = [0.992, 0.961, 0.886, 1.0];
   neck.matrix = bodyCoordinatesMat;
   neck.matrix.setTranslate(0.0, 0.10, 0.05); 
   neck.matrix.rotate(-g_neckAngle,1,0,0);
@@ -319,7 +346,7 @@ function renderAllShapes() {
 
   // Draw a head
   var head = new Cube();
-  head.color = [0.65, 0.65, 0.65, 1.0];
+  head.color = [0.945, 0.761, 0.490, 1.0];
   head.matrix = neckCoordinatesMat;
   head.matrix.translate(0, 0.45, -0.15);
   head.matrix.rotate(g_headAngle*0.5, 0, 1, 0);
@@ -331,11 +358,22 @@ function renderAllShapes() {
   // Draw a nose
   var nose = new Cube();
   nose.color = [0.35, 0.35, 0.35, 1.0];
-  nose.matrix = headCoordinatesMat;
+  nose.matrix = cloneMatrix4(headCoordinatesMat);
   nose.matrix.translate(0, 0.45, -0.10);
-  nose.matrix.scale(0.15, 0.10, 0.25);
+  if (g_nose_size === 1)
+    nose.matrix.scale(0.15, 0.10, 0.25);
+  else
+   nose.matrix.scale(0.10, 0.10, 0.10);
   nose.matrix.translate(-0.5, -4.25, -0.0001);
   nose.render();
+
+  // Draw a nose
+  var nose2 = new Cube();
+  nose.color = [0.35, 0.35, 0.35, 1.0];
+  nose2.matrix = headCoordinatesMat;
+  nose2.matrix.translate(0, 0.45, -0.10);
+  nose2.matrix.scale(0.15, 0.10, 0.25);
+  nose2.matrix.translate(-0.5, -4.25, -0.0001);
 
   // Draw ears
   var ear = new Tetrahedron(); // Left ear
@@ -359,35 +397,35 @@ function renderAllShapes() {
   
   // Draw four legs
   var leg = new Cube(); // Front left
-  leg.color = [0.6, 0.6, 0.7, 1.0];
+  leg.color = [0.992, 0.961, 0.886, 1.0];
   leg.matrix = bodyCoordinatesMat;
   leg.matrix.setTranslate(0.05, -0.2, 0.05); 
   leg.matrix.rotate(g_legsAngle,1,0,0);
-  leg.matrix.scale(0.10, -0.45, 0.20);
+  leg.matrix.scale(0.05, -0.45, 0.05);
   leg.render();
 
   var leg2 = new Cube(); // Front right
-  leg2.color = [0.6, 0.6, 0.7, 1.0];
+  leg2.color = [0.992, 0.961, 0.886, 1.0];
   leg2.matrix = bodyCoordinatesMat;
   leg2.matrix.setTranslate(-0.15, -0.2, 0.05); 
   leg2.matrix.rotate(-g_legsAngle,1,0,0);
-  leg2.matrix.scale(0.10, -0.45, 0.20);
+  leg2.matrix.scale(0.05, -0.45, 0.05);
   leg2.render();
 
   var leg3 = new Cube(); // Back left
-  leg3.color = [0.6, 0.6, 0.7, 1.0];
+  leg3.color = [0.992, 0.961, 0.886, 1.0];
   leg3.matrix = bodyCoordinatesMat;
   leg3.matrix.setTranslate(0.05, -0.2, 0.5); 
   leg3.matrix.rotate(-g_legsAngle,1,0,0);
-  leg3.matrix.scale(0.10, -0.45, 0.20);
+  leg3.matrix.scale(0.05, -0.45, 0.05);
   leg3.render();
 
   var leg4 = new Cube(); // Back right
-  leg4.color = [0.6, 0.6, 0.7, 1.0];
+  leg4.color = [0.992, 0.961, 0.886, 1.0];
   leg4.matrix = bodyCoordinatesMat;
   leg4.matrix.setTranslate(-0.15, -0.2, 0.5); 
   leg4.matrix.rotate(g_legsAngle,1,0,0);
-  leg4.matrix.scale(0.10, -0.45, 0.20);
+  leg4.matrix.scale(0.05, -0.45, 0.05);
   leg4.render();
   
   var duration = performance.now() - StartTime;
