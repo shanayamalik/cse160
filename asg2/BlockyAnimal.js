@@ -84,11 +84,13 @@ let g_neckAngle=0;
 let g_headAngle=0;
 let g_legsAngle=0;
 let g_earsAngle=0;
+let g_tailAngle=0;
 let g_seconds=0;
 let g_neckAnimation=false;
 let g_headAnimation=false;
 let g_legsAnimation=false;
 let g_earsAnimation=false;
+let g_tailAnimation=false;
 let dragging = false;
 let currentAngleX=-10;
 let currentAngleY=0;
@@ -109,6 +111,8 @@ document.getElementById('headSlide').addEventListener('mousemove', function() {g
 document.getElementById('legsSlide').addEventListener('mousemove', function() {g_legsAngle = this.value; renderAllShapes(); });
   
 document.getElementById('earsSlide').addEventListener('mousemove', function() {g_earsAngle = this.value; renderAllShapes(); });
+
+document.getElementById('tailSlide').addEventListener('mousemove', function() {g_tailAngle = this.value; renderAllShapes(); });
   
 document.getElementById('animationneckOnButton').onclick = function() {g_neckAnimation=true;};
   
@@ -125,6 +129,10 @@ document.getElementById('animationlegsOffButton').onclick = function() {g_legsAn
 document.getElementById('animationearsOnButton').onclick = function() {g_earsAnimation=true;};
 
 document.getElementById('animationearsOffButton').onclick = function() {g_earsAnimation=false;};
+
+document.getElementById('animationtailOnButton').onclick = function() {g_tailAnimation=true;};
+
+document.getElementById('animationtailOffButton').onclick = function() {g_tailAnimation=false;};
 
 document.getElementById('angleSlide').addEventListener('mousemove', function() {currentAngleX = this.value; renderAllShapes(); });
   
@@ -267,6 +275,7 @@ function tick() {
 
     updateAnimationAngles();
     updatePokeAnimation();
+  
     // Draw everything
     renderAllShapes();
 
@@ -286,6 +295,9 @@ function updateAnimationAngles() {
     }
     if (g_earsAnimation) {
         g_earsAngle = (5 * Math.sin(4 * g_seconds));
+    }
+    if (g_tailAnimation) {
+        g_tailAngle = (5 * Math.sin(4 * g_seconds));
     }
 }
 
@@ -330,6 +342,7 @@ function renderAllShapes() {
   tail2.color =[0.945, 0.761, 0.490, 1.0];
   tail2.matrix = bodyCoordinatesMat;
   tail2.matrix.translate(0.075, 0.10, 0.75);
+  tail2.matrix.rotate(-g_tailAngle,1,0,0);
   tail2.matrix.scale(0.15, 0.55, 0.15);
   tail2.render();
 
