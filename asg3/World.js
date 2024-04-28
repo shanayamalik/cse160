@@ -17,18 +17,23 @@ var VSHADER_SOURCE =
 // Fragment shader program
 var FSHADER_SOURCE =
   'precision mediump float;\n' +
-  'uniform vec4 u_FragColor;\n' +  // uniform
+  'varying vec2 v_UV;\n' +
+  'uniform vec4 u_FragColor;\n' +
   'void main() {\n' +
   '  gl_FragColor = u_FragColor;\n' +
-  '}\n';
+  '  // gl_FragColor = vec4(v_UV, 1.0, 1.0);\n' +
+  '}';
 
 // Global Variables
 let canvas;
 let gl;
 let a_Position;
+let a_UV;
 let u_FragColor;
 let u_Size;
 let u_ModelMatrix;
+let u_ProjectionMatrix;
+let u_ViewMatrix;
 let u_GlobalRotateMatrix;
 
 function setupWebGL() {
