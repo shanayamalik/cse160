@@ -1,11 +1,17 @@
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE =
+  'precision mediump float;\n' +
   'attribute vec4 a_Position;\n' +
+  'attribute vec2 a_UV;\n' +
+  'varying vec2 v_UV;\n' +
   'uniform mat4 u_ModelMatrix;\n' +
   'uniform mat4 u_GlobalRotateMatrix;\n' +
+  'uniform mat4 u_ViewMatrix;\n' +
+  'uniform mat4 u_ProjectionMatrix;\n' +
   'void main() {\n' +
-  '  gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;\n' +
+  '  gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;\n' +
+  // v_UV = a_UV;\n'
   '}';
 
 // Fragment shader program
