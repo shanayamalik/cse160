@@ -1,41 +1,39 @@
 // ColoredPoint.js (c) 2012 matsuda
-// Vertex Shader program
+// Vertex shader program
 var VSHADER_SOURCE =
-  'precision mediump float;' +
-  'attribute vec4 a_Position;' +
-  'attribute vec2 a_UV;' +
-  'varying vec2 v_UV;' +
-  'uniform mat4 u_ModelMatrix;' +
-  'uniform mat4 u_GlobalRotateMatrix;' +
-  'uniform mat4 u_ViewMatrix;' +
-  'uniform mat4 u_ProjectionMatrix;' +
-  'void main() {' +
-  '  gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;' +
-  '  v_UV = a_UV;' +
+  'attribute vec4 a_Position;\n' +
+  'attribute vec2 a_UV;\n' +
+  'varying vec2 v_UV;\n' +
+  'uniform mat4 u_ModelMatrix;\n' +
+  'uniform mat4 u_GlobalRotateMatrix;\n' +
+  'uniform mat4 u_ViewMatrix;\n' +
+  'uniform mat4 u_ProjectionMatrix;\n' +
+  'void main() {\n' +
+  '  gl_Position =  u_GlobalRotateMatrix * u_ModelMatrix * a_Position;\n' +
+  ' v_UV = a_UV;\n' +
   '}';
 
 // Fragment shader program
 var FSHADER_SOURCE =
-  'precision mediump float;' +
-  'varying vec2 v_UV;' +
-  'uniform vec4 u_FragColor;' +
-  'void main() {' +
-  '  gl_FragColor = u_FragColor;' +
-  '  gl_FragColor = vec4(v_UV, 1.0, 1.0);' +
-  '}';
+  'precision mediump float;\n' +
+  'varying vec2 v_UV;\n' +
+  'uniform vec4 u_FragColor;\n' +  // uniform
+  'void main() {\n' +
+  '  gl_FragColor = u_FragColor;\n' +
+  //'  gl_FragColor = vec4(v_UV,1.0,1.0);\n' +
+'}\n';
 
 // Global Variables
 let canvas;
 let gl;
 let a_Position;
 let a_UV;
-let v_UV;
 let u_FragColor;
 let u_Size;
 let u_ModelMatrix;
-let u_ProjectionMatrix;
-let u_ViewMatrix;
 let u_GlobalRotateMatrix;
+let u_ViewMatrix;
+let u_ProjectionMatrix;
 
 function setupWebGL() {
   // Retrieve <canvas> element
@@ -64,13 +62,6 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  // Get the storage location of a_UV
-  a_UV = gl.getAttribLocation(gl.program, 'a_UV');
-  if (a_UV < 0) {
-    console.log('Failed to get the storage location of a_UV');
-    return;
-  }
-
   // Get the storage location of u_FragColor
   u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
   if (!u_FragColor) {
@@ -91,18 +82,6 @@ function connectVariablesToGLSL() {
     return;
   }
 
-  u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
-  if (!u_ProjectionMatrix) {
-    console.log('Failed to get the storage location of u_ProjectionMatrix');
-    return;
-  }
-  
-  u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
-  if (!u_ViewMatrix) {
-    console.log('Failed to get the storage location of u_ViewMatrix');
-    return;
-  }
-  
   var identityM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
 }
@@ -127,7 +106,7 @@ let g_seconds=0;
 function addActionsForHtmlUI() {
 document.getElementById('yellowSlide').addEventListener('mousemove', function() {g_yellowAngle = this.value; renderAllShapes(); });
   document.getElementById('magentaSlide').addEventListener('mousemove', function() {g_magentaAngle = this.value; renderAllShapes(); });
-  
+
 document.getElementById('animationYellowOnButton').onclick = function() {g_yellowAnimation=true;};
 document.getElementById('animationYellowOffButton').onclick = function() {g_yellowAnimation=false;};
 
@@ -142,13 +121,13 @@ function main() {
 
   // Set up actions for HTML UI 
   addActionsForHtmlUI();
-  
+
   // Specify the color for clearing <canvas>
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   g_startTime=performance.now()/1000.0;
   //renderAllShapes();
   requestAnimationFrame(tick);
-  
+
 }
 
 function click(ev) {
@@ -175,10 +154,11 @@ function click(ev) {
 // Called by browser repeatedly whenever its time
 function tick() {
     g_seconds=performance.now()/1000.0-g_startTime;
+    // Print some debug information so we know we are running
     //console.log(performance.now());
 
     updateAnimationAngles();
-  
+
     // Draw everything
     renderAllShapes();
 
@@ -201,7 +181,7 @@ function renderAllShapes() {
   // Pass the matrix to u_ModelMatrix attribute
   var globalRotMat=new Matrix4().rotate(g_globalAngle, 0, 1, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-  
+
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   //gl.clear(gl.COLOR_BUFFER_BIT);
@@ -212,7 +192,6 @@ function renderAllShapes() {
   body.matrix.translate(-0.25, -0.75, 0.0);
   body.matrix.rotate(-5,1,0,0);
   body.matrix.scale(0.5, .3, .5);
-  //console.log("Rendering shapes...");
   body.render();
 
   // Draw a left arm
@@ -221,17 +200,12 @@ function renderAllShapes() {
   yellow.matrix.setTranslate(0, -0.5, 0.0); 
   yellow.matrix.rotate(-5,1,0,0);
   yellow.matrix.rotate(-g_yellowAngle,0,0,1);
-  
-  //if (g_yellowAnimation) {
-      //yellow.matrix.rotate(45*Math.sin(g_seconds), 0,0,1);
-  //} else {
-      //yellow.matrix.rotate(-g_yellowAngle, 0,0,1);
-  //}
-  
+
+
+
   var yellowCoordinatesMat=new Matrix4(yellow.matrix);
   yellow.matrix.scale(0.25, 0.7, 0.5);
   yellow.matrix.translate(-0.5,0,0);
-  //console.log("Rendering shapes...");
   yellow.render();
 
 
@@ -245,14 +219,8 @@ function renderAllShapes() {
   box.matrix.translate(-0.5, 0, -0.001);
   //box.matrix.rotate(-30, 1, 0, 0);
   //box.matrix.scale(.5, .5, .5);
-  //console.log("Rendering shapes...");
   box.render();
 
-  var error = gl.getError();
-  if (error != gl.NO_ERROR) {
-    console.log('WebGL Error: ' + error);
-  }
-  
   var duration = performance.now() - StartTime;
   sendTextToHTML("ms: " + Math.floor(duration) + " fps: " + Math.floor(1000/duration)/10, "numdot");
 
