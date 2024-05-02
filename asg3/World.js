@@ -9,6 +9,7 @@ var VSHADER_SOURCE =
   'uniform mat4 u_ViewMatrix;\n' +
   'uniform mat4 u_ProjectionMatrix;\n' +
   'void main() {\n' +
+  //'gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;\n' +
   '  gl_Position =  u_GlobalRotateMatrix * u_ModelMatrix * a_Position;\n' +
   ' v_UV = a_UV;\n' +
   '}';
@@ -82,8 +83,40 @@ function connectVariablesToGLSL() {
     return;
   }
 
+  u_ProjectionMatrix = gl.getUniformLocation(gl.program, 'u_ProjectionMatrix');
+  if (!u_ProjectionMatrix) {
+    console.log('Failed to get the storage location of u_ProjectionMatrix');
+    return;
+  }
+
+  u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
+  if (!u_ViewMatrix) {
+    console.log('Failed to get the storage location of u_ViewMatrix');
+    return;
+  }
+
   var identityM = new Matrix4();
   gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
+}
+
+function initProjectionMatrix() {
+    var fieldOfView = 45; // degrees
+    var aspect = canvas.width / canvas.height;
+    var zNear = 0.1;
+    var zFar = 100.0;
+    u_ProjectionMatrix = new Matrix4();
+    u_ProjectionMatrix.setPerspective(fieldOfView, aspect, zNear, zFar);
+    gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, 'u_ProjectionMatrix'), false, u_ProjectionMatrix.elements);
+}
+
+function initViewMatrix() {
+    var eyeX = 0, eyeY = 0, eyeZ = 5; // Camera position
+    var centerX = 0, centerY = 0, centerZ = 0; // Where the camera is looking
+    var upX = 0, upY = 1, upZ = 0; // "Up" direction in world space (usually Y-axis)
+
+    u_ViewMatrix = new Matrix4();
+    u_ViewMatrix.setLookAt(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ);
+    gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, 'u_ViewMatrix'), false, u_ViewMatrix.elements);
 }
 
 // Constants
@@ -118,6 +151,10 @@ document.getElementById('animationMagentaOffButton').onclick = function() {g_mag
 function main() {
   setupWebGL();
   connectVariablesToGLSL();
+
+  // Initialize projection and view matrices
+  initProjectionMatrix(); // Initialize the projection matrix
+  initViewMatrix(); // Initialize the view matrix
 
   // Set up actions for HTML UI 
   addActionsForHtmlUI();
