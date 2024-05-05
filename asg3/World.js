@@ -279,10 +279,10 @@ function renderAllShapes() {
 
   // Create and render the ground plane with texture
   var ground = new Cube(); // Use the Cube class to create the ground
-  ground.color = [0.3, 0.8, 0.2, 1.0]; // Green color, may not be visible if texture covers entirely
-  ground.matrix.scale(10, 0.1, 10); // Scale to make it flat and wide
+  //ground.color = [0.3, 0.8, 0.2, 1.0];  
+  ground.matrix.scale(10, 0.1, 10);  
   ground.matrix.rotate(-90, 1, 0, 0); // Rotate to lay it in the x-z plane
-  ground.matrix.translate(0, -0.05, 0); 
+  ground.matrix.translate(-1, -0.05, 0); 
   //gl.uniform1i(gl.getUniformLocation(gl.program, 'u_SampleTexture0'), 0); // Use the texture
   gl.uniform1i(u_UseTexture, 1); // Enable texturing
   ground.render(); // Render the ground
