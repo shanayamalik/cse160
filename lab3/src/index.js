@@ -1,7 +1,15 @@
+/**
+ * With codesandbox we import our functions from the files they live in
+ * rather than import that file in the HTML file like we usually do
+ *
+ * ALSO NOTE that there is NO main function being called.
+ * index.js IS your main function and the code written in it is run
+ * on page load.
+ */
 import "./styles.css";
 import { initShaders } from "../lib/cuon-utils";
 import getContext from "./Context";
-import Stats from "./stats.js";
+import Stats from "stats.js";
 import Cube from "./Cube";
 import Camera from "./Camera";
 import RotateControls from "./Controls";

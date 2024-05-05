@@ -1,31 +1,25 @@
-import { Matrix4, Vector3 } from "../lib/cuon-matrix-cse160";
+export default function getContext() {
+  // Retrieve <canvas> element
+  var canvas = document.getElementById("webgl");
 
-export default class Camera {
-  constructor(position = [0, 1, 2], target = [0, 0, 0]) {
-    this.position = new Vector3(position);
-    this.target = new Vector3(target);
-    this.viewMatrix = new Matrix4();
-    this.projectionMatrix = new Matrix4();
-    this.up = new Vector3([0, 1, 0]);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-    this.aspect = window.innerWidth / window.innerHeight;
-
-    window.addEventListener("resize", (e) => {
-      this.aspect = window.innerWidth / window.innerHeight;
-
-      this.calculateViewProjection();
-    });
-
-    this.calculateViewProjection();
+  // Get the rendering context for WebGL
+  const gl = canvas.getContext("webgl");
+  if (!gl) {
+    console.log("Failed to get the rendering context for WebGL");
   }
 
-  calculateViewProjection() {
-    this.viewMatrix.setLookAt(
-      ...this.position.elements,
-      ...this.target.elements,
-      ...this.up.elements
-    );
+  gl.viewport(0, 0, canvas.width, canvas.height);
+  gl.enable(gl.DEPTH_TEST);
 
-    this.projectionMatrix.setPerspective(50, this.aspect, 0.01, 10);
-  }
+  window.addEventListener("resize", (e) => {
+    gl.canvas.width = window.innerWidth;
+    gl.canvas.height = window.innerHeight;
+
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+  });
+
+  return gl;
 }
