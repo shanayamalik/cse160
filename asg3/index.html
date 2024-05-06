@@ -2,42 +2,47 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>CSE 160: Assignment 3</title>
+    <title>Blokky Worl </title>
+    <link rel="stylesheet" type="text/css" href="asg3.css">
   </head>
 
   <body onload="main()">
-    <canvas id="webgl" width="400" height="400">
-        Please use a browser that supports canvas elements
-    </canvas>
-    <p id="numdot"> performance data goes here </p>
-    <!--
-    <button type="button" id="green">x</button>
-    <button type="button" id="red">x</button>
-    <button type="button" id="blue">x</button>
-    <button type="button" id="clearButton">x</button>
-    <button type="button" id="pointButton">x</button>
-    <button type="button" id="triButton">x</button>
-    <p>
-    x <input type="range" min="0" max="100" value="100" class="slider" id="redSlide">
-    -->
-    Yellow <input type="range" min="0" max="90" value="5" class="slider" id="yellowSlide">
-    Animation:
-      <button type="button" id="animationYellowOnButton">ON</button></button>
-      <button type="button" id="animationYellowOffButton">OFF</button></button>
-    <p>
-    Magenta <input type="range" min="0" max="90" value="5" class="slider" id="magentaSlide">
-      Animation:
-        <button type="button" id="animationMagentaOnButton">ON</button></button>
-        <button type="button" id="animationMagentaOffButton">OFF</button></button>
-    <p>
-    Camera Angle <input type="range" min="0" max="90" value="5" class="slider" id="angleSlide">
+    <div class="container" style="display: flex;">
+      <div class="canvas-container" style="margin: 10px;">
+          <canvas id="webgl" width="500" height="500">
+          Please use a browser that supports "canvas"
+          </canvas>
+          <!-- <div style="width: 300px;"> -->
+        </div>
 
-    <script src="lib/webgl-utils.js"></script>
-    <script src="lib/webgl-debug.js"></script>
-    <script src="lib/cuon-utils.js"></script>
-    <script src="lib/cuon-matrix-cse160.js"></script>
-    <script src="Triangle.js"></script>
+      </div>
+      <div class="controls-container" id="controls-container" style="margin: 10px;">
+        <p id="info"> Ms: 0, FPS: 0 </p>
+        <div>
+          Camera Angle <input type="range" id="cameraAngle" class="slider" min="0" max="360" value="30" />
+          <input type="button" id="resetCamera" value="Reset Camera"/>
+        </div>
+        <br>
+        <div>
+          <br><br>
+          <div style="font-size: large;">
+            Notes to Grader:
+          </div>
+          Just the stuff for part 3A done, textures, ground, and sky.
+
+    </div>  
+
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="../lib/cuon-matrix-cse160.js"></script>
+    <script src="Camera.js"></script>
     <script src="Cube.js"></script>
+    <script src="Sphere.js"></script>
+    <script src="Plane.js"></script>
+    <script src="Triangle.js"></script>
+    <script src="Tetrahedron.js"></script>
+    <script src="BlockyAnimal.js"></script>
     <script src="World.js"></script>
   </body>
 </html>
