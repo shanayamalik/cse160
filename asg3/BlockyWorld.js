@@ -1,7 +1,3 @@
-//TODO: uncomment renderLlama();
-//TODO: uncomment ground.textureNum = 0;
-//TODO: uncomment sky.textureNum = 1;
-//TODO: comment body cube, left arm, and test box
 
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
@@ -17,6 +13,7 @@ var VSHADER_SOURCE = `
   uniform mat4 u_ProjectionMatrix;
   void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
+    // gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     v_UV = a_UV;
   }`
 
@@ -59,10 +56,19 @@ let u_ModelMatrix;
 let u_GlobalRotateMatrix;
 let u_ProjectionMatrix;
 let u_ViewMatrix;
+// let u_Sampler0;
+// let u_Sampler1;
 let u_Samplers = [];
 let u_whichTexture;
-let g_horizontalAngle = 0.0;
-let g_verticalAngle = 0.0;
+let g_globalHorizontalAngle = 0.0;
+let g_globalVerticalAngle = 0.0;
+let g_xAngle = 0.0;
+let g_yAngle = 0.0;
+let g_zAngle = 0.0;
+let g_xPosition = 0.0;
+let g_yPosition = 0.0;
+let g_zPosition = 0.0;
+let g_globalScale = 1.0;
 
 const setupWebGL = () => {
   // Retrieve <canvas> element
@@ -173,7 +179,7 @@ const connectVariablesToGLSL = () => {
 const addActionsForHtmlUI = () => {
   document.getElementById('cameraAngle').addEventListener('mousemove', (event) => {
     if (event.buttons == 1) {
-      g_horizontalAngle = document.getElementById('cameraAngle').value;
+      g_globalHorizontalAngle = document.getElementById('cameraAngle').value;
       renderAllShapes();
     }
   })
@@ -237,7 +243,7 @@ const tick = () => {
   // console.log(g_seconds);
   updateAnimationAngles();
   renderAllShapes();
-  //renderLlama();
+  renderLlama();
   requestAnimationFrame(tick);
 }
 
@@ -264,8 +270,8 @@ const renderAllShapes = () => {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const globalRotateMatrix = new Matrix4().rotate(g_horizontalAngle, 0, 1, 0);
-  globalRotateMatrix.rotate(g_verticalAngle, 1, 0, 0);
+  const globalRotateMatrix = new Matrix4().rotate(g_globalHorizontalAngle, 0, 1, 0);
+  globalRotateMatrix.rotate(g_globalVerticalAngle, 1, 0, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotateMatrix.elements);
 
   const perspectiveMatrix = new Matrix4();
@@ -278,76 +284,21 @@ const renderAllShapes = () => {
               g_camera.up.elements[0], g_camera.up.elements[1], g_camera.up.elements[2]);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
 
-  /*
-  var globalRotMat = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
-  globalRotMat.rotate(g_verticalAngle, 1, 0, 0);
-  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-  
-  // Pass the projection matrix
-  var perspectiveMatrix = new Matrix4();
-  perspectiveMatrix.setPerspective(60, canvas.width/canvas.height, 0.1, 100);
-  gl.uniformMatrix4fv(u_ProjectionMatrix, false, perspectiveMatrix.elements);
-
-  // Pass the view matrix
-  var viewMat = new Matrix4();
-  viewMat.setLookAt(g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2], 
-  g_camera.at.elements[0], g_camera.at.elements[1], g_camera.at.elements[2],
-  g_camera.up.elements[0], g_camera.up.elements[1], g_camera.up.elements[2]);
-  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
-  */
-  
-  const ground = new Cube();
-  ground.color = [1,0,0,1];
-  ground.textureNum = -2;
-  //ground.textureNum = 0;
-  ground.matrix.translate(0, -0.5, 0);
-  ground.matrix.scale(10, 0, 10);
-  ground.matrix.translate(-0.5, 0, -0.5);
-  ground.render();
+  const cube = new Cube();
+  cube.color = [1,0,0,1];
+  cube.textureNum = 0;
+  cube.matrix.translate(0, -0.5, 0);
+  cube.matrix.scale(10, 0, 10);
+  cube.matrix.translate(-0.5, 0, -0.5);
+  cube.render();
 
   const sky = new Cube();
   sky.color = [1,1,1,1];
-  sky.textureNum = -2;
-  //sky.textureNum = 1;
+  sky.textureNum = 1;
   sky.matrix.scale(50, 50, 50);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
 
-  // Draw the body cube
-  var body = new Cube();
-  body.textureNum = -2;
-  body.color = [1.0, 0.0, 0.0, 1.0];
-  body.matrix.translate(-0.25, -0.75, 0.0);
-  body.matrix.rotate(-5,1,0,0);
-  body.matrix.scale(0.5, .3, .5);
-  body.render();
-
-  // Draw a left arm
-  var yellow = new Cube();
-  yellow.textureNum = -2;
-  yellow.color = [1, 1, 0, 1];
-  yellow.matrix.setTranslate(0, -0.5, 0.0); 
-  yellow.matrix.rotate(-5,1,0,0);
-  //yellow.matrix.rotate(-g_yellowAngle,0,0,1);
-
-  var yellowCoordinatesMat=new Matrix4(yellow.matrix);
-  yellow.matrix.scale(0.25, 0.7, 0.5);
-  yellow.matrix.translate(-0.5,0,0);
-  yellow.render();
-
-  // Test box
-  var box = new Cube();
-  box.textureNum = -2;
-  box.color = [1, 0, 1, 1];
-  box.matrix = yellowCoordinatesMat;
-  box.matrix.translate(0, 0.65, 0);
-  //box.matrix.rotate(g_magentaAngle, 0, 0, 1);
-  box.matrix.scale(0.3, 0.3, 0.3);
-  box.matrix.translate(-0.5, 0, -0.001);
-  //box.matrix.rotate(-30, 1, 0, 0);
-  //box.matrix.scale(.5, .5, .5);
-  box.render();
-  
   let duration = performance.now() - startTime;
   sendTextToHTML(`ms: ${Math.floor(duration)} fps: ${Math.floor(10000/duration)/10}`, 'info');
 }
