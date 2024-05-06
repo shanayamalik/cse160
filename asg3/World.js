@@ -182,16 +182,6 @@ const addActionsForHtmlUI = () => {
       renderAllShapes();
     }
   })
-  document.getElementById('resetCamera').addEventListener('click', () => {
-    g_globalHorizontalAngle = 30.0;
-    g_globalVerticalAngle = -10.0;
-    g_xPosition = 0.0;
-    g_yPosition = 0.0;
-    g_zPosition = 0.0;
-    g_globalScale = 1.0;
-    document.getElementById('cameraAngle').value = 30;
-    renderAllShapes();
-  })
 
 }
 
@@ -209,7 +199,7 @@ function initTextures() {
       console.log('Failed to create the image object');
       return false;
     }
-    // Register the event handler to be called when image loading is completed
+
     image.onload = function(){ sendImageToTexture(image, i); };
     // Tell the browser to load an Image
     image.src = images[i];
@@ -226,9 +216,6 @@ function sendImageToTexture(image, textureNum) {
     console.log('Failed to create the texture object');
     return false;
   }
-  // console.log(gl.TEXTURE0)
-  // console.log(gl.TEXTURE1)
-  // console.log(gl.TEXTURE0+textureNum)
 
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);  // Flip the image's y axis
   // Activate texture unit0
@@ -276,8 +263,6 @@ const updateAnimationAngles = () => {
 
 let g_camera = new Camera();
 
-
-
 const renderAllShapes = () => {
   let startTime = performance.now();
   gl.clearColor(0, 0, 0, 1.0);
@@ -288,11 +273,11 @@ const renderAllShapes = () => {
   globalRotateMatrix.rotate(g_globalVerticalAngle, 1, 0, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotateMatrix.elements);
 
-  const perspectiveMatrix = new Matrix4(); //.scale(g_globalScale, g_globalScale, g_globalScale);
+  const perspectiveMatrix = new Matrix4();
   perspectiveMatrix.setPerspective(60, canvas.width/canvas.height, 0.1, 100);
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, perspectiveMatrix.elements);
 
-  const viewMatrix = new Matrix4(); //.translate(g_xPosition, g_yPosition, g_zPosition);
+  const viewMatrix = new Matrix4();  
   viewMatrix.setLookAt(g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2], 
               g_camera.at.elements[0], g_camera.at.elements[1], g_camera.at.elements[2],
               g_camera.up.elements[0], g_camera.up.elements[1], g_camera.up.elements[2]);
@@ -313,10 +298,8 @@ const renderAllShapes = () => {
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
 
-
-
   let duration = performance.now() - startTime;
-  sendTextToHTML(`Ms: ${Math.floor(duration)}, FPS: ${Math.floor(10000/duration)/10}`, 'info');
+  sendTextToHTML(`ms: ${Math.floor(duration)} fps: ${Math.floor(10000/duration)/10}`, 'info');
 }
 
 const sendTextToHTML = (text, htmlTag) => {
@@ -332,7 +315,6 @@ function main() {
   setupWebGL();
   connectVariablesToGLSL();
   addActionsForHtmlUI();
-
 
   initTextures();
 

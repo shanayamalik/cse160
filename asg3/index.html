@@ -2,33 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Blokky Worl </title>
+    <title>CSE 160: Assignment 3</title>
     <link rel="stylesheet" type="text/css" href="asg3.css">
   </head>
 
   <body onload="main()">
     <div class="container" style="display: flex;">
       <div class="canvas-container" style="margin: 10px;">
-          <canvas id="webgl" width="500" height="500">
+          <canvas id="webgl" width="400" height="400">
           Please use a browser that supports "canvas"
           </canvas>
-          <!-- <div style="width: 300px;"> -->
         </div>
 
       </div>
       <div class="controls-container" id="controls-container" style="margin: 10px;">
-        <p id="info"> Ms: 0, FPS: 0 </p>
+        <p id="info"> ms: 0 fps: 0 </p>
         <div>
           Camera Angle <input type="range" id="cameraAngle" class="slider" min="0" max="360" value="30" />
-          <input type="button" id="resetCamera" value="Reset Camera"/>
         </div>
         <br>
         <div>
-          <br><br>
-          <div style="font-size: large;">
-            Notes to Grader:
-          </div>
-          Just the stuff for part 3A done, textures, ground, and sky.
 
     </div>  
 
@@ -38,8 +31,6 @@
     <script src="../lib/cuon-matrix-cse160.js"></script>
     <script src="Camera.js"></script>
     <script src="Cube.js"></script>
-    <script src="Sphere.js"></script>
-    <script src="Plane.js"></script>
     <script src="Triangle.js"></script>
     <script src="Tetrahedron.js"></script>
     <script src="BlockyAnimal.js"></script>
