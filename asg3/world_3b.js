@@ -258,43 +258,28 @@ const updateAnimationAngles = () => {
 
 let g_camera = new Camera();
 
+var g_eye = [0, 0, 3];
+var g_at = [0, 0, -100];
+var g_up = [0, 1, 0];
+
 const renderAllShapes = () => {
   let startTime = performance.now();
   gl.clearColor(0, 0, 0, 1.0);
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  /*
+  
   const globalRotateMatrix = new Matrix4().rotate(g_horizontalAngle, 0, 1, 0);
   globalRotateMatrix.rotate(g_verticalAngle, 1, 0, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotateMatrix.elements);
 
-  const perspectiveMatrix = new Matrix4();
-  perspectiveMatrix.setPerspective(60, canvas.width/canvas.height, 0.1, 100);
-  gl.uniformMatrix4fv(u_ProjectionMatrix, false, perspectiveMatrix.elements);
-
-  const viewMatrix = new Matrix4();  
-  viewMatrix.setLookAt(g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2], 
-              g_camera.at.elements[0], g_camera.at.elements[1], g_camera.at.elements[2],
-              g_camera.up.elements[0], g_camera.up.elements[1], g_camera.up.elements[2]);
-  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
-*/
-  
-  // Pass the projection matrix
   var projMat = new Matrix4();
-    projMat.setPerspective(50, 1*canvas.width/canvas.height, 1, 100);
+  projMat.setPerspective(50, 1 * canvas.width / canvas.height, 1, 100);
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
 
   // Pass the view matrix
   var viewMat = new Matrix4();
-  viewMat.setLookAt(0, 0, 3, 0, 0, -100, 0, 1, 0); // (eye, at, up) 
-  g_camera.at.elements[0], g_camera.at.elements[1], g_camera.at.elements[2],
-  g_camera.up.elements[0], g_camera.up.elements[1], g_camera.up.elements[2];
+  viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
-
-  // Pass the matrix to u_ModelMatrix attribute
-  var globalRotMat = new Matrix4().rotate(g_globalAngle, 0, 1, 0);
-  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
   
   const ground = new Cube();
   ground.color = [1,0,0,1];
