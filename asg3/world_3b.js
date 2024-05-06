@@ -256,6 +256,16 @@ const convertCoordinateEventToGL = (ev) => {
 const updateAnimationAngles = () => {
 }
 
+function keydown(ev) {
+    if (ev.keyCode == 39) { // Right arrow
+        g_eye[0] += 0.2;
+    } else if (ev.keyCode == 37) { // Left arrow
+        g_eye[0] -= 0.2;
+    }
+    renderAllShapes();
+    console.log(ev.keyCode);
+}
+
 let g_camera = new Camera();
 
 var g_eye = [0, 0, 3];
@@ -350,6 +360,12 @@ function main() {
   setupWebGL();
   connectVariablesToGLSL();
   addActionsForHtmlUI();
+
+  // Register function (event handler) to be called on a mouse press
+  // canvas.onmousedown = click;
+  // canvas.onmousemove = click;
+  // canvas.onmousemove = function(ev) { if(ev.buttons == 1) { click(ev) } }
+  document.onkeydown = keydown;
 
   initTextures();
 
