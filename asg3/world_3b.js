@@ -1,10 +1,4 @@
-//TODO: uncomment renderLlama();
-//TODO: uncomment ground.textureNum = 0;
-//TODO: uncomment sky.textureNum = 1;
-//TODO: comment body cube, left arm, and test box
-
 //TODO: implement world
-//TODO: rotate camera with mouse
 //TODO: add/delete blocks
 //TODO: add simple story or game to world
 //TODO: wow!
@@ -177,86 +171,37 @@ const connectVariablesToGLSL = () => {
 }
 
 const addActionsForHtmlUI = () => {
-  document.getElementById('cameraAngle').addEventListener('mousemove', (event) => {
-    if (event.buttons == 1) {
-      g_horizontalAngle = document.getElementById('cameraAngle').value;
+  document.getElementById('cameraAngle').addEventListener('input', (event) => {
+      g_horizontalAngle = parseFloat(event.target.value);
       renderAllShapes();
-    }
-  })
+  });
 
-  canvas.onmousedown = function(ev) {
-    ev.preventDefault();  // Prevent any default action
-    ev.stopPropagation(); 
-    let x = ev.clientX;
-    let y = ev.clientY;
-    // Check if the cursor is inside the canvas bounds
-    let rect = ev.target.getBoundingClientRect();
-    if (rect.left <= x && x < rect.right && rect.top <= y && y < rect.bottom) {
-      lastX = x;
-      lastY = y;
-      dragging = true;
-
-      if (ev.shiftKey) {
-          //console.log("shift key")
-          resetRotation();
-          //g_pokeAnimation = true;
-          //g_pokeTime = 0; // Reset animation time
-          renderAllShapes();
+  canvas.addEventListener('mousedown', (ev) => {
+      ev.preventDefault();
+      let rect = ev.target.getBoundingClientRect();
+      if (rect.left <= ev.clientX && ev.clientX < rect.right && rect.top <= ev.clientY && ev.clientY < rect.bottom) {
+          lastX = ev.clientX;
+          lastY = ev.clientY;
+          dragging = true;
       }
-    }
-  };
+  });
 
-  canvas.onmouseup = function(ev) {
-    dragging = false;
-  };
+  canvas.addEventListener('mousemove', (ev) => {
+      if (dragging) {
+          let dx = (ev.clientX - lastX) * 10.0 * Math.PI / canvas.width;
+          let dy = (ev.clientY - lastY) * 10.0 * Math.PI / canvas.height;
+          currentAngleX += dx;
+          currentAngleY += dy;
+          renderAllShapes();
+          lastX = ev.clientX;
+          lastY = ev.clientY;
+      }
+  });
 
-  canvas.onmousemove = function(ev) {
-    let x = ev.clientX;
-    let y = ev.clientY;
-    if (dragging) {
-      let factor = canvas.height / 100; // Adjust rotation speed
-      let dx = factor * (x - lastX);
-      let dy = factor * (y - lastY);
-      // Passing the angles to rotate the scene
-      rotateScene(dx, dy);
-    }
-    lastX = x;
-    lastY = y;
-  };
+  canvas.addEventListener('mouseup', () => {
+      dragging = false;
+  });
   
-}
-
-function resetRotation() {
-  currentAngleX = 0;
-  currentAngleY = 0;
-  console.log('Rotation Reset');
-  applyRotation();
-}
-
-function rotateScene(dx, dy) {
-  // Update angles based on mouse movement
-  currentAngleX += dx;
-  currentAngleY += dy;
-
-  let smoothingFactor = 0.1;  
-  let targetAngleX = currentAngleX + dx;  
-  let targetAngleY = currentAngleY + dy;
-
-  currentAngleX = smoothingFactor * targetAngleX + (1 - smoothingFactor) * currentAngleX;
-  currentAngleY = smoothingFactor * targetAngleY + (1 - smoothingFactor) * currentAngleY;
-  
-  // Consolidate and apply rotation
-  applyRotation();
-}
-
-function applyRotation() {
-  var globalRotMat = new Matrix4();
-  globalRotMat.setRotate(currentAngleY, 1, 0, 0);
-  globalRotMat.rotate(currentAngleX, 0, 1, 0);
-  globalRotMat.translate(0, 0, -0.5);
-  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-  //console.log("applying rotation");
-  renderAllShapes();  // Update the scene rendering
 }
 
 let images = {
@@ -316,7 +261,7 @@ const tick = () => {
   // console.log(g_seconds);
   updateAnimationAngles();
   renderAllShapes();
-  //renderLlama();
+  renderLlama();
   requestAnimationFrame(tick);
 }
 
@@ -408,8 +353,8 @@ const renderAllShapes = () => {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   
-  const globalRotateMatrix = new Matrix4().rotate(g_horizontalAngle, 0, 1, 0);
-  globalRotateMatrix.rotate(g_verticalAngle, 1, 0, 0);
+  const globalRotateMatrix = new Matrix4().rotate(g_horizontalAngle + currentAngleX, 0, 1, 0);
+  globalRotateMatrix.rotate(g_verticalAngle + currentAngleY, 1, 0, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotateMatrix.elements);
 
   var projMat = new Matrix4();
@@ -427,8 +372,7 @@ const renderAllShapes = () => {
   
   const ground = new Cube();
   ground.color = [1,0,0,1];
-  ground.textureNum = -2;
-  //ground.textureNum = 0;
+  ground.textureNum = 0;
   ground.matrix.translate(0, -0.5, 0);
   ground.matrix.scale(10, 0, 10);
   ground.matrix.translate(-0.5, 0, -0.5);
@@ -436,46 +380,10 @@ const renderAllShapes = () => {
 
   const sky = new Cube();
   sky.color = [1,1,1,1];
-  sky.textureNum = -2;
-  //sky.textureNum = 1;
+  sky.textureNum = 1;
   sky.matrix.scale(50, 50, 50);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
-
-  // Draw the body cube
-  var body = new Cube();
-  body.textureNum = -2;
-  body.color = [1.0, 0.0, 0.0, 1.0];
-  body.matrix.translate(-0.25, -0.75, 0.0);
-  body.matrix.rotate(-5,1,0,0);
-  body.matrix.scale(0.5, .3, .5);
-  body.render();
-
-  // Draw a left arm
-  var yellow = new Cube();
-  yellow.textureNum = -2;
-  yellow.color = [1, 1, 0, 1];
-  yellow.matrix.setTranslate(0, -0.5, 0.0); 
-  yellow.matrix.rotate(-5,1,0,0);
-  //yellow.matrix.rotate(-g_yellowAngle,0,0,1);
-
-  var yellowCoordinatesMat=new Matrix4(yellow.matrix);
-  yellow.matrix.scale(0.25, 0.7, 0.5);
-  yellow.matrix.translate(-0.5,0,0);
-  yellow.render();
-
-  // Test box
-  var box = new Cube();
-  box.textureNum = -2;
-  box.color = [1, 0, 1, 1];
-  box.matrix = yellowCoordinatesMat;
-  box.matrix.translate(0, 0.65, 0);
-  //box.matrix.rotate(g_magentaAngle, 0, 0, 1);
-  box.matrix.scale(0.3, 0.3, 0.3);
-  box.matrix.translate(-0.5, 0, -0.001);
-  //box.matrix.rotate(-30, 1, 0, 0);
-  //box.matrix.scale(.5, .5, .5);
-  box.render();
   
   let duration = performance.now() - startTime;
   sendTextToHTML(`ms: ${Math.floor(duration)} fps: ${Math.floor(10000/duration)/10}`, 'info');
@@ -506,3 +414,4 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   requestAnimationFrame(tick);
 }
+
