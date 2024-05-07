@@ -3,6 +3,12 @@
 //TODO: uncomment sky.textureNum = 1;
 //TODO: comment body cube, left arm, and test box
 
+//TODO: implement world
+//TODO: rotate camera with mouse
+//TODO: add/delete blocks
+//TODO: add simple story or game to world
+//TODO: wow!
+
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE = `
@@ -178,6 +184,79 @@ const addActionsForHtmlUI = () => {
     }
   })
 
+  canvas.onmousedown = function(ev) {
+    ev.preventDefault();  // Prevent any default action
+    ev.stopPropagation(); 
+    let x = ev.clientX;
+    let y = ev.clientY;
+    // Check if the cursor is inside the canvas bounds
+    let rect = ev.target.getBoundingClientRect();
+    if (rect.left <= x && x < rect.right && rect.top <= y && y < rect.bottom) {
+      lastX = x;
+      lastY = y;
+      dragging = true;
+
+      if (ev.shiftKey) {
+          //console.log("shift key")
+          resetRotation();
+          //g_pokeAnimation = true;
+          //g_pokeTime = 0; // Reset animation time
+          renderAllShapes();
+      }
+    }
+  };
+
+  canvas.onmouseup = function(ev) {
+    dragging = false;
+  };
+
+  canvas.onmousemove = function(ev) {
+    let x = ev.clientX;
+    let y = ev.clientY;
+    if (dragging) {
+      let factor = canvas.height / 100; // Adjust rotation speed
+      let dx = factor * (x - lastX);
+      let dy = factor * (y - lastY);
+      // Passing the angles to rotate the scene
+      rotateScene(dx, dy);
+    }
+    lastX = x;
+    lastY = y;
+  };
+  
+}
+
+function resetRotation() {
+  currentAngleX = 0;
+  currentAngleY = 0;
+  console.log('Rotation Reset');
+  applyRotation();
+}
+
+function rotateScene(dx, dy) {
+  // Update angles based on mouse movement
+  currentAngleX += dx;
+  currentAngleY += dy;
+
+  let smoothingFactor = 0.1;  
+  let targetAngleX = currentAngleX + dx;  
+  let targetAngleY = currentAngleY + dy;
+
+  currentAngleX = smoothingFactor * targetAngleX + (1 - smoothingFactor) * currentAngleX;
+  currentAngleY = smoothingFactor * targetAngleY + (1 - smoothingFactor) * currentAngleY;
+  
+  // Consolidate and apply rotation
+  applyRotation();
+}
+
+function applyRotation() {
+  var globalRotMat = new Matrix4();
+  globalRotMat.setRotate(currentAngleY, 1, 0, 0);
+  globalRotMat.rotate(currentAngleX, 0, 1, 0);
+  globalRotMat.translate(0, 0, -0.5);
+  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
+  //console.log("applying rotation");
+  renderAllShapes();  // Update the scene rendering
 }
 
 let images = {
@@ -257,52 +336,43 @@ const updateAnimationAngles = () => {
 }
 
 function keydown(ev) {
-  // d key
-  if (ev.keyCode == 68) {
-    g_camera.right();
-  }
-  // a key
-  else if (ev.keyCode == 65) {
-    g_camera.left();
-  }
-  // w key
-  if (ev.keyCode == 87) {
-    g_camera.forward();
-  }
-  // s key
-  else if (ev.keyCode == 83) {
-    g_camera.back();
-  }
-  // q key
-  if (ev.keyCode == 81) {
-    g_camera.turnLeft();
-  }
-  // e key
-  else if (ev.keyCode == 69) {
-    g_camera.turnRight();
-  }
-
-  renderAllShapes();
-  //console.log(ev.keyCode);
-}
-
-/*
-function keydown(ev) {
-    if (ev.keyCode == 39) { // Right arrow
-        g_eye[0] += 0.2;
-    } else if (ev.keyCode == 37) { // Left arrow
-        g_eye[0] -= 0.2;
+    switch (ev.keyCode) {
+        case 39: // Right arrow
+            g_eye[0] += 0.2;
+            break;
+        case 37: // Left arrow
+            g_eye[0] -= 0.2;
+            break;
+        case 81: // Q - rotate left
+            g_eye_angle += 5; 
+            break;
+        case 69: // E - rotate right
+            g_eye_angle -= 5; 
+            break;
+        case 87: // W - move forward
+            g_eye[2] -= 0.2; // Moves the camera forward along the Z-axis
+            break;
+        case 65: // A - move left
+            g_eye[0] -= 0.2; // Moves the camera left along the X-axis
+            break;
+        case 83: // S - move backward
+            g_eye[2] += 0.2; // Moves the camera backward along the Z-axis
+            break;
+        case 68: // D - move right
+            g_eye[0] += 0.2; // Moves the camera right along the X-axis
+            break;
     }
     renderAllShapes();
-    //console.log(ev.keyCode);
+    // console.log(ev.keyCode);
 }
-*/
 
 let g_camera = new Camera();
 
 var g_eye = [0, 0, 3];
 var g_at = [0, 0, -100];
 var g_up = [0, 1, 0];
+
+var g_eye_angle = 90;
 
 var g_map = [
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -348,7 +418,11 @@ const renderAllShapes = () => {
 
   // Pass the view matrix
   var viewMat = new Matrix4();
-  viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
+  const radians = g_eye_angle * Math.PI / 180; // Convert degrees to radians
+  const eyeX = Math.cos(radians) * 3; // Assuming the radius is 3
+  const eyeZ = Math.sin(radians) * 3;
+  viewMat.setLookAt(g_eye[0] + eyeX, g_eye[1], g_eye[2] + eyeZ, g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
+  //viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
   
   const ground = new Cube();
@@ -421,10 +495,6 @@ function main() {
   connectVariablesToGLSL();
   addActionsForHtmlUI();
 
-  // Register function (event handler) to be called on a mouse press
-  // canvas.onmousedown = click;
-  // canvas.onmousemove = click;
-  // canvas.onmousemove = function(ev) { if(ev.buttons == 1) { click(ev) } }
   document.onkeydown = keydown;
 
   initTextures();
