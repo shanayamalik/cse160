@@ -1,7 +1,7 @@
-//TODO: implement world
-//TODO: add/delete blocks
-//TODO: add simple story or game to world
-//TODO: wow!
+//TODO: World is implemented. There is some interesting world to walk around.
+//TODO: Add/delete blocks.
+//TODO: Add simple story or game to world.
+//TODO: Beautiful world or OBJ Loader or Terrain or anything else that excites you to work on. 
 
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
@@ -252,7 +252,6 @@ function sendImageToTexture(image, textureNum) {
 
 }
 
-
 const g_startTime = performance.now()/1000.0;
 let g_seconds = performance.now()/1000.0 - g_startTime;
 
@@ -262,6 +261,7 @@ const tick = () => {
   updateAnimationAngles();
   renderAllShapes();
   renderLlama();
+  drawMap();
   requestAnimationFrame(tick);
 }
 
@@ -331,9 +331,19 @@ var g_map = [
 ];
 
 function drawMap() {
-    for (x = 0; x < 16; x++) {
-        for (y = 0; y < 16; y++) {
-            // console.log(x, y);
+    for (x = 0; x < 32; x++) {
+        for (y = 0; y < 32; y++) {
+            //console.log(x, y);
+            if (x % 4 == 0 && y % 4 == 0) {
+              if (g_map[x/4][y/4] == 1) {
+                var shrub = new Cube();
+                shrub.color = [0, 1, 0, 1];
+                shrub.textureNum = 0;
+                shrub.matrix.translate(x - 16, -1.0, y - 16);
+                //shrub.matrix.scale(0.5, 0.5, 0.5);
+                shrub.render();
+              }
+            }
             if (x === 0 || x === 31 || y === 0 || y === 31) {
                 var body = new Cube();
                 body.color = [0.8, 1.0, 1.0, 1.0];
@@ -414,4 +424,3 @@ function main() {
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   requestAnimationFrame(tick);
 }
-
