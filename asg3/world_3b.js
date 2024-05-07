@@ -198,7 +198,7 @@ function initTextures() {
     image.onload = function(){ sendImageToTexture(image, i); };
     // Tell the browser to load an Image
     image.src = images[i];
-    console.log(image.src);
+    //console.log(image.src);
   }
 
   return true;
@@ -257,20 +257,80 @@ const updateAnimationAngles = () => {
 }
 
 function keydown(ev) {
+  // d key
+  if (ev.keyCode == 68) {
+    g_camera.right();
+  }
+  // a key
+  else if (ev.keyCode == 65) {
+    g_camera.left();
+  }
+  // w key
+  if (ev.keyCode == 87) {
+    g_camera.forward();
+  }
+  // s key
+  else if (ev.keyCode == 83) {
+    g_camera.back();
+  }
+  // q key
+  if (ev.keyCode == 81) {
+    g_camera.turnLeft();
+  }
+  // e key
+  else if (ev.keyCode == 69) {
+    g_camera.turnRight();
+  }
+
+  renderAllShapes();
+  //console.log(ev.keyCode);
+}
+
+/*
+function keydown(ev) {
     if (ev.keyCode == 39) { // Right arrow
         g_eye[0] += 0.2;
     } else if (ev.keyCode == 37) { // Left arrow
         g_eye[0] -= 0.2;
     }
     renderAllShapes();
-    console.log(ev.keyCode);
+    //console.log(ev.keyCode);
 }
+*/
 
 let g_camera = new Camera();
 
 var g_eye = [0, 0, 3];
 var g_at = [0, 0, -100];
 var g_up = [0, 1, 0];
+
+var g_map = [
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 1, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+];
+
+function drawMap() {
+    for (x = 0; x < 16; x++) {
+        for (y = 0; y < 16; y++) {
+            // console.log(x, y);
+            if (x === 0 || x === 31 || y === 0 || y === 31) {
+                var body = new Cube();
+                body.color = [0.8, 1.0, 1.0, 1.0];
+                body.matrix.translate(0, -0.75, 0);
+                body.matrix.scale(-0.3, 0.3, -0.3);
+                body.matrix.translate(x - 16, 0, y - 16);
+                body.render();
+            }
+        }
+    }
+}
+
 
 const renderAllShapes = () => {
   let startTime = performance.now();
