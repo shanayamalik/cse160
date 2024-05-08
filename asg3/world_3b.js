@@ -1,5 +1,4 @@
 //TODO: World is implemented. There is some interesting world to walk around.
-//TODO: Add/delete blocks.
 //TODO: Add simple story or game to world.
 //TODO: Beautiful world or OBJ Loader or Terrain or anything else that excites you to work on. 
 
@@ -261,6 +260,15 @@ const tick = () => {
   updateAnimationAngles();
   renderAllShapes();
   renderLlama();
+  if (Math.random() > 0.950) {
+    x = Math.floor(Math.random()*32);
+    y = Math.floor(Math.random()*32);
+    if (g_map[x][y] > 0) {
+      g_map[x][y] += Math.round(Math.random()*2) - 1;
+    } else {
+      g_map[x][y] = 1;
+    }   
+  }
   drawMap();
   requestAnimationFrame(tick);
 }
@@ -277,7 +285,12 @@ const convertCoordinateEventToGL = (ev) => {
   return [x, y];
 }
 
-const updateAnimationAngles = () => {
+function updateAnimationAngles() {
+    g_neckAngle = (20 * Math.sin(g_seconds));  
+    g_headAngle = (25 * Math.sin(3 * g_seconds));
+    g_legsAngle = (25 * Math.sin(3 * g_seconds));
+    g_earsAngle = (5 * Math.sin(4 * g_seconds));
+    g_tailAngle = (5 * Math.sin(4 * g_seconds));
 }
 
 function keydown(ev) {
@@ -323,34 +336,29 @@ var g_map = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 3, 0, 0, 0, 0, 1],
+    [1, 0, 2, 0, 0, 0, 0, 1],
+    [1, 4, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
 ];
+
+g_map = new Array(32).fill(null).map(() => new Array(32).fill(0));
 
 function drawMap() {
     for (x = 0; x < 32; x++) {
         for (y = 0; y < 32; y++) {
             //console.log(x, y);
             if (x % 4 == 0 && y % 4 == 0) {
-              if (g_map[x/4][y/4] == 1) {
+              if (g_map[x][y] > 0) {
                 var shrub = new Cube();
                 shrub.color = [0, 1, 0, 1];
                 shrub.textureNum = 0;
-                shrub.matrix.translate(x - 16, -1.0, y - 16);
-                //shrub.matrix.scale(0.5, 0.5, 0.5);
+                //shrub.matrix.translate(0, -0.75, 0);
+                shrub.matrix.translate(x - 14, -0.5, y - 14);
+                shrub.matrix.scale(3.75, g_map[x][y], 3.75);
                 shrub.render();
               }
-            }
-            if (x === 0 || x === 31 || y === 0 || y === 31) {
-                var body = new Cube();
-                body.color = [0.8, 1.0, 1.0, 1.0];
-                body.matrix.translate(0, -0.75, 0);
-                body.matrix.scale(-0.3, 0.3, -0.3);
-                body.matrix.translate(x - 16, 0, y - 16);
-                body.render();
             }
         }
     }
@@ -362,11 +370,11 @@ const renderAllShapes = () => {
   gl.clearColor(0, 0, 0, 1.0);
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  
+
   const globalRotateMatrix = new Matrix4().rotate(g_horizontalAngle + currentAngleX, 0, 1, 0);
   globalRotateMatrix.rotate(g_verticalAngle + currentAngleY, 1, 0, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotateMatrix.elements);
-
+  
   var projMat = new Matrix4();
   projMat.setPerspective(50, 1 * canvas.width / canvas.height, 1, 100);
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
@@ -384,14 +392,14 @@ const renderAllShapes = () => {
   ground.color = [1,0,0,1];
   ground.textureNum = 0;
   ground.matrix.translate(0, -0.5, 0);
-  ground.matrix.scale(10, 0, 10);
+  ground.matrix.scale(128, 0, 128);
   ground.matrix.translate(-0.5, 0, -0.5);
   ground.render();
 
   const sky = new Cube();
   sky.color = [1,1,1,1];
   sky.textureNum = 1;
-  sky.matrix.scale(50, 50, 50);
+  sky.matrix.scale(128, 128, 128);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
   
