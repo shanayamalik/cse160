@@ -1,4 +1,3 @@
-//TODO: World is implemented. There is some interesting world to walk around.
 //TODO: Add simple story or game to world.
 //TODO: Beautiful world or OBJ Loader or Terrain or anything else that excites you to work on. 
 
@@ -302,10 +301,10 @@ function keydown(ev) {
             g_eye[0] -= 0.2;
             break;
         case 81: // Q - rotate left
-            g_eye_angle += 5; 
+            g_horizontalAngle += 5; 
             break;
         case 69: // E - rotate right
-            g_eye_angle -= 5; 
+            g_horizontalAngle -= 5; 
             break;
         case 87: // W - move forward
             g_eye[2] -= 0.2; // Moves the camera forward along the Z-axis
@@ -329,8 +328,6 @@ let g_camera = new Camera();
 var g_eye = [0, 0, 3];
 var g_at = [0, 0, -100];
 var g_up = [0, 1, 0];
-
-var g_eye_angle = 90;
 
 var g_map = [
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -381,10 +378,7 @@ const renderAllShapes = () => {
 
   // Pass the view matrix
   var viewMat = new Matrix4();
-  const radians = g_eye_angle * Math.PI / 180; // Convert degrees to radians
-  const eyeX = Math.cos(radians) * 3; // Assuming the radius is 3
-  const eyeZ = Math.sin(radians) * 3;
-  viewMat.setLookAt(g_eye[0] + eyeX, g_eye[1], g_eye[2] + eyeZ, g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
+  viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
   //viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
   
