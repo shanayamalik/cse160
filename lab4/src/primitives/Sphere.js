@@ -33,6 +33,44 @@ export default class Sphere {
     this.generateSphere(radius, widthSegments, heightSegments);
   }
 
+  setProgram(gl) {
+    // Vertex shader source code
+    this.vertexShader = `
+      precision mediump float;
+      attribute vec3 position;
+      attribute vec2 uv;
+      attribute vec3 normal;
+      
+      uniform mat4 modelMatrix;
+      uniform mat4 normalMatrix;
+      uniform mat4 viewMatrix;
+      uniform mat4 projectionMatrix;
+      
+      varying vec3 vNormal;
+      
+      void main() {
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+        vNormal = (normalMatrix * vec4(normal, 1.0)).xyz;
+      }
+    `;
+
+    // Fragment shader source code
+    this.fragmentShader = `
+      precision mediump float;
+      varying vec3 vNormal;
+
+      void main() {
+        vec3 norm = normalize(vNormal);
+        
+        gl_FragColor = vec4(norm, 1.0);
+      }
+    `;
+
+    // Compile and link shader program
+    this.program = createProgram(gl, this.vertexShader, this.fragmentShader);
+    if (!this.program) console.error("Could not compile shaders for ", this);
+  }
+
   generateSphere(radius, widthSegments, heightSegments) {
     let index = 0;
     const grid = [];
