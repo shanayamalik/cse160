@@ -30,6 +30,43 @@ export default class Plane {
     this.generatePlane(widthSegments, heightSegments);
   }
 
+  setProgram(gl) {
+    // Vertex shader source code
+    this.vertexShader = `
+      precision mediump float;
+      attribute vec3 position;
+      attribute vec2 uv;
+      attribute vec3 normal;
+      
+      uniform mat4 modelMatrix;
+      uniform mat4 normalMatrix;
+      uniform mat4 viewMatrix;
+      uniform mat4 projectionMatrix;
+      
+      varying vec3 vNormal;
+      
+      void main() {
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+        vNormal = (normalMatrix * vec4(normal, 1.0)).xyz;
+      }
+    `;
+
+    // Fragment shader source code
+    this.fragmentShader = `
+      precision mediump float;
+      varying vec3 vNormal;
+
+      void main() {
+        vec3 norm = normalize(vNormal);
+        
+        gl_FragColor = vec4(norm, 1.0);
+      }
+    `;
+
+    // Compile and link shader program
+    this.program = createProgram(gl, this.vertexShader, this.fragmentShader);
+  }
+
   generatePlane(widthSegments, heightSegments) {
     const seg_width = 1.0 / widthSegments;
     const seg_height = 1.0 / widthSegments;
