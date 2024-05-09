@@ -1,8 +1,8 @@
 import { Vector3, Matrix4 } from "../../lib/cuon-matrix-cse160";
 import { createProgram } from "../../lib/cuon-utils";
 
-export default class Sphere {
-  constructor(radius = 0.5, widthSegments = 3, heightSegments = 2) {
+export default class Plane {
+  constructor(widthSegments = 1, heightSegments = 1) {
     // buffers
     this.vertexBuffer = null;
     this.indexBuffer = null;
@@ -27,10 +27,7 @@ export default class Sphere {
     this.modelMatrix = new Matrix4();
     this.normalMatrix = new Matrix4();
 
-    widthSegments = Math.max(3, Math.floor(widthSegments));
-    heightSegments = Math.max(2, Math.floor(heightSegments));
-
-    this.generateSphere(radius, widthSegments, heightSegments);
+    this.generatePlane(widthSegments, heightSegments);
   }
 
   setProgram(gl) {
@@ -68,76 +65,55 @@ export default class Sphere {
 
     // Compile and link shader program
     this.program = createProgram(gl, this.vertexShader, this.fragmentShader);
-    if (!this.program) console.error("Could not compile shaders for ", this);
   }
 
-  generateSphere(radius, widthSegments, heightSegments) {
-    let index = 0;
-    const grid = [];
+  generatePlane(widthSegments, heightSegments) {
+    const seg_width = 1.0 / widthSegments;
+    const seg_height = 1.0 / widthSegments;
 
-    const vertex = new Vector3();
-    const normal = new Vector3();
-
-    // buffers
-
-    const indices = [];
     const vertices = [];
-    const normals = [];
+    const indices = [];
     const uvs = [];
+    const normals = [];
 
-    for (let j = 0; j <= heightSegments; j++) {
-      const row = [];
+    /**
+     * generate widthSegments by heightSegments grid of vertices centered on origin
+     * generate uv's and normals along the way
+     * */
+    for (let i = 0; i < heightSegments + 1; i++) {
+      const y = i * seg_height - 0.5;
 
-      const v = j / heightSegments;
+      for (let j = 0; j < widthSegments + 1; j++) {
+        let x = j * seg_width - 0.5;
 
-      let uOffset = 0;
-      // special cases for poles
-      if (j === 0) {
-        uOffset = 0.5 / widthSegments;
-      } else if (j === heightSegments) {
-        uOffset = -0.5 / widthSegments;
+        vertices.push(x, -y, 0);
+
+        // facing towards camera at first
+        normals.push(0, 0, 1);
+
+        uvs.push(j / widthSegments);
+        uvs.push(1 - i / heightSegments);
       }
 
-      for (let i = 0; i <= widthSegments; i++) {
-        const u = i / widthSegments;
+      for (let i = 0; i < heightSegments; i++) {
+        for (let j = 0; j < widthSegments; j++) {
+          let a = j + (widthSegments + 1) * i;
+          let b = j + (widthSegments + 1) * (i + 1);
+          let c = j + 1 + (widthSegments + 1) * (i + 1);
+          let d = j + 1 + (widthSegments + 1) * i;
 
-        vertex.elements[0] =
-          -radius * Math.cos(u * Math.PI * 2) * Math.sin(v * Math.PI);
-
-        vertex.elements[1] = radius * Math.cos(v * Math.PI);
-
-        vertex.elements[2] =
-          radius * Math.sin(u * Math.PI * 2) * Math.sin(v * Math.PI);
-
-        vertices.push(...vertex.elements);
-        normal.set(vertex).normalize();
-
-        normals.push(...normal.elements);
-
-        uvs.push(u + uOffset, 1 - v);
-
-        row.push(index++);
+          // this indices compose the two triangles that create the square
+          // on the grid at [i,j]
+          indices.push(a, b, d);
+          indices.push(b, c, d);
+        }
       }
 
-      grid.push(row);
+      this.vertices = new Float32Array(vertices);
+      this.indices = new Uint16Array(indices);
+      this.uvs = new Float32Array(uvs);
+      this.normals = new Float32Array(normals);
     }
-
-    for (let j = 0; j < heightSegments; j++) {
-      for (let i = 0; i < widthSegments; i++) {
-        const a = grid[j][i + 1];
-        const b = grid[j][i];
-        const c = grid[j + 1][i];
-        const d = grid[j + 1][i + 1];
-
-        if (j !== 0) indices.push(a, b, d);
-        if (j !== heightSegments - 1) indices.push(b, c, d);
-      }
-    }
-
-    this.vertices = new Float32Array(vertices);
-    this.indices = new Uint16Array(indices);
-    this.uvs = new Float32Array(uvs);
-    this.normals = new Float32Array(normals);
   }
 
   calculateMatrix() {
@@ -156,6 +132,14 @@ export default class Sphere {
   }
 
   render(gl, camera) {
+    // Compile the shader if not already done so
+    if (this.program === null) {
+      this.setProgram(gl);
+    }
+
+    // Activate the shader program
+    gl.useProgram(this.program);
+
     if (this.vertexBuffer === null) this.vertexBuffer = gl.createBuffer();
     if (this.indexBuffer === null) this.indexBuffer = gl.createBuffer();
     if (this.uvBuffer === null) this.uvBuffer = gl.createBuffer();
@@ -164,14 +148,14 @@ export default class Sphere {
     this.calculateMatrix();
     camera.calculateViewProjection();
 
-    const position = gl.getAttribLocation(gl.program, "position");
-    const uv = gl.getAttribLocation(gl.program, "uv");
-    const normal = gl.getAttribLocation(gl.program, "normal");
-    const modelMatrix = gl.getUniformLocation(gl.program, "modelMatrix");
-    const normalMatrix = gl.getUniformLocation(gl.program, "normalMatrix");
-    const viewMatrix = gl.getUniformLocation(gl.program, "viewMatrix");
+    const position = gl.getAttribLocation(this.program, "position");
+    const uv = gl.getAttribLocation(this.program, "uv");
+    const normal = gl.getAttribLocation(this.program, "normal");
+    const modelMatrix = gl.getUniformLocation(this.program, "modelMatrix");
+    const normalMatrix = gl.getUniformLocation(this.program, "normalMatrix");
+    const viewMatrix = gl.getUniformLocation(this.program, "viewMatrix");
     const projectionMatrix = gl.getUniformLocation(
-      gl.program,
+      this.program,
       "projectionMatrix"
     );
 
