@@ -58,8 +58,8 @@ export default class Plane {
 
       void main() {
         vec3 norm = normalize(vNormal);
-        
-        gl_FragColor = vec4(norm, 1.0);
+        vec3 color = 1.0 - norm; 
+        gl_FragColor = vec4(color, 1.0);
       }
     `;
 
