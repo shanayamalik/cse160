@@ -132,13 +132,13 @@ export default class Plane {
   }
 
   render(gl, camera) {
-      // Compile the shader if not already done so
-      if (this.program === null) {
-        this.setProgram(gl);
-      }
+    // Compile the shader if not already done so
+    if (this.program === null) {
+      this.setProgram(gl);
+    }
 
-      // Activate the shader program
-      gl.useProgram(this.program);
+    // Activate the shader program
+    gl.useProgram(this.program);
 
     if (this.vertexBuffer === null) this.vertexBuffer = gl.createBuffer();
     if (this.indexBuffer === null) this.indexBuffer = gl.createBuffer();
@@ -148,14 +148,14 @@ export default class Plane {
     this.calculateMatrix();
     camera.calculateViewProjection();
 
-    const position = gl.getAttribLocation(gl.program, "position");
-    const uv = gl.getAttribLocation(gl.program, "uv");
-    const normal = gl.getAttribLocation(gl.program, "normal");
-    const modelMatrix = gl.getUniformLocation(gl.program, "modelMatrix");
-    const normalMatrix = gl.getUniformLocation(gl.program, "normalMatrix");
-    const viewMatrix = gl.getUniformLocation(gl.program, "viewMatrix");
+    const position = gl.getAttribLocation(this.program, "position");
+    const uv = gl.getAttribLocation(this.program, "uv");
+    const normal = gl.getAttribLocation(this.program, "normal");
+    const modelMatrix = gl.getUniformLocation(this.program, "modelMatrix");
+    const normalMatrix = gl.getUniformLocation(this.program, "normalMatrix");
+    const viewMatrix = gl.getUniformLocation(this.program, "viewMatrix");
     const projectionMatrix = gl.getUniformLocation(
-      gl.program,
+      this.program,
       "projectionMatrix"
     );
 
