@@ -132,6 +132,14 @@ export default class Plane {
   }
 
   render(gl, camera) {
+      // Compile the shader if not already done so
+      if (this.program === null) {
+        this.setProgram(gl);
+      }
+
+      // Activate the shader program
+      gl.useProgram(this.program);
+
     if (this.vertexBuffer === null) this.vertexBuffer = gl.createBuffer();
     if (this.indexBuffer === null) this.indexBuffer = gl.createBuffer();
     if (this.uvBuffer === null) this.uvBuffer = gl.createBuffer();
