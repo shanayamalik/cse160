@@ -9,6 +9,11 @@ export default class Sphere {
     this.uvBuffer = null;
     this.normalBuffer = null;
 
+    // shader programs
+    this.vertexShader = null;
+    this.fragmentShader = null;
+    this.program = null;
+
     // data arrays
     this.vertices = null;
     this.indices = null;
