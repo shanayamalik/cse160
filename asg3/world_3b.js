@@ -200,7 +200,7 @@ const addActionsForHtmlUI = () => {
   canvas.addEventListener('mouseup', () => {
       dragging = false;
   });
-  
+
 }
 
 let images = {
@@ -372,7 +372,7 @@ const renderAllShapes = () => {
   const globalRotateMatrix = new Matrix4().rotate(g_horizontalAngle + currentAngleX, 0, 1, 0);
   globalRotateMatrix.rotate(g_verticalAngle + currentAngleY, 1, 0, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotateMatrix.elements);
-  
+
   var projMat = new Matrix4();
   projMat.setPerspective(50, 1 * canvas.width / canvas.height, 1, 100);
   gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
@@ -382,7 +382,7 @@ const renderAllShapes = () => {
   viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
   //viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
-  
+
   const ground = new Cube();
   ground.color = [1,0,0,1];
   ground.textureNum = 0;
@@ -397,7 +397,14 @@ const renderAllShapes = () => {
   sky.matrix.scale(128, 128, 128);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
-  
+
+  const night_sky = new Cube();
+  night_sky.color = [1,1,1,1];
+  night_sky.textureNum = 1;
+  night_sky.matrix.scale(128, 128, 128);
+  night_sky.matrix.translate(-0.5, -0.5, -0.5);
+  night_sky.render();
+
   let duration = performance.now() - startTime;
   sendTextToHTML(`ms: ${Math.floor(duration)} fps: ${Math.floor(10000/duration)/10}`, 'info');
 }
