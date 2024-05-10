@@ -42,6 +42,7 @@ export default class Plane {
       uniform mat4 normalMatrix;
       uniform mat4 viewMatrix;
       uniform mat4 projectionMatrix;
+      uniform float uTime;
       
       varying vec3 vNormal;
       varying float vWaveHeight;
@@ -49,7 +50,10 @@ export default class Plane {
       void main() {
         vec4 transformedPosition = modelMatrix * vec4(position, 1.0);
     
-        float waveIntensity = sin(transformedPosition.z) + cos(transformedPosition.x);
+        float waveZ = transformedPosition.z + uTime * 0.5;
+        float waveX = transformedPosition.x - uTime * 0.2;
+        float waveIntensity = sin(waveZ) + cos(waveX);
+
         transformedPosition.y += waveIntensity;
     
         gl_Position = projectionMatrix * viewMatrix * transformedPosition;
@@ -159,6 +163,7 @@ export default class Plane {
     this.calculateMatrix();
     camera.calculateViewProjection();
 
+    const uTime = gl.getUniformLocation(this.program, "uTime");
     const position = gl.getAttribLocation(this.program, "position");
     const uv = gl.getAttribLocation(this.program, "uv");
     const normal = gl.getAttribLocation(this.program, "normal");
@@ -170,6 +175,7 @@ export default class Plane {
       "projectionMatrix"
     );
 
+    gl.uniform1f(uTime, performance.now() / 1000);
     gl.uniformMatrix4fv(modelMatrix, false, this.modelMatrix.elements);
     gl.uniformMatrix4fv(normalMatrix, false, this.normalMatrix.elements);
     gl.uniformMatrix4fv(viewMatrix, false, camera.viewMatrix.elements);
