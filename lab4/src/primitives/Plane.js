@@ -57,6 +57,7 @@ export default class Plane {
         transformedPosition.y += waveIntensity;
     
         gl_Position = projectionMatrix * viewMatrix * transformedPosition;
+        
         vNormal = (normalMatrix * vec4(normal, 1.0)).xyz;
         vWaveHeight = (waveIntensity + 2.0) * 0.25;
 
