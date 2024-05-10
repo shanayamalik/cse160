@@ -58,7 +58,7 @@ export default class Plane {
 
       void main() {
         vec3 norm = normalize(vNormal);
-        vec3 color = 1.0 - norm; 
+        vec3 color = vec3(0.15, 0.35, 0.75); // bluish color
         gl_FragColor = vec4(color, 1.0);
       }
     `;
@@ -186,6 +186,6 @@ export default class Plane {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.DYNAMIC_DRAW);
 
-    gl.drawElements(gl.POINTS, this.indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
   }
 }
