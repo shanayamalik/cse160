@@ -51,6 +51,7 @@ if (!initShaders(gl, VERTEX_SHADER, FRAGMENT_SHADER))
   console.error("Could not init shaders");
 
 const camera = new Camera([0, 1, 5], [0, 1, 0]);
+camera.position.elements[1] = 15;
 const controls = new Controls(gl, camera);
 
 const floor = new Plane(10, 10);
