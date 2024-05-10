@@ -296,22 +296,36 @@ function checkCollisionWithShrub() {
 }
 
 const tick = () => {
-  g_seconds = performance.now()/1000.0 - g_startTime;
-  // console.log(g_seconds);
-  updateAnimationAngles();
+  // Update time passed since game started
+  g_seconds = performance.now() / 1000.0 - g_startTime;
+
+  // Handle game updates and logic
+  if (gameActive) {
+    updateGame(); // Check if game should end based on time
+    updateAnimationAngles(); // Update any animation-related changes
+    checkRandomShrubGrowth(); // Handle random shrub growth
+  }
+
+  // Rendering functions
   renderAllShapes();
   renderLlama();
+  drawMap();
+
+  // Continuously loop this function
+  requestAnimationFrame(tick);
+}
+
+// Function to handle random shrub growth
+function checkRandomShrubGrowth() {
   if (Math.random() > 0.950) {
-    x = Math.floor(Math.random()*32);
-    y = Math.floor(Math.random()*32);
+    let x = Math.floor(Math.random() * 32);
+    let y = Math.floor(Math.random() * 32);
     if (g_map[x][y] > 0) {
-      g_map[x][y] += Math.round(Math.random()*2) - 1;
+      g_map[x][y] += Math.round(Math.random() * 2) - 1;
     } else {
       g_map[x][y] = 1;
-    }   
+    }
   }
-  drawMap();
-  requestAnimationFrame(tick);
 }
 
 
