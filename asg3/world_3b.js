@@ -1,5 +1,6 @@
 //TODO: Add simple story or game to world.
 //TODO: Beautiful world or OBJ Loader or Terrain or anything else that excites you to work on. 
+//TODO: World is implemented. There is some interesting world to walk around.
 
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
