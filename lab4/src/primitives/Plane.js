@@ -186,6 +186,6 @@ export default class Plane {
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this.indices, gl.DYNAMIC_DRAW);
 
-    gl.drawElements(gl.TRIANGLES, this.indices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.POINTS, this.indices.length, gl.UNSIGNED_SHORT, 0);
   }
 }
