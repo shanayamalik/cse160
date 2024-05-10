@@ -44,6 +44,7 @@ export default class Plane {
       uniform mat4 projectionMatrix;
       
       varying vec3 vNormal;
+      varying float vWaveHeight;
       
       void main() {
         vec4 transformedPosition = modelMatrix * vec4(position, 1.0);
@@ -53,6 +54,8 @@ export default class Plane {
     
         gl_Position = projectionMatrix * viewMatrix * transformedPosition;
         vNormal = (normalMatrix * vec4(normal, 1.0)).xyz;
+        vWaveHeight = (waveIntensity + 2.0) * 0.25;
+
     }
     `;
 
@@ -60,10 +63,13 @@ export default class Plane {
     this.fragmentShader = `
       precision mediump float;
       varying vec3 vNormal;
+      varying float vWaveHeight;
 
       void main() {
         vec3 norm = normalize(vNormal);
         vec3 color = vec3(0.15, 0.35, 0.75); // bluish color
+        //color = mix(color, vec3(1.0), vWaveHeight);
+        color = mix(color, vec3(1.0), smoothstep(0.35, 1.0, vWaveHeight));
         gl_FragColor = vec4(color, 1.0);
       }
     `;
