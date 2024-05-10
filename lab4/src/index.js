@@ -53,7 +53,7 @@ if (!initShaders(gl, VERTEX_SHADER, FRAGMENT_SHADER))
 const camera = new Camera([0, 1, 5], [0, 1, 0]);
 const controls = new Controls(gl, camera);
 
-const floor = new Plane();
+const floor = new Plane(10, 10);
 floor.scale.mul(100); // make it 100x100 units
 floor.rotation.elements[0] = -90; // make it horizontal
 
