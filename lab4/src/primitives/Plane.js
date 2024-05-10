@@ -46,9 +46,14 @@ export default class Plane {
       varying vec3 vNormal;
       
       void main() {
-        gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
+        vec4 transformedPosition = modelMatrix * vec4(position, 1.0);
+    
+        float waveIntensity = sin(transformedPosition.z) + cos(transformedPosition.x);
+        transformedPosition.y += waveIntensity;
+    
+        gl_Position = projectionMatrix * viewMatrix * transformedPosition;
         vNormal = (normalMatrix * vec4(normal, 1.0)).xyz;
-      }
+    }
     `;
 
     // Fragment shader source code
