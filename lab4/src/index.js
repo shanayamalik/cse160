@@ -54,7 +54,7 @@ const camera = new Camera([0, 1, 5], [0, 1, 0]);
 camera.position.elements[1] = 15;
 const controls = new Controls(gl, camera);
 
-const floor = new Plane(10, 10);
+const floor = new Plane(25, 25);
 floor.scale.mul(100); // make it 100x100 units
 floor.rotation.elements[0] = -90; // make it horizontal
 
