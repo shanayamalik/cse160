@@ -28,6 +28,7 @@ var FSHADER_SOURCE = `
   uniform sampler2D u_Sampler1;
   uniform sampler2D u_Sampler2;
   uniform sampler2D u_Sampler3;
+  uniform sampler2D u_Sampler4;  // Added sampler for the night sky texture
   uniform int u_whichTexture;
   void main() {
     if (u_whichTexture == -2) {
@@ -42,6 +43,8 @@ var FSHADER_SOURCE = `
       gl_FragColor = texture2D(u_Sampler2, v_UV); // texture 2
     } else if (u_whichTexture == 3) {
       gl_FragColor = texture2D(u_Sampler3, v_UV); // texture 3
+    } else if (u_whichTexture == 4) {
+      gl_FragColor = texture2D(u_Sampler4, v_UV); // texture 4 for night sky
     } else {
       gl_FragColor = vec4(1.0, 0.2, 0.2, 1.0); // error
     }
@@ -62,6 +65,8 @@ let u_Samplers = [];
 let u_whichTexture;
 let g_horizontalAngle = 0.0;
 let g_verticalAngle = 0.0;
+
+let isNightMode = false;
 
 const setupWebGL = () => {
   // Retrieve <canvas> element
@@ -162,6 +167,13 @@ const connectVariablesToGLSL = () => {
   }
   u_Samplers.push(u_Sampler3);
 
+  let u_Sampler4 = gl.getUniformLocation(gl.program, 'u_Sampler4');
+  if (!u_Sampler4) {
+    console.log('Failed to get the storage location of u_Sampler4');
+    return false;
+  }
+  u_Samplers.push(u_Sampler4);
+
   u_whichTexture = gl.getUniformLocation(gl.program, 'u_whichTexture');
   if (!u_whichTexture) {
     console.log('Failed to get the storage location of u_whichTexture');
@@ -208,6 +220,7 @@ let images = {
   1: 'cloud-sky.jpg',
   2: 'llama-skin.jpg',
   3: 'llama-tail.jpg',
+  4: 'night-sky.png'
 }
 
 function initTextures() {
@@ -354,7 +367,7 @@ function drawMap() {
                 shrub.textureNum = 0;
                 //shrub.matrix.translate(0, -0.75, 0);
                 shrub.matrix.translate(x - 14, -0.5, y - 14);
-                shrub.matrix.scale(3.75, g_map[x][y], 3.75);
+                shrub.matrix.scale(0.75, g_map[x][y], 0.75);
                 shrub.render();
               }
             }
@@ -362,6 +375,16 @@ function drawMap() {
     }
 }
 
+// Mode Toggle Functions
+function setDayMode() {
+    isNightMode = false;
+    renderAllShapes();  
+}
+
+function setNightMode() {
+    isNightMode = true;
+    renderAllShapes(); 
+}
 
 const renderAllShapes = () => {
   let startTime = performance.now();
@@ -383,6 +406,12 @@ const renderAllShapes = () => {
   //viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
+  if (isNightMode) {
+      renderNightSky();
+  } else {
+      renderDaySky();
+  }
+  
   const ground = new Cube();
   ground.color = [1,0,0,1];
   ground.textureNum = 0;
@@ -391,20 +420,25 @@ const renderAllShapes = () => {
   ground.matrix.translate(-0.5, 0, -0.5);
   ground.render();
 
+function renderDaySky() {
   const sky = new Cube();
   sky.color = [1,1,1,1];
   sky.textureNum = 1;
   sky.matrix.scale(128, 128, 128);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
+} 
 
+function renderNightSky() {
   const night_sky = new Cube();
-  night_sky.color = [1,1,1,1];
-  night_sky.textureNum = 1;
+  //night_sky.color = [1,1,1,1];
+  night_sky.textureNum = 4;
   night_sky.matrix.scale(128, 128, 128);
   night_sky.matrix.translate(-0.5, -0.5, -0.5);
+  gl.uniform1i(u_whichTexture, 4);
   night_sky.render();
-
+}
+  
   let duration = performance.now() - startTime;
   sendTextToHTML(`ms: ${Math.floor(duration)} fps: ${Math.floor(10000/duration)/10}`, 'info');
 }
