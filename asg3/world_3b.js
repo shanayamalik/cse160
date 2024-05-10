@@ -335,6 +335,8 @@ function updateAnimationAngles() {
 }
 
 function keydown(ev) {
+    let moved = false; // Flag to check if movement occurred
+
     switch (ev.keyCode) {
         case 39: // Right arrow
             g_eye[0] += 0.2;
@@ -343,26 +345,33 @@ function keydown(ev) {
             g_eye[0] -= 0.2;
             break;
         case 81: // Q - rotate left
-            g_horizontalAngle += 5; 
+            g_horizontalAngle += 5;
             break;
         case 69: // E - rotate right
-            g_horizontalAngle -= 5; 
+            g_horizontalAngle -= 5;
             break;
         case 87: // W - move forward
             g_eye[2] -= 0.2; // Moves the camera forward along the Z-axis
+            moved = true; // Set moved to true since position changed
             break;
         case 65: // A - move left
             g_eye[0] -= 0.2; // Moves the camera left along the X-axis
+            moved = true; // Set moved to true since position changed
             break;
         case 83: // S - move backward
             g_eye[2] += 0.2; // Moves the camera backward along the Z-axis
+            moved = true; // Set moved to true since position changed
             break;
         case 68: // D - move right
             g_eye[0] += 0.2; // Moves the camera right along the X-axis
+            moved = true; // Set moved to true since position changed
             break;
     }
-    renderAllShapes();
-    // console.log(ev.keyCode);
+
+    if (moved) {
+        checkCollisionWithShrub(); // Check for collisions after movement
+    }
+    renderAllShapes(); // Update scene rendering
 }
 
 let g_camera = new Camera();
