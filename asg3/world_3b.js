@@ -281,6 +281,20 @@ function sendImageToTexture(image, textureNum) {
 const g_startTime = performance.now()/1000.0;
 let g_seconds = performance.now()/1000.0 - g_startTime;
 
+function eatShrub(x, y) {
+    if (g_map[x][y] > 0) {
+        g_map[x][y] = 0; // Assume the shrub is removed once eaten
+        score += 10; // Increment score by 10, adjust scoring as needed
+        renderAllShapes(); // Redraw the scene to reflect changes
+    }
+}
+
+function checkCollisionWithShrub() {
+    let x = Math.floor(g_eye[0] + 16); // Adjusting for the shrub positions
+    let y = Math.floor(g_eye[2] + 16); // Adjusting for the shrub positions
+    eatShrub(x, y);
+}
+
 const tick = () => {
   g_seconds = performance.now()/1000.0 - g_startTime;
   // console.log(g_seconds);
