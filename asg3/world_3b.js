@@ -63,6 +63,12 @@ let u_whichTexture;
 let g_horizontalAngle = 0.0;
 let g_verticalAngle = 0.0;
 
+// Global Variables for Game Logic
+let score = 0;
+let gameDuration = 120; // Time in seconds, adjust as necessary
+let gameStartTime = 0;
+let gameActive = false;
+
 const setupWebGL = () => {
   // Retrieve <canvas> element
   canvas = document.getElementById('webgl');
