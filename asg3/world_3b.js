@@ -233,6 +233,27 @@ function initTextures() {
   return true;
 }
 
+function startGame() {
+    gameActive = true;
+    score = 0;
+    gameStartTime = performance.now();
+    requestAnimationFrame(tick); // Start the game loop if not already running
+}
+
+function endGame() {
+    gameActive = false;
+    console.log(`Game Over! Your score: ${score}`); // Use console.log or another method to show the score
+}
+
+function updateGame() {
+    if (!gameActive) return;
+
+    const currentTime = performance.now();
+    if ((currentTime - gameStartTime) / 1000 > gameDuration) {
+        endGame();
+    }
+}
+
 function sendImageToTexture(image, textureNum) {
   // Create a texture object
   var texture = gl.createTexture();
