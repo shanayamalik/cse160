@@ -418,7 +418,7 @@ function drawMap() {
                 shrub.textureNum = 0;
                 //shrub.matrix.translate(0, -0.75, 0);
                 shrub.matrix.translate(x - 14, -0.5, y - 14);
-                shrub.matrix.scale(3.75, g_map[x][y], 3.75);
+                shrub.matrix.scale(0.75, g_map[x][y], 0.75);
                 shrub.render();
               }
             }
