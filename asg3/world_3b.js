@@ -63,12 +63,6 @@ let u_whichTexture;
 let g_horizontalAngle = 0.0;
 let g_verticalAngle = 0.0;
 
-// Global Variables for Game Logic
-let score = 0;
-let gameDuration = 120; // Time in seconds, adjust as necessary
-let gameStartTime = 0;
-let gameActive = false;
-
 const setupWebGL = () => {
   // Retrieve <canvas> element
   canvas = document.getElementById('webgl');
@@ -233,27 +227,6 @@ function initTextures() {
   return true;
 }
 
-function startGame() {
-    gameActive = true;
-    score = 0;
-    gameStartTime = performance.now();
-    requestAnimationFrame(tick); // Start the game loop if not already running
-}
-
-function endGame() {
-    gameActive = false;
-    console.log(`Game Over! Your score: ${score}`); // Use console.log or another method to show the score
-}
-
-function updateGame() {
-    if (!gameActive) return;
-
-    const currentTime = performance.now();
-    if ((currentTime - gameStartTime) / 1000 > gameDuration) {
-        endGame();
-    }
-}
-
 function sendImageToTexture(image, textureNum) {
   // Create a texture object
   var texture = gl.createTexture();
@@ -281,51 +254,23 @@ function sendImageToTexture(image, textureNum) {
 const g_startTime = performance.now()/1000.0;
 let g_seconds = performance.now()/1000.0 - g_startTime;
 
-function eatShrub(x, y) {
-    if (g_map[x][y] > 0) {
-        g_map[x][y] = 0; // Assume the shrub is removed once eaten
-        score += 10; // Increment score by 10, adjust scoring as needed
-        renderAllShapes(); // Redraw the scene to reflect changes
-    }
-}
-
-function checkCollisionWithShrub() {
-    let x = Math.floor(g_eye[0] + 16); // Adjusting for the shrub positions
-    let y = Math.floor(g_eye[2] + 16); // Adjusting for the shrub positions
-    eatShrub(x, y);
-}
-
 const tick = () => {
-  // Update time passed since game started
-  g_seconds = performance.now() / 1000.0 - g_startTime;
-
-  // Handle game updates and logic
-  if (gameActive) {
-    updateGame(); // Check if game should end based on time
-    updateAnimationAngles(); // Update any animation-related changes
-    checkRandomShrubGrowth(); // Handle random shrub growth
-  }
-
-  // Rendering functions
+  g_seconds = performance.now()/1000.0 - g_startTime;
+  // console.log(g_seconds);
+  updateAnimationAngles();
   renderAllShapes();
   renderLlama();
-  drawMap();
-
-  // Continuously loop this function
-  requestAnimationFrame(tick);
-}
-
-// Function to handle random shrub growth
-function checkRandomShrubGrowth() {
   if (Math.random() > 0.950) {
-    let x = Math.floor(Math.random() * 32);
-    let y = Math.floor(Math.random() * 32);
+    x = Math.floor(Math.random()*32);
+    y = Math.floor(Math.random()*32);
     if (g_map[x][y] > 0) {
-      g_map[x][y] += Math.round(Math.random() * 2) - 1;
+      g_map[x][y] += Math.round(Math.random()*2) - 1;
     } else {
       g_map[x][y] = 1;
-    }
+    }   
   }
+  drawMap();
+  requestAnimationFrame(tick);
 }
 
 
@@ -349,8 +294,6 @@ function updateAnimationAngles() {
 }
 
 function keydown(ev) {
-    let moved = false; // Flag to check if movement occurred
-
     switch (ev.keyCode) {
         case 39: // Right arrow
             g_eye[0] += 0.2;
@@ -359,33 +302,26 @@ function keydown(ev) {
             g_eye[0] -= 0.2;
             break;
         case 81: // Q - rotate left
-            g_horizontalAngle += 5;
+            g_horizontalAngle += 5; 
             break;
         case 69: // E - rotate right
-            g_horizontalAngle -= 5;
+            g_horizontalAngle -= 5; 
             break;
         case 87: // W - move forward
             g_eye[2] -= 0.2; // Moves the camera forward along the Z-axis
-            moved = true; // Set moved to true since position changed
             break;
         case 65: // A - move left
             g_eye[0] -= 0.2; // Moves the camera left along the X-axis
-            moved = true; // Set moved to true since position changed
             break;
         case 83: // S - move backward
             g_eye[2] += 0.2; // Moves the camera backward along the Z-axis
-            moved = true; // Set moved to true since position changed
             break;
         case 68: // D - move right
             g_eye[0] += 0.2; // Moves the camera right along the X-axis
-            moved = true; // Set moved to true since position changed
             break;
     }
-
-    if (moved) {
-        checkCollisionWithShrub(); // Check for collisions after movement
-    }
-    renderAllShapes(); // Update scene rendering
+    renderAllShapes();
+    // console.log(ev.keyCode);
 }
 
 let g_camera = new Camera();
@@ -418,7 +354,7 @@ function drawMap() {
                 shrub.textureNum = 0;
                 //shrub.matrix.translate(0, -0.75, 0);
                 shrub.matrix.translate(x - 14, -0.5, y - 14);
-                shrub.matrix.scale(0.75, g_map[x][y], 0.75);
+                shrub.matrix.scale(3.75, g_map[x][y], 3.75);
                 shrub.render();
               }
             }
