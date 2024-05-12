@@ -1,231 +1,325 @@
-// ColoredPoint.js (c) 2012 matsuda
-// Vertex shader program
-var VSHADER_SOURCE =
-  'attribute vec4 a_Position;\n' +
-  'uniform mat4 u_ModelMatrix;\n' +
-  'uniform mat4 u_GlobalRotateMatrix;\n' +
-  'void main() {\n' +
-  '  gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;\n' +
-  '}';
-
-// Fragment shader program
-var FSHADER_SOURCE =
-  'precision mediump float;\n' +
-  'uniform vec4 u_FragColor;\n' +  // uniform
-  'void main() {\n' +
-  '  gl_FragColor = u_FragColor;\n' +
-  '}\n';
-
-// Global Variables
-let canvas;
-let gl;
-let a_Position;
-let u_FragColor;
-let u_Size;
-let u_ModelMatrix;
-let u_GlobalRotateMatrix;
-
-function setupWebGL() {
-  // Retrieve <canvas> element
-  canvas = document.getElementById('webgl');
-
-  // Get the rendering context for WebGL
-  gl = canvas.getContext("webgl", { preserveDrawingBuffer: true});
-  if (!gl) {
-    console.log('Failed to get the rendering context for WebGL');
-    return;
-  }
-  gl.enable(gl.DEPTH_TEST);
-}
-
-function connectVariablesToGLSL() {
-  // Initialize shaders
-  if (!initShaders(gl, VSHADER_SOURCE, FSHADER_SOURCE)) {
-    console.log('Failed to intialize shaders.');
-    return;
-  }
-
-  // Get the storage location of a_Position
-  a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-  if (a_Position < 0) {
-    console.log('Failed to get the storage location of a_Position');
-    return;
-  }
-
-  // Get the storage location of u_FragColor
-  u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-  if (!u_FragColor) {
-    console.log('Failed to get the storage location of u_FragColor');
-    return;
-  }
-
-  // Get the storage location of u_ModelMatrix
-  u_ModelMatrix = gl.getUniformLocation(gl.program, 'u_ModelMatrix');
-  if (!u_ModelMatrix) {
-    console.log('Failed to get the storage location of u_ModelMatrix');
-    return;
-  }
-
-  u_GlobalRotateMatrix = gl.getUniformLocation(gl.program, 'u_GlobalRotateMatrix');
-  if (!u_GlobalRotateMatrix) {
-    console.log('Failed to get the storage location of u_GlobalRotateMatrix');
-    return;
-  }
-  
-  var identityM = new Matrix4();
-  gl.uniformMatrix4fv(u_ModelMatrix, false, identityM.elements);
-}
-
-// Constants
-//const POINT = 0;
-//const TRIANGLE = 1;
-//const CIRCLE = 2;
-
 // Global Variables Related to UI Elements
-let g_selectedColor=[1.0,1.0,1.0,1.0];
-let g_selectedSize=5;
-//let g_selectedType=POINT;
-let g_globalAngle=0; 
-let g_yellowAngle=0;
-let g_magentaAngle=0;
-let g_yellowAnimation=false;
-let g_magentaAnimation=false;
-let g_seconds=0;
-//let g_startTime=0;
+let g_vertAngle=0;
+let g_neckAngle=0;
+let g_headAngle=0;
+let g_legsAngle=0;
+let g_earsAngle=0;
+let g_tailAngle=0;
+let g_neckAnimation=false;
+let g_headAnimation=false;
+let g_legsAnimation=false;
+let g_earsAnimation=false;
+let g_tailAnimation=false;
+let dragging = false;
+let currentAngleX=-10;
+let currentAngleY=0;
+let g_modelY=0;
+let g_pokeAnimation = false;
+let g_pokeTime = 0;  
+let g_nose_size = 2;
 
-function addActionsForHtmlUI() {
-document.getElementById('yellowSlide').addEventListener('mousemove', function() {g_yellowAngle = this.value; renderAllShapes(); });
-  document.getElementById('magentaSlide').addEventListener('mousemove', function() {g_magentaAngle = this.value; renderAllShapes(); });
-  
-document.getElementById('animationYellowOnButton').onclick = function() {g_yellowAnimation=true;};
-document.getElementById('animationYellowOffButton').onclick = function() {g_yellowAnimation=false;};
+let g_color_1 = [0.851, 0.475, 0.043, 1.0];
+let g_color_2 = [0, 1, 0, 1.0];
 
-document.getElementById('animationMagentaOnButton').onclick = function() {g_magentaAnimation=true;};
-document.getElementById('animationMagentaOffButton').onclick = function() {g_magentaAnimation=false;};
-  document.getElementById('angleSlide').addEventListener('mousemove', function() {g_globalAngle = this.value; renderAllShapes(); });
-}
 
-function main() {
-  setupWebGL();
-  connectVariablesToGLSL();
+function updatePokeAnimation() {
+    if (g_pokeAnimation) {
+        console.log("poke", g_pokeTime)
+        g_pokeTime += 1
+        g_legsAnimation = 1
+        g_pokeTime++; // Increment the tick counter
 
-  // Set up actions for HTML UI 
-  addActionsForHtmlUI();
-  
-  // Specify the color for clearing <canvas>
-  gl.clearColor(0.0, 0.0, 0.0, 1.0);
-  g_startTime=performance.now()/1000.0;
-  //renderAllShapes();
-  requestAnimationFrame(tick);
-  
-}
+      // Switch colors every 10 ticks
+      if (g_pokeTime % 20 < 10) {
+          g_color_1 = [0.761, 0.424, 0.035, 1.0];
 
-function click(ev) {
-  let [x, y] = convertCoordinatesEventToGL(ev);
-  console.log ([x,y]);
-  // Create and store the new point
-  let point;
-  if (g_selectedType == POINT) {
-    point = new Point();
-  } else if (g_selectedType == TRIANGLE) {
-    point = new Triangle();
-  } else if (g_selectedType == CIRCLE) {
-    point = new Circle(g_selectedSegments); 
-  }
+      } else {
+          g_color_1 = [0.851, 0.475, 0.043, 1.0];
+      }
+      // Switch colors every 10 ticks
+      if (g_pokeTime % 60 < 10) {
+          g_nose_size = 1
+      } else {
+          g_nose_size = 2
+      }
 
-  point.position = [x,y];
-  point.color = g_selectedColor.slice();
-  point.size = g_selectedSize;
-  g_shapesList.push(point);
 
-  renderAllShapes();
-}
-
-// Called by browser repeatedly whenever its time
-function tick() {
-    g_seconds=performance.now()/1000.0-g_startTime;
-    // Print some debug information so we know we are running
-    //console.log(performance.now());
-
-    updateAnimationAngles();
-  
-    // Draw everything
-    renderAllShapes();
-
-    // Tell the browser to update again when it has time
-    requestAnimationFrame(tick);
-}
-
-function updateAnimationAngles() {
-    if (g_yellowAnimation) {
-        g_yellowAngle = (45 * Math.sin(g_seconds));
-    }
-    if (g_magentaAnimation) {
-        g_magentaAngle = (45 * Math.sin(3 * g_seconds));
+        if (g_pokeTime > 1000) { // Animation lasts 1 second
+            console.log("poke stop")
+          g_legsAnimation = 0
+          g_pokeAnimation = false;
+            g_color_1 = [1,0,0,1.0]
+        }
+        renderAllShapes();
     }
 }
 
-function renderAllShapes() {
-  var StartTime = performance.now();
-
-  // Pass the matrix to u_ModelMatrix attribute
-  var globalRotMat=new Matrix4().rotate(g_globalAngle, 0, 1, 0);
-  gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotMat.elements);
-  
-  // Clear <canvas>
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-  //gl.clear(gl.COLOR_BUFFER_BIT);
-
-  // Draw the body cube
-  var body = new Cube();
-  body.color = [1.0, 0.0, 0.0, 1.0];
-  body.matrix.translate(-0.25, -0.75, 0.0);
-  body.matrix.rotate(-5,1,0,0);
-  body.matrix.scale(0.5, .3, .5);
-  body.render();
-
-  // Draw a left arm
-  var yellow = new Cube();
-  yellow.color = [1, 1, 0, 1];
-  yellow.matrix.setTranslate(0, -0.5, 0.0); 
-  yellow.matrix.rotate(-5,1,0,0);
-  yellow.matrix.rotate(-g_yellowAngle,0,0,1);
-  
-  //if (g_yellowAnimation) {
-      //yellow.matrix.rotate(45*Math.sin(g_seconds), 0,0,1);
-  //} else {
-      //yellow.matrix.rotate(-g_yellowAngle, 0,0,1);
-  //}
-  
-  var yellowCoordinatesMat=new Matrix4(yellow.matrix);
-  yellow.matrix.scale(0.25, 0.7, 0.5);
-  yellow.matrix.translate(-0.5,0,0);
-  yellow.render();
-
-
-  // Test box
-  var box = new Cube();
-  box.color = [1, 0, 1, 1];
-  box.matrix = yellowCoordinatesMat;
-  box.matrix.translate(0, 0.65, 0);
-  box.matrix.rotate(g_magentaAngle, 0, 0, 1);
-  box.matrix.scale(0.3, 0.3, 0.3);
-  box.matrix.translate(-0.5, 0, -0.001);
-  //box.matrix.rotate(-30, 1, 0, 0);
-  //box.matrix.scale(.5, .5, .5);
-  box.render();
-  
-  var duration = performance.now() - StartTime;
-  sendTextToHTML("ms: " + Math.floor(duration) + " fps: " + Math.floor(1000/duration)/10, "numdot");
-
+function cloneMatrix4(matrix) {
+    var newMatrix = new Matrix4();
+    newMatrix.elements = new Float32Array(matrix.elements);   
+    return newMatrix;
 }
 
-// Set the text of a HTML element
-function sendTextToHTML(text, htmlID) {
-  var htmlElm = document.getElementById(htmlID);
-  if (!htmlElm) {
-      console.log("Failed to get " + htmlID + " from HTML");
-      return;
-  }
-htmlElm.innerHTML = text;
+
+function renderLlama(scale, textureNumBody, textureNumTail) {
+    const scalePercent = scale / 100; // Convert percentage scale to decimal
+
+    // Initialize the base matrix for the entire llama
+    var baseMatrix = new Matrix4();
+    baseMatrix.setScale(scalePercent, scalePercent, scalePercent);
+
+    // Draw the body
+    var body = new Cube();
+    body.color = [0.776, 0.525, 0.259, 1.0];
+    body.textureNum = textureNumBody;
+    body.matrix = new Matrix4(baseMatrix).translate(-0.25, -0.25, 0);
+    body.matrix.scale(0.5, 0.5, 0.75);
+    body.render();
+
+    // Draw the tail
+    var tail = new Cube();
+    tail.color = [1, 0.65, 0.65, 1.0];
+    tail.textureNum = textureNumTail;
+    tail.matrix = new Matrix4(baseMatrix).translate(-0.15, -0.15, 0.575);
+    tail.matrix.scale(0.35, 0.5, 0.5);
+    tail.render();
+
+    var tail2 = new Cube();
+    tail2.color = [0.945, 0.761, 0.490, 1.0];
+    tail2.textureNum = textureNumTail;
+    tail2.matrix = new Matrix4(baseMatrix).translate(-0.15, -0.1, 0.575);
+    tail2.matrix.rotate(-g_tailAngle, 1, 0, 0);
+    tail2.matrix.scale(0.15, 0.55, 0.15);
+    tail2.render();
+
+    // Draw the neck
+    var neck = new Cube();
+    neck.color = [0.992, 0.961, 0.886, 1.0];
+    neck.textureNum = textureNumBody;
+    neck.matrix = new Matrix4(baseMatrix).translate(-0.25, 0.2, 0.075);
+    neck.matrix.rotate(-g_neckAngle, 1, 0, 0);
+    neck.matrix.scale(0.25, 0.45, 0.25);
+    neck.render();
+
+    // Draw the head
+    var head = new Cube();
+    head.color = [0.945, 0.761, 0.490, 1.0];
+    head.textureNum = textureNumBody;
+    head.matrix = new Matrix4(baseMatrix).translate(-0.25, 0.65, 0.075);
+    head.matrix.rotate(g_headAngle, 0, 1, 0);
+    head.matrix.scale(0.35, 0.3, 0.45);
+    head.render();
+
+    // Draw the nose
+    var nose = new Cube();
+    nose.color = [0.35, 0.35, 0.35, 1.0];
+    nose.textureNum = textureNumBody;
+    nose.matrix = new Matrix4(baseMatrix).translate(-0.25, 0.95, 0.05);
+    nose.matrix.scale(0.1, 0.1, 0.2);
+    nose.render();
+
+    // Draw ears (left and right)
+    var ear = new Tetrahedron();
+    ear.color = g_color_1;
+    ear.textureNum = textureNumBody;
+    ear.matrix = new Matrix4(baseMatrix).translate(0, 1.0, 0.075);
+    ear.matrix.scale(0.1, 0.3, 0.1);
+    ear.matrix.rotate(-g_earsAngle, 1, 0, 0);
+    ear.render();
+
+    var ear2 = new Tetrahedron();
+    ear2.color = g_color_1;
+    ear2.textureNum = textureNumBody;
+    ear2.matrix = new Matrix4(baseMatrix).translate(-0.5, 1.0, 0.075);
+    ear2.matrix.scale(0.1, 0.3, 0.1);
+    ear2.matrix.rotate(-g_earsAngle, 1, 0, 0);
+    ear2.render();
+
+    // Draw four legs
+    function drawLeg(x, y, z) {
+        var leg = new Cube();
+        leg.color = [0.992, 0.961, 0.886, 1.0];
+        leg.textureNum = textureNumBody;
+        leg.matrix = new Matrix4(baseMatrix).translate(x, y, z);
+        leg.matrix.scale(0.05, -0.45, 0.05);
+        leg.matrix.rotate(g_legsAngle, 1, 0, 0);
+        leg.render();
+    }
+
+    drawLeg(-0.2, -0.75, 0.05); // Front left
+    drawLeg(-0.3, -0.75, 0.05); // Front right
+    drawLeg(-0.2, -0.75, 0.5);  // Back left
+    drawLeg(-0.3, -0.75, 0.5);  // Back right
+}
+
+function renderLlama() 
+{
+    renderLlama3(0, -0.5,50, 2, 3, 0);
+    renderLlama3(2,-0.5,45, 6, 6, 11.95); //unique llama
+    renderLlama3(-1,-0.3,60, 2, 3, 0);
+    renderLlama3(2,-1.9,20, 2, 3, 0.5);
+    renderLlama3(10,-1.9,20, 2, 3, -2);
+    renderLlama3(-10,-1.9,20, 2, 3, -3);
+    renderLlama3(-15,-1.1,30, 2, 3, 2);
+    renderLlama3(15,-1.1,30, 2, 3, 1);
+    renderLlama3(3, -0.6, 45, 2, 3, 5);
+    renderLlama3(-5, -0.7, 35, 2, 3, -5);
+
+    renderLlama3(-1,-0.3,60, 2, 3, 10);
+    renderLlama3(3,-1.9,20, 2, 3, 11.5);
+    renderLlama3(10,-1.9,20, 2, 3, 12);
+    renderLlama3(-10,-1.9,20, 2, 3, 13);
+    renderLlama3(-15,-1.1,30, 2, 3, 12);
+    renderLlama3(15,-1.1,30, 2, 3, 11);
+    renderLlama3(5, -0.6, 45, 2, 3, 15);
+    renderLlama3(-5, -0.7, 35, 2, 3, 15);
+    
+    renderLlama3(12, -1.0, 55, 2, 3, 12);
+    renderLlama3(-12, -1.5, 65, 2, 3, -12);
+    renderLlama3(20, -1.2, 40, 2, 3, 20);
+    renderLlama3(-20, -1.3, 30, 2, 3, -20);
+    renderLlama3(25, -0.8, 50, 2, 3, 25);
+    renderLlama3(-25, -0.9, 45, 2, 3, -25);
+    renderLlama3(18, -1.0, 35, 2, 3, -18);
+    renderLlama3(-18, -0.8, 55, 2, 3, 18);
+    renderLlama3(28, -0.7, 60, 2, 3, 28);
+    renderLlama3(-28, -1.1, 50, 2, 3, -28);
+    renderLlama3(30, -0.9, 40, 2, 3, 30);
+
+    renderLlama3(-12, -1.5, 65, 2, 3, 32);
+    renderLlama3(-20, -1.3, 30, 2, 3, 30);
+    renderLlama3(25, -0.8, 50, 2, 3, 45);
+    renderLlama3(-25, -0.9, 45, 2, 3, 35);
+    renderLlama3(18, -1.0, 35, 2, 3, 18);
+    renderLlama3(28, -0.7, 60, 2, 3, 48);
+    renderLlama3(-28, -1.1, 50, 2, 3, 28);
+
+    renderLlama3(-12, -1.5, 65, 2, 3, -32);
+    renderLlama3(-20, -1.3, 30, 2, 3, -30);
+    renderLlama3(25, -0.8, 50, 2, 3, -45);
+    renderLlama3(-25, -0.9, 45, 2, 3, -35);
+    renderLlama3(18, -1.0, 35, 2, 3, -18);
+    renderLlama3(28, -0.7, 60, 2, 3, -48);
+    renderLlama3(-28, -1.1, 50, 2, 3,- 28);
+    
+    renderLlama3(-30, -1.2, 45, 2, 3, -30);
+    renderLlama3(-32, -1.5, 45, 2, 3, -15);
+    renderLlama3(32, -1.6, 50, 2, 3, 15);
+    renderLlama3(-24, -1.4, 30, 2, 3, 24);
+    renderLlama3(24, -0.6, 55, 2, 3, -24);
+    renderLlama3(-22, -1.3, 40, 2, 3, 22);
+    renderLlama3(22, -0.5, 35, 2, 3, -22);
+    renderLlama3(-26, -1.1, 60, 2, 3, 26);
+    renderLlama3(26, -1.2, 65, 2, 3, -26);
+    renderLlama3(-34, -0.7, 50, 2, 3, 34);
+    renderLlama3(34, -0.8, 45, 2, 3, -34);
+    renderLlama3(-36, -0.9, 55, 2, 3, 36);
+    renderLlama3(36, -1.0, 40, 2, 3, -36);
+    renderLlama3(2, -0.5, 45, 2, 3, -0.5);
+    renderLlama3(-3, -0.3, 55, 2, 3, 0.3);
+    renderLlama3(5, -2.0, 18, 2, 3, 0);
+    renderLlama3(12, -1.8, 25, 2, 3, -1);
+    renderLlama3(-12, -2.0, 25, 2, 3, -2);
+    renderLlama3(-17, -1.2, 32, 2, 3, 1.5);
+    renderLlama3(17, -1.2, 32, 2, 3, 1);
+    renderLlama3(1, -0.4, 45, 2, 3, 0.5);
+    renderLlama3(-2, -0.2, 55, 2, 3, -0.5);
+    renderLlama3(4, -1.8, 20, 2, 3, 1);
+    renderLlama3(11, -1.7, 18, 2, 3, -1.5);
+    renderLlama3(-11, -1.8, 20, 2, 3, -2.5);
+    renderLlama3(-16, -1.0, 30, 2, 3, 3);
+    renderLlama3(16, -1.0, 30, 2, 3, 2);
+
+    renderLlama3(32, -1.6, 50, 2, 3, 15);
+    renderLlama3(-24, -1.4, 30, 2, 3, 24);
+    renderLlama3(24, -0.6, 55, 2, 3, 24);
+    renderLlama3(-22, -1.3, 40, 2, 3, 22);
+    renderLlama3(22, -0.5, 35, 2, 3, 22);
+    renderLlama3(-26, -1.1, 60, 2, 3, 26);
+    renderLlama3(26, -1.2, 65, 2, 3, 26);
+    renderLlama3(-34, -0.7, 50, 2, 3, 34);
+    renderLlama3(34, -0.8, 45, 2, 3, 34);
+    renderLlama3(-36, -0.9, 55, 2, 3, 36);
+    renderLlama3(36, -1.0, 40, 2, 3, 36);
+    renderLlama3(2, -0.5, 45, 2, 3, 0.5);
+}
+
+function renderLlama3(x, y, scale, textureNumBody, textureNumTail, z = 0) {
+    const scalePercent = scale / 100; 
+
+    // Initialize the base matrix to scale and position the entire llama
+    var baseMatrix = new Matrix4();
+    baseMatrix.setScale(scalePercent, scalePercent, scalePercent);
+    baseMatrix.translate(x, y, z);
+    //baseMatrix.translate(x, y, 0); 
+
+    // Draw the body
+    var body = new Cube();
+    body.color = [0.776, 0.525, 0.259, 1.0];
+    body.textureNum = textureNumBody;
+    body.matrix = new Matrix4(baseMatrix);
+    body.matrix.translate(-0.25, -0.25, 0);
+    body.matrix.scale(0.5, 0.5, 0.75);
+    body.render();
+
+    // Draw the tail
+    var tail = new Cube();
+    tail.color = [1, 0.65, 0.65, 1.0];
+    tail.textureNum = textureNumTail;
+    tail.matrix = new Matrix4(baseMatrix);
+    tail.matrix.translate(-0.05, 0.2, 0.75);
+    tail.matrix.scale(0.15, 0.2, 0.15);
+    tail.render();
+
+    // Draw the neck
+    var neck = new Cube();
+    neck.color = [0.992, 0.961, 0.886, 1.0];
+    neck.textureNum = -2;
+    neck.matrix = new Matrix4(baseMatrix);
+    neck.matrix.translate(-0.2, 0.2, 0);
+    neck.matrix.scale(0.25, 0.45, 0.25);
+    neck.render();
+
+    // Draw the head
+    var head = new Cube();
+    head.color = [0.945, 0.761, 0.490, 1.0];
+    head.textureNum = -2;
+    head.matrix = new Matrix4(baseMatrix);
+    head.matrix.translate(-0.25, 0.45, -0.05);
+    head.matrix.scale(0.35, 0.3, 0.45);
+    head.render();
+
+    // Draw the ears
+    var ear = new Cube(); // Left ear
+    ear.color = [0.851, 0.475, 0.043, 1.0];
+    ear.textureNum = -2;
+    ear.matrix = new Matrix4(baseMatrix);
+    ear.matrix.translate(0.05, 0.7, -0.05);
+    ear.matrix.scale(0.1, 0.2, 0.1);
+    ear.render();
+
+    var ear2 = new Cube(); // Right ear
+    ear2.color = [0.851, 0.475, 0.043, 1.0];
+    ear2.textureNum = -2;
+    ear2.matrix = new Matrix4(baseMatrix);
+    ear2.matrix.translate(-0.3, 0.7, -0.05);
+    ear2.matrix.scale(0.1, 0.2, 0.1);
+    ear2.render();
+
+    // Draw four legs
+    var legPositions = [
+        [0.15, -0.5, 0.1], 
+        [-0.25, -0.5, 0.1],  // Front legs
+        [0.15, -0.5, 0.55], 
+        [-0.25, -0.5, 0.55]  // Back legs
+    ];
+    legPositions.forEach(pos => {
+        var leg = new Cube();
+        leg.color = [0.992, 0.961, 0.886, 1.0];
+        leg.textureNum = -2;
+        leg.matrix = new Matrix4(baseMatrix);
+        leg.matrix.translate(pos[0], pos[1], pos[2]);
+        leg.matrix.scale(0.1, 0.5, 0.1);
+        leg.render();
+    });
 }
