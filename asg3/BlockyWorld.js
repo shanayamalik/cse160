@@ -1,3 +1,4 @@
+
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE = `
@@ -12,6 +13,7 @@ var VSHADER_SOURCE = `
   uniform mat4 u_ProjectionMatrix;
   void main() {
     gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
+    // gl_Position = u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
     v_UV = a_UV;
   }`
 
@@ -24,33 +26,24 @@ var FSHADER_SOURCE = `
   uniform sampler2D u_Sampler1;
   uniform sampler2D u_Sampler2;
   uniform sampler2D u_Sampler3;
-  uniform sampler2D u_Sampler4;  // Existing sampler for the night sky texture
-  uniform sampler2D u_Sampler5;  // Existing sampler for the sunrise sky texture
-  uniform sampler2D u_Sampler6;  // New sampler for the additional texture
   uniform int u_whichTexture;
   void main() {
     if (u_whichTexture == -2) {
-      gl_FragColor = u_FragColor;  // Use plain color
+      gl_FragColor = u_FragColor;  // color
     } else if (u_whichTexture == -1) {
-      gl_FragColor = vec4(v_UV, 1.0, 1.0); // Display texture coordinates
+      gl_FragColor = vec4(v_UV, 1.0, 1.0); // texture coordinates
     } else if (u_whichTexture == 0) {
-      gl_FragColor = texture2D(u_Sampler0, v_UV); // Texture 0
+      gl_FragColor = texture2D(u_Sampler0, v_UV); // texture 0
     } else if (u_whichTexture == 1) {
-      gl_FragColor = texture2D(u_Sampler1, v_UV); // Texture 1
+      gl_FragColor = texture2D(u_Sampler1, v_UV); // texture 1
     } else if (u_whichTexture == 2) {
-      gl_FragColor = texture2D(u_Sampler2, v_UV); // Texture 2
+      gl_FragColor = texture2D(u_Sampler2, v_UV); // texture 2
     } else if (u_whichTexture == 3) {
-      gl_FragColor = texture2D(u_Sampler3, v_UV); // Texture 3
-    } else if (u_whichTexture == 4) {
-      gl_FragColor = texture2D(u_Sampler4, v_UV); // Texture 4 (night sky)
-    } else if (u_whichTexture == 5) {
-      gl_FragColor = texture2D(u_Sampler5, v_UV); // Texture 5 (sunrise sky)
-    } else if (u_whichTexture == 6) {
-      gl_FragColor = texture2D(u_Sampler6, v_UV); // Texture 6 (new texture)
+      gl_FragColor = texture2D(u_Sampler3, v_UV); // texture 3
     } else {
-      gl_FragColor = vec4(1.0, 0.2, 0.2, 1.0); // Fallback color for errors
+      gl_FragColor = vec4(1.0, 0.2, 0.2, 1.0); // error
     }
-  }`;
+  }`
 
 // Global Variables (UI or data passed to GLSL)
 let canvas;
@@ -63,12 +56,19 @@ let u_ModelMatrix;
 let u_GlobalRotateMatrix;
 let u_ProjectionMatrix;
 let u_ViewMatrix;
+// let u_Sampler0;
+// let u_Sampler1;
 let u_Samplers = [];
 let u_whichTexture;
-let g_horizontalAngle = -145.0;
-let g_verticalAngle = 0.0;
-let isNightMode = false;
-let isSunriseMode = false;
+let g_globalHorizontalAngle = 0.0;
+let g_globalVerticalAngle = 0.0;
+let g_xAngle = 0.0;
+let g_yAngle = 0.0;
+let g_zAngle = 0.0;
+let g_xPosition = 0.0;
+let g_yPosition = 0.0;
+let g_zPosition = 0.0;
+let g_globalScale = 1.0;
 
 const setupWebGL = () => {
   // Retrieve <canvas> element
@@ -169,27 +169,6 @@ const connectVariablesToGLSL = () => {
   }
   u_Samplers.push(u_Sampler3);
 
-  let u_Sampler4 = gl.getUniformLocation(gl.program, 'u_Sampler4');
-  if (!u_Sampler4) {
-    console.log('Failed to get the storage location of u_Sampler4');
-    return false;
-  }
-  u_Samplers.push(u_Sampler4);
-
-  let u_Sampler5 = gl.getUniformLocation(gl.program, 'u_Sampler5');
-  if (!u_Sampler5) {
-    console.log('Failed to get the storage location of u_Sampler5');
-    return false;
-  }
-  u_Samplers.push(u_Sampler5);
-
-  let u_Sampler6 = gl.getUniformLocation(gl.program, 'u_Sampler6');
-  if (!u_Sampler6) {
-    console.log('Failed to get the storage location of u_Sampler6');
-    return false;
-  }
-  u_Samplers.push(u_Sampler6);
-
   u_whichTexture = gl.getUniformLocation(gl.program, 'u_whichTexture');
   if (!u_whichTexture) {
     console.log('Failed to get the storage location of u_whichTexture');
@@ -198,36 +177,12 @@ const connectVariablesToGLSL = () => {
 }
 
 const addActionsForHtmlUI = () => {
-  document.getElementById('cameraAngle').addEventListener('input', (event) => {
-      g_horizontalAngle = parseFloat(event.target.value);
+  document.getElementById('cameraAngle').addEventListener('mousemove', (event) => {
+    if (event.buttons == 1) {
+      g_globalHorizontalAngle = document.getElementById('cameraAngle').value;
       renderAllShapes();
-  });
-
-  canvas.addEventListener('mousedown', (ev) => {
-      ev.preventDefault();
-      let rect = ev.target.getBoundingClientRect();
-      if (rect.left <= ev.clientX && ev.clientX < rect.right && rect.top <= ev.clientY && ev.clientY < rect.bottom) {
-          lastX = ev.clientX;
-          lastY = ev.clientY;
-          dragging = true;
-      }
-  });
-
-  canvas.addEventListener('mousemove', (ev) => {
-      if (dragging) {
-          let dx = (ev.clientX - lastX) * 10.0 * Math.PI / canvas.width;
-          let dy = (ev.clientY - lastY) * 10.0 * Math.PI / canvas.height;
-          currentAngleX += dx;
-          currentAngleY += dy;
-          renderAllShapes();
-          lastX = ev.clientX;
-          lastY = ev.clientY;
-      }
-  });
-
-  canvas.addEventListener('mouseup', () => {
-      dragging = false;
-  });
+    }
+  })
 
 }
 
@@ -236,9 +191,6 @@ let images = {
   1: 'cloud-sky.jpg',
   2: 'llama-skin.jpg',
   3: 'llama-tail.jpg',
-  4: 'night-sky.png',
-  5: 'sunrise-sky.jpg',
-  6: 'checker.jpg'
 }
 
 function initTextures() {
@@ -252,7 +204,7 @@ function initTextures() {
     image.onload = function(){ sendImageToTexture(image, i); };
     // Tell the browser to load an Image
     image.src = images[i];
-    //console.log(image.src);
+    console.log(image.src);
   }
 
   return true;
@@ -282,6 +234,7 @@ function sendImageToTexture(image, textureNum) {
 
 }
 
+
 const g_startTime = performance.now()/1000.0;
 let g_seconds = performance.now()/1000.0 - g_startTime;
 
@@ -290,18 +243,7 @@ const tick = () => {
   // console.log(g_seconds);
   updateAnimationAngles();
   renderAllShapes();
-  renderLlama(0, 0, 0, 1.0);
-  renderLlama(1, 0, 0, 0.5); 
-  if (Math.random() > 0.250) {
-    x = Math.floor(Math.random()*32);
-    y = Math.floor(Math.random()*32);
-    if (g_map[x][y] > 0) {
-      g_map[x][y] += Math.round(Math.random()*2) - 1;
-    } else {
-      g_map[x][y] = 1;
-    }   
-  }
-  drawMap();
+  renderLlama();
   requestAnimationFrame(tick);
 }
 
@@ -317,101 +259,10 @@ const convertCoordinateEventToGL = (ev) => {
   return [x, y];
 }
 
-function updateAnimationAngles() {
-    g_neckAngle = (20 * Math.sin(g_seconds));  
-    g_headAngle = (25 * Math.sin(3 * g_seconds));
-    g_legsAngle = (25 * Math.sin(3 * g_seconds));
-    g_earsAngle = (5 * Math.sin(4 * g_seconds));
-    g_tailAngle = (5 * Math.sin(4 * g_seconds));
-}
-
-function keydown(ev) {
-    switch (ev.keyCode) {
-        case 39: // Right arrow
-            g_eye[0] += 0.2;
-            break;
-        case 37: // Left arrow
-            g_eye[0] -= 0.2;
-            break;
-        case 81: // Q - rotate left
-            g_horizontalAngle += 5; 
-            break;
-        case 69: // E - rotate right
-            g_horizontalAngle -= 5; 
-            break;
-        case 87: // W - move forward
-            g_eye[2] -= 0.2; // Moves the camera forward along the Z-axis
-            break;
-        case 65: // A - move left
-            g_eye[0] -= 0.2; // Moves the camera left along the X-axis
-            break;
-        case 83: // S - move backward
-            g_eye[2] += 0.2; // Moves the camera backward along the Z-axis
-            break;
-        case 68: // D - move right
-            g_eye[0] += 0.2; // Moves the camera right along the X-axis
-            break;
-    }
-    renderAllShapes();
-    // console.log(ev.keyCode);
+const updateAnimationAngles = () => {
 }
 
 let g_camera = new Camera();
-
-var g_eye = [0, 0, 3];
-var g_at = [0, 0, -100];
-var g_up = [0, 1, 0];
-
-var g_map = [
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 3, 0, 0, 0, 0, 1],
-    [1, 0, 2, 0, 0, 0, 0, 1],
-    [1, 4, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
-];
-
-g_map = new Array(32).fill(null).map(() => new Array(32).fill(0));
-
-function drawMap() {
-    for (x = 0; x < 32; x++) {
-        for (y = 0; y < 32; y++) {
-            //console.log(x, y);
-            if (x % 4 == 0 && y % 4 == 0) {
-              if (g_map[x][y] > 0) {
-                var shrub = new Cube();
-                shrub.color = [0, 1, 0, 1];
-                shrub.textureNum = 0;
-                //shrub.matrix.translate(0, -0.75, 0);
-                shrub.matrix.translate(x - 14, -0.5, y - 14);
-                shrub.matrix.scale(0.75, g_map[x][y], 0.75);
-                shrub.render();
-              }
-            }
-        }
-    }
-}
-
-// Mode Toggle Functions
-function setDayMode() {
-    isNightMode = false;
-    isSunriseMode = false;  // Ensure sunrise mode is turned off when it's day
-    renderAllShapes();  
-}
-
-function setNightMode() {
-    isNightMode = true;
-    isSunriseMode = false;  
-    renderAllShapes(); 
-}
-
-function setSunriseMode() {
-    isNightMode = false;    // Ensure night mode is turned off when it's sunrise
-    isSunriseMode = true;
-    renderAllShapes(); 
-}
 
 const renderAllShapes = () => {
   let startTime = performance.now();
@@ -419,64 +270,35 @@ const renderAllShapes = () => {
   // Clear <canvas>
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  const globalRotateMatrix = new Matrix4().rotate(g_horizontalAngle + currentAngleX, 0, 1, 0);
-  globalRotateMatrix.rotate(g_verticalAngle + currentAngleY, 1, 0, 0);
+  const globalRotateMatrix = new Matrix4().rotate(g_globalHorizontalAngle, 0, 1, 0);
+  globalRotateMatrix.rotate(g_globalVerticalAngle, 1, 0, 0);
   gl.uniformMatrix4fv(u_GlobalRotateMatrix, false, globalRotateMatrix.elements);
 
-  var projMat = new Matrix4();
-  projMat.setPerspective(50, 1 * canvas.width / canvas.height, 1, 100);
-  gl.uniformMatrix4fv(u_ProjectionMatrix, false, projMat.elements);
+  const perspectiveMatrix = new Matrix4();
+  perspectiveMatrix.setPerspective(60, canvas.width/canvas.height, 0.1, 100);
+  gl.uniformMatrix4fv(u_ProjectionMatrix, false, perspectiveMatrix.elements);
 
-  // Pass the view matrix
-  var viewMat = new Matrix4();
-  viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
-  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
+  const viewMatrix = new Matrix4();  
+  viewMatrix.setLookAt(g_camera.eye.elements[0], g_camera.eye.elements[1], g_camera.eye.elements[2], 
+              g_camera.at.elements[0], g_camera.at.elements[1], g_camera.at.elements[2],
+              g_camera.up.elements[0], g_camera.up.elements[1], g_camera.up.elements[2]);
+  gl.uniformMatrix4fv(u_ViewMatrix, false, viewMatrix.elements);
 
-  if (isNightMode) {
-      renderNightSky();
-  } else if (isSunriseMode) {
-      renderSunriseSky();
-  } else {
-      renderDaySky();
-  }
-  
-  const ground = new Cube();
-  ground.color = [1,0,0,1];
-  ground.textureNum = 0;
-  ground.matrix.translate(0, -0.5, 0);
-  ground.matrix.scale(128, 0, 128);
-  ground.matrix.translate(-0.5, 0, -0.5);
-  ground.render();
+  const cube = new Cube();
+  cube.color = [1,0,0,1];
+  cube.textureNum = 0;
+  cube.matrix.translate(0, -0.5, 0);
+  cube.matrix.scale(10, 0, 10);
+  cube.matrix.translate(-0.5, 0, -0.5);
+  cube.render();
 
-function renderDaySky() {
   const sky = new Cube();
   sky.color = [1,1,1,1];
   sky.textureNum = 1;
-  sky.matrix.scale(128, 128, 128);
+  sky.matrix.scale(50, 50, 50);
   sky.matrix.translate(-0.5, -0.5, -0.5);
   sky.render();
-} 
 
-function renderNightSky() {
-  const night_sky = new Cube();
-  //night_sky.color = [1,1,1,1];
-  night_sky.textureNum = 4;
-  night_sky.matrix.scale(128, 128, 128);
-  night_sky.matrix.translate(-0.5, -0.5, -0.5);
-  gl.uniform1i(u_whichTexture, 4);
-  night_sky.render();
-}
-
-function renderSunriseSky() {
-    const night_sky = new Cube();
-    //night_sky.color = [1,1,1,1];
-    night_sky.textureNum = 5;
-    night_sky.matrix.scale(128, 128, 128);
-    night_sky.matrix.translate(-0.5, -0.5, -0.5);
-    gl.uniform1i(u_whichTexture, 5);
-    night_sky.render();
-  }
-  
   let duration = performance.now() - startTime;
   sendTextToHTML(`ms: ${Math.floor(duration)} fps: ${Math.floor(10000/duration)/10}`, 'info');
 }
@@ -494,8 +316,6 @@ function main() {
   setupWebGL();
   connectVariablesToGLSL();
   addActionsForHtmlUI();
-
-  document.onkeydown = keydown;
 
   initTextures();
 

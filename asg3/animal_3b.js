@@ -25,15 +25,7 @@ let g_color_1 = [0.851, 0.475, 0.043, 1.0];
 let g_color_2 = [0, 1, 0, 1.0];
 //let g_color_3 = [0.65, 0.75, 0.75, 1.0];
 
-
 /*
-function rotateScene(dx, dy) {
-  currentAngleX += dx;
-  currentAngleY += dy;
-  renderAllShapes(); // Update the scene rendering
-}
-*/
-
 function resetRotation() {
   currentAngleX = 0;
   currentAngleY = 0;
@@ -66,6 +58,7 @@ function applyRotation() {
 
   renderAllShapes();  // Update the scene rendering
 }
+*/
 
 function updatePokeAnimation() {
     if (g_pokeAnimation) {
@@ -99,16 +92,11 @@ function updatePokeAnimation() {
     }
 }
 
-
-
-
-
 function cloneMatrix4(matrix) {
     var newMatrix = new Matrix4();
     newMatrix.elements = new Float32Array(matrix.elements);   
     return newMatrix;
 }
-
 
 function renderLlama() {
 
@@ -130,22 +118,22 @@ function renderLlama() {
   tail.matrix = cloneMatrix4(bodyCoordinatesMat);
   tail.matrix.translate(0.075, 0.10, 0.75);
   tail.matrix.scale(0.35, 0.5, 0.5);
-
+    
   // Draw the tail
   var tail2 = new Cube();
   tail2.color =[0.945, 0.761, 0.490, 1.0];
   tail2.textureNum = 3;
-  tail2.matrix = bodyCoordinatesMat;
+  tail2.matrix = cloneMatrix4(bodyCoordinatesMat);
   tail2.matrix.translate(0.075, 0.10, 0.75);
   tail2.matrix.rotate(-g_tailAngle,1,0,0);
   tail2.matrix.scale(0.15, 0.55, 0.15);
   tail2.render();
-
+    
   // Draw a neck
   var neck = new Cube();
   neck.color = [0.992, 0.961, 0.886, 1.0];
   neck.textureNum = -2;
-  neck.matrix = bodyCoordinatesMat;
+  neck.matrix = cloneMatrix4(bodyCoordinatesMat);
   neck.matrix.setTranslate(0.0, 0.10, 0.05); 
   neck.matrix.rotate(-g_neckAngle,1,0,0);
   var neckCoordinatesMat=new Matrix4(neck.matrix);
@@ -191,7 +179,7 @@ function renderLlama() {
   var ear = new Tetrahedron(); // Left ear
   ear.color = g_color_1;
   ear.textureNum = -2;
-  ear.matrix = neckCoordinatesMat;
+  //ear.matrix = neckCoordinatesMat;
   ear.matrix = headCoordinatesMat;
   ear.matrix.translate(1.0, 2.65, -0.20);
   ear.matrix.scale(0.4, 1.5, 0.85);
@@ -213,8 +201,8 @@ function renderLlama() {
   var leg = new Cube(); // Front left
   leg.color = [0.992, 0.961, 0.886, 1.0];
   leg.textureNum = -2;
-  leg.matrix = bodyCoordinatesMat;
-  leg.matrix.setTranslate(0.05, -0.2, 0.05); 
+  leg.matrix = cloneMatrix4(bodyCoordinatesMat);
+  leg.matrix.setTranslate(0.05, -0.05, 0.05); 
   leg.matrix.rotate(g_legsAngle,1,0,0);
   leg.matrix.scale(0.05, -0.45, 0.05);
   leg.render();
@@ -222,8 +210,8 @@ function renderLlama() {
   var leg2 = new Cube(); // Front right
   leg2.color = [0.992, 0.961, 0.886, 1.0];
   leg2.textureNum = -2;
-  leg2.matrix = bodyCoordinatesMat;
-  leg2.matrix.setTranslate(-0.15, -0.2, 0.05); 
+  leg2.matrix = cloneMatrix4(bodyCoordinatesMat);
+  leg2.matrix.setTranslate(-0.15, -0.05, 0.05); 
   leg2.matrix.rotate(-g_legsAngle,1,0,0);
   leg2.matrix.scale(0.05, -0.45, 0.05);
   leg2.render();
@@ -231,8 +219,8 @@ function renderLlama() {
   var leg3 = new Cube(); // Back left
   leg3.color = [0.992, 0.961, 0.886, 1.0];
   leg3.textureNum = -2;
-  leg3.matrix = bodyCoordinatesMat;
-  leg3.matrix.setTranslate(0.05, -0.2, 0.5); 
+  leg3.matrix = cloneMatrix4(bodyCoordinatesMat);
+  leg3.matrix.setTranslate(0.05, -0.05, 0.5); 
   leg3.matrix.rotate(-g_legsAngle,1,0,0);
   leg3.matrix.scale(0.05, -0.45, 0.05);
   leg3.render();
@@ -240,8 +228,8 @@ function renderLlama() {
   var leg4 = new Cube(); // Back right
   leg4.color = [0.992, 0.961, 0.886, 1.0];
   leg4.textureNum = -2;
-  leg4.matrix = bodyCoordinatesMat;
-  leg4.matrix.setTranslate(-0.15, -0.2, 0.5); 
+  leg4.matrix = cloneMatrix4(bodyCoordinatesMat);
+  leg4.matrix.setTranslate(-0.15, -0.05, 0.5); 
   leg4.matrix.rotate(g_legsAngle,1,0,0);
   leg4.matrix.scale(0.05, -0.45, 0.05);
   leg4.render();
