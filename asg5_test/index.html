@@ -126,6 +126,9 @@ let clock = new THREE.Clock(); // Clock to track the elapsed time for movement
 function animate() {
     requestAnimationFrame(animate);
 
+    // Update controls
+    controls.update();
+
     // Calculate the new y position of the sphere using a sine wave
     let time = clock.getElapsedTime();
     sphere.position.y = amplitude * Math.sin(frequency * time);
@@ -135,11 +138,6 @@ function animate() {
 animate();
 
 </script>
-
-
-
-
-
 
 </body>
 </html>
