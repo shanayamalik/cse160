@@ -24,7 +24,18 @@
     import { OrbitControls } from './js/OrbitControls.js';
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xaaaaaa);
+
+    // Load and set the skybox
+    const loader = new THREE.CubeTextureLoader();
+    const skyboxTexture = loader.load([
+        'sky.jpg',   // Right side
+        'sky.jpg',   // Left side
+        'sky.jpg',   // Top side
+        'sky.jpg',   // Bottom side
+        'sky.jpg',   // Front side
+        'sky.jpg'    // Back side
+    ]);
+    scene.background = skyboxTexture;
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     camera.position.z = 50;
