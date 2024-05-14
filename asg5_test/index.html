@@ -67,6 +67,14 @@
 // Texture Loader
 const textureLoaderBox = new THREE.TextureLoader();
 
+    // Ground Plane
+    const groundGeometry = new THREE.PlaneGeometry(100, 100);  // Size of the ground
+    const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2; // Rotate the plane to be horizontal
+    ground.position.y = -5;
+    scene.add(ground);
+
 // Box (Rectangle)
 const boxGeometry = new THREE.BoxGeometry(2, 2, 2);
 const texture = textureLoaderBox.load('one.jpg', function(texture) {
