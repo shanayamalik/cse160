@@ -97,6 +97,36 @@ for (let i = 0; i < 3; i++) {
     scene.add(cloud);
 }
 
+// Function to create a rock
+function createRock() {
+    const geometry = new THREE.SphereGeometry(1, 16, 16);
+    const material = new THREE.MeshPhongMaterial({ color: 0x888888 });
+    const rock = new THREE.Mesh(geometry, material);
+
+    // Scale the geometry for a non-uniform, more natural rock shape
+    rock.scale.x = 0.5 + Math.random() * 1.5; // Random scaling in X
+    rock.scale.y = 0.5 + Math.random() * 1.5; // Random scaling in Y
+    rock.scale.z = 0.5 + Math.random() * 1.5; // Random scaling in Z
+
+    // Optional: random rotation for varied orientation
+    rock.rotation.x = Math.random() * Math.PI;
+    rock.rotation.y = Math.random() * Math.PI;
+    rock.rotation.z = Math.random() * Math.PI;
+
+    return rock;
+}
+
+// Add rocks to the scene
+for (let i = 0; i < 10; i++) {
+    const rock = createRock();
+    rock.position.set(
+        Math.random() * 50 - 25, // X position within a range
+        -4,                      // Y position just above the ground
+        Math.random() * 50 - 25  // Z position within a range
+    );
+    scene.add(rock);
+}
+
     // Ground Plane
     const groundGeometry = new THREE.PlaneGeometry(100, 100);  // Size of the ground
     const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
