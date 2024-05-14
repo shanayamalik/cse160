@@ -75,6 +75,14 @@ const textureLoaderBox = new THREE.TextureLoader();
     ground.position.y = -5;
     scene.add(ground);
 
+    // Rock
+    const rockGeometry = new THREE.SphereGeometry(1, 32, 32);
+    const rockMaterial = new THREE.MeshPhongMaterial({ color: 0x808080 });
+    const rock = new THREE.Mesh(rockGeometry, rockMaterial);
+    rock.scale.set(1.5, 0.7, 1.2);
+    rock.position.set(0, -0.5, 0);  // Position the rock on top of the ground
+    scene.add(rock);
+
 // Box (Rectangle)
 const boxGeometry = new THREE.BoxGeometry(2, 2, 2);
 const texture = textureLoaderBox.load('one.jpg', function(texture) {
