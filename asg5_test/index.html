@@ -48,6 +48,11 @@
     pointLight.position.set(10, 10, 10);
     scene.add(pointLight);
 
+    // Hemisphere Light
+    const hemisphereLight = new THREE.HemisphereLight(0xB1E1FF, 0xB97A20, 0.75);
+    hemisphereLight.position.set(0, 50, 0);  // Position is not critical as it affects the whole scene equally
+    scene.add(hemisphereLight);
+
 // Texture Loader
 const textureLoaderBox = new THREE.TextureLoader();
 
