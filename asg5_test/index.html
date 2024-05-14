@@ -127,6 +127,35 @@ for (let i = 0; i < 10; i++) {
     scene.add(rock);
 }
 
+function createTree() {
+    const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.3, 2, 32);
+    const trunkMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.set(0, 1, 0); // Position the trunk base on the ground
+
+    const foliageGeometry = new THREE.ConeGeometry(1, 3, 32);
+    const foliageMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 });
+    const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
+    foliage.position.set(0, 3, 0); // Position the foliage on top of the trunk
+
+    const tree = new THREE.Group();
+    tree.add(trunk);
+    tree.add(foliage);
+
+    return tree;
+}
+
+// Add trees to the scene
+for (let i = 0; i < 10; i++) {
+    const tree = createTree();
+    tree.position.set(
+        Math.random() * 50 - 25, // X position
+        0, // Y position; adjust if your ground isn't at y = 0
+        Math.random() * 50 - 25  // Z position
+    );
+    scene.add(tree);
+}
+
     // Ground Plane
     const groundGeometry = new THREE.PlaneGeometry(100, 100);  // Size of the ground
     const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
