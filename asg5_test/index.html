@@ -158,6 +158,31 @@ for (let i = 0; i < 10; i++) {
     scene.add(tree);
 }
 
+function createMountain() {
+    const geometry = new THREE.ConeGeometry(5, 10, 32); // Base radius, height, radial segments
+    const material = new THREE.MeshPhongMaterial({ color: 0x8B8989 });
+    const mountain = new THREE.Mesh(geometry, material);
+
+    mountain.scale.x = 1 + Math.random() * 2; // Random scaling in X to make the mountain wider
+    mountain.scale.z = 1 + Math.random() * 2; // Random scaling in Z
+
+    // Ensure the base of the mountain is at y = -5
+    mountain.position.y = 5 - 5; // Half of the mountain's height to align its base with y = -5
+
+    return mountain;
+}
+
+// Add mountains to the scene
+for (let i = 0; i < 5; i++) {
+    const mountain = createMountain();
+    mountain.position.set(
+        Math.random() * 100 - 50, // X position
+        0, // Y position; adjusted in the function
+        -50 - Math.random() * 50  // Z position (behind the scene)
+    );
+    scene.add(mountain);
+}
+
     // Ground Plane
     const groundGeometry = new THREE.PlaneGeometry(100, 100);  // Size of the ground
     const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
