@@ -18,6 +18,7 @@ const VertexShader = `
 
 const FragmentShader = `
   precision mediump float;
+  #define SUN_POS vec3(0.0, 25.0, 43.301)
 
   void main() {
     vec3 color = vec3(0.1, 0.12, 0.4);
