@@ -75,6 +75,7 @@ let canvas;
 let gl;
 let a_Position;
 let a_UV;
+let a_Normal; 
 let u_FragColor;
 let u_Size;
 let u_ModelMatrix;
@@ -96,6 +97,8 @@ let g_yellowAngle=0;
 let g_magentaAngle=0;
 let g_yellowAnimation=false;
 let g_magentaAnimation=false;
+
+let g_lightPos=0;
 
 const setupWebGL = () => {
   // Retrieve <canvas> element
@@ -136,6 +139,15 @@ const connectVariablesToGLSL = () => {
     return;
   }
 
+  /*
+  // Get the storage location of a Normal
+  a_Normal = gl.getAttribLocation(gl.program, 'a_Normal');
+  if (a_Normal < 0) {
+    console.log('Failed to get the storage location of a_Normal');
+    return;
+  }
+  */
+  
   // Get the storage location of u_FragColor
   u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
   if (!u_FragColor) {
@@ -344,12 +356,22 @@ const convertCoordinateEventToGL = (ev) => {
   return [x, y];
 }
 
+// Update the angles of everything if currently animated
 function updateAnimationAngles() {
-    g_neckAngle = (20 * Math.sin(g_seconds));  
-    g_headAngle = (25 * Math.sin(3 * g_seconds));
-    g_legsAngle = (25 * Math.sin(3 * g_seconds));
-    g_earsAngle = (5 * Math.sin(4 * g_seconds));
-    g_tailAngle = (5 * Math.sin(4 * g_seconds));
+    if (g_yellowAnimation) {
+        g_yellowAngle = (45 * Math.sin(g_seconds));
+    }
+    if (g_magentaAnimation) {
+        g_magentaAngle = (45 * Math.sin(3 * g_seconds));
+    }
+
+    //g_neckAngle = (20 * Math.sin(g_seconds));  
+    //g_headAngle = (25 * Math.sin(3 * g_seconds));
+    //g_legsAngle = (25 * Math.sin(3 * g_seconds));
+    //g_earsAngle = (5 * Math.sin(4 * g_seconds));
+    //g_tailAngle = (5 * Math.sin(4 * g_seconds));
+  
+    g_lightPos[0] = cos(g_seconds);
 }
 
 function keydown(ev) {
