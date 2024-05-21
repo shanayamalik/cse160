@@ -1,10 +1,24 @@
+//TODO: Yellow Slider and Animation
+//TODO: Magenta Slider and Animation
+
+//TODO: Created a sphere.
+//TODO: Lighting (ambient+diffuse+specular) works correctly and the lighting color changes correctly with slider.
+//TODO: A visual marker of light location exists.
+//TODO: A user interface button to turn on and off lighting
+//TODO: The point light moves around the world over time and also using the slider.
+//TODO: Your blocky animal or your world exists and is lighted.
+//TODO: A spot light is added.
+//TODO: Button to visualize normals with color
+
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE = `
   precision mediump float;
   attribute vec4 a_Position;
   attribute vec2 a_UV;
+  attribute vec3 a_Normal;
   varying vec2 v_UV;
+  varying vec3 v_Normal;
   attribute vec4 a_Color;
   uniform mat4 u_ModelMatrix;
   uniform mat4 u_GlobalRotateMatrix;
@@ -19,6 +33,7 @@ var VSHADER_SOURCE = `
 var FSHADER_SOURCE = `
   precision mediump float;
   varying vec2 v_UV;
+  varying vec3 v_Normal;
   uniform vec4 u_FragColor;
   uniform sampler2D u_Sampler0;
   uniform sampler2D u_Sampler1;
@@ -28,8 +43,11 @@ var FSHADER_SOURCE = `
   uniform sampler2D u_Sampler5;  // Existing sampler for the sunrise sky texture
   uniform sampler2D u_Sampler6;  // New sampler for the additional texture
   uniform int u_whichTexture;
+
   void main() {
-    if (u_whichTexture == -2) {
+    if (u_whichTexture == -3) {
+      gl_FragColor -= vec4((v_Normal + 1.0) / 2.0, 1.0);
+    } else if (u_whichTexture == -2) {
       gl_FragColor = u_FragColor;  // Use plain color
     } else if (u_whichTexture == -1) {
       gl_FragColor = vec4(v_UV, 1.0, 1.0); // Display texture coordinates
