@@ -402,7 +402,7 @@ function updateAnimationAngles() {
     //g_earsAngle = (5 * Math.sin(4 * g_seconds));
     //g_tailAngle = (5 * Math.sin(4 * g_seconds));
   
-    //g_lightPos[0] = cos(g_seconds);
+    g_lightPos[0] = Math.cos(g_seconds);
 }
 
 function keydown(ev) {
