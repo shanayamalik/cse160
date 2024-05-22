@@ -43,8 +43,10 @@ var FSHADER_SOURCE = `
   uniform sampler2D u_Sampler5;  // Existing sampler for the sunrise sky texture
   uniform sampler2D u_Sampler6;  // New sampler for the additional texture
   uniform int u_whichTexture;
-  uniform vec3 u_lightPos;
+  uniform vec3 u_lightPos;  // Correct declaration
+  uniform vec3 u_cameraPos;  // Declaration added
   varying vec4 v_VertPos;
+  uniform bool u_lightOn;
 
   void main() {
     if (u_whichTexture == -3) {
@@ -71,15 +73,43 @@ var FSHADER_SOURCE = `
       gl_FragColor = vec4(1.0, 0.2, 0.2, 1.0); // Fallback color for errors
     }
 
-    vec3 lightVector = vec3(v_VertPos) - u_lightPos;
+    vec3 lightVector = u_lightPos - vec3(v_VertPos);
     float r = length(lightVector);
-    if (r < 0.0) {
-        gl_FragColor = vec4(1, 0, 0, 1);
-    } else if (r < 0.0) {
-        gl_FragColor = vec4(0, 1, 0, 1);
-    }
 
-  }`;
+    // Red/Green Distance Visualization
+    // if (r<1.0) {
+    //   gl_FragColor= vec4(1,0,0,1);
+    // } else if (r<2.0) {
+    //   gl_FragColor= vec4(0,1,0,1);
+    // }
+
+    // Light Falloff Visualization 1/r^2
+    // gl_FragColor= vec4(vec3(gl_FragColor)/(r*r),1);
+
+    // N dot L
+    vec3 L = normalize(lightVector);
+    vec3 N = normalize(v_Normal);
+    float nDotL = max(dot(N, L), 0.0);
+
+    vec3 R = reflect(-L, N);
+
+    // eye
+    vec3 E = normalize(u_cameraPos - vec3(v_VertPos));
+
+    // Specular
+    float specular = pow(max(dot(E, R), 0.0), 64.0) * 0.8;
+
+    vec3 diffuse = vec3(1.0, 1.0, 0.9) * vec3(gl_FragColor) * nDotL * 0.7;
+    vec3 ambient = vec3(gl_FragColor) * 0.2;
+    if (u_lightOn) {
+      if (u_whichTexture == 0) {
+        gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
+      } else {
+        gl_FragColor = vec4(diffuse + ambient, 1.0);
+      }
+    }
+  }
+`;
 
 // Global Variables (UI or data passed to GLSL)
 let canvas;
@@ -96,6 +126,7 @@ let u_ViewMatrix;
 let u_Samplers = [];
 let u_whichTexture;
 let u_lightPos;
+let u_CameraPos;
 let g_horizontalAngle = 175.0;
 let g_verticalAngle = 0.0;
 //let isNightMode = false;
@@ -109,7 +140,7 @@ let g_yellowAngle=0;
 let g_magentaAngle=0;
 let g_yellowAnimation=false;
 let g_magentaAnimation=false;
-let g_NormalOn=false;
+let g_NormalOn=true;
 
 let g_lightPos=[0, 1, -2];
 
@@ -170,6 +201,12 @@ const connectVariablesToGLSL = () => {
   u_lightPos = gl.getUniformLocation(gl.program, 'u_lightPos');
   if (!u_lightPos) {
       console.log('Failed to get the storage location of u_lightPos');
+      return;
+  }
+
+  u_cameraPos = gl.getUniformLocation(gl.program, 'u_cameraPos');
+  if (!u_cameraPos) {
+      console.log('Failed to get the storage location of u_cameraPos');
       return;
   }
   
@@ -251,6 +288,13 @@ const connectVariablesToGLSL = () => {
   if (!u_whichTexture) {
     console.log('Failed to get the storage location of u_whichTexture');
     return false;
+  }
+
+  // Get the storage location of u_whichTexture
+  u_lightOn = gl.getUniformLocation(gl.program, 'u_lightOn');
+  if (!u_lightOn) {
+      console.log('Failed to get the storage location of u_lightOn');
+      return;
   }
 }
 
@@ -561,10 +605,11 @@ function renderSunriseSky() {
   }
 */
 
-  /*
+
   // Pass the light position to GLSL
   gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
 
+  /*
   // Draw the light
   var light = new Cube();
   light.color = [2, 2, 0, 1];
@@ -580,7 +625,7 @@ function renderSunriseSky() {
   sp.matrix.translate(-1, -1.5, -1.5);
   //sp.matrix.scale(.4, .4, .4);
   sp.render();
-  */
+*/
   
   // Draw the body cube
   var body = new Cube();
