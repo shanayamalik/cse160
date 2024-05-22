@@ -25,7 +25,7 @@ class Sphere {
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
         var d = Math.PI / 10;
-        var dd = Math.PI / 100;
+        var dd = Math.PI / 10;
         //var uv = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
 
         for (var t = 0; t < Math.PI; t += d) {
@@ -49,7 +49,7 @@ class Sphere {
                 v = v.concat(p4); uv = uv.concat([0, 0]);
                 v = v.concat(p2); uv = uv.concat([0, 0]);
 
-                gl.uniform4f(u_FragColor, 1, 1, 1, 1);
+                gl.uniform4f(u_FragColor, 1, 0, 0, 1);
                 drawTriangle3DUVNormal(v, uv, v);
             }
         }
