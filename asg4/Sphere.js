@@ -1,3 +1,11 @@
+function sin(x) {
+    return Math.sin(x);
+}
+
+function cos(x) {
+    return Math.cos(x);
+}
+
 class Sphere {
     constructor() {
         this.type = 'sphere';
