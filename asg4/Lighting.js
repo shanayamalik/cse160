@@ -1,6 +1,3 @@
-//TODO: Yellow Slider and Animation
-//TODO: Magenta Slider and Animation
-
 //TODO: Created a sphere.
 //TODO: Lighting (ambient+diffuse+specular) works correctly and the lighting color changes correctly with slider.
 //TODO: A visual marker of light location exists.
@@ -267,6 +264,15 @@ const addActionsForHtmlUI = () => {
       dragging = false;
   });
 
+  document.getElementById('yellowSlide').addEventListener('mousemove', function() {g_yellowAngle = this.value; renderAllShapes(); });
+  document.getElementById('magentaSlide').addEventListener('mousemove', function() {g_magentaAngle = this.value; renderAllShapes(); });
+  
+  document.getElementById('animationYellowOnButton').onclick = function() {g_yellowAnimation=true;};
+  document.getElementById('animationYellowOffButton').onclick = function() {g_yellowAnimation=false;};
+  
+  document.getElementById('animationMagentaOnButton').onclick = function() {g_magentaAnimation=true;};
+  document.getElementById('animationMagentaOffButton').onclick = function() {g_magentaAnimation=false;};
+  
 }
 
 let images = {
