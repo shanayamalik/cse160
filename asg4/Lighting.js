@@ -1,6 +1,5 @@
 //TODO: drawTriangle3DUVNormal
 
-//TODO: Created a sphere.
 //TODO: Your blocky animal or your world exists and is lighted.
 //TODO: A spot light is added.
 
@@ -691,7 +690,7 @@ function renderSunriseSky() {
 
   // Pass the light status
   gl.uniform1i(u_lightOn, g_lightOn);
-
+  
   // Draw the light
   var light = new Cube();
   light.color = [2, 2, 0, 1];
@@ -704,8 +703,8 @@ function renderSunriseSky() {
   // Draw Sphere
   var sp = new Sphere();
   sp.textureNum = g_NormalOn ? -3 : -2;
-  sp.matrix.translate(-4, -1.5, -1.5);
-  //sp.matrix.scale(.4, .4, .4);
+  sp.matrix.translate(0, 0, -1.5); // Adjust translation to move sphere into view
+  sp.matrix.scale(0.15, 0.15, 0.15); // Adjust scale to appropriate size
   sp.render();
   
   // Draw the body cube
