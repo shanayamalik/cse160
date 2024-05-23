@@ -58,6 +58,11 @@ uniform vec3 u_cameraPos;
 uniform bool u_lightOn; 
 varying vec4 v_VertPos;
 
+uniform vec3 u_spotLightPos;
+uniform vec3 u_spotLightDir;
+uniform float u_spotLightCutoff; // Cosine of cutoff angle
+uniform float u_spotLightOuterCutoff; // Cosine of outer cutoff angle
+
 void main() {
     vec4 texColor;
 
@@ -104,6 +109,22 @@ void main() {
     vec3 diffuse = vec3(texColor) * nDotL * 0.7;
     vec3 ambient = vec3(texColor) * 0.3;
 
+    // Spotlight calculations
+    vec3 spotLightDir = normalize(u_spotLightDir);
+    vec3 fragToLight = normalize(u_spotLightPos - vec3(v_VertPos));
+    float theta = dot(fragToLight, spotLightDir);
+
+    float epsilon = u_spotLightCutoff - u_spotLightOuterCutoff;
+    float intensity = clamp((theta - u_spotLightOuterCutoff) / epsilon, 0.0, 1.0);
+
+    if (theta > u_spotLightOuterCutoff) {
+        float spotDiffuse = max(dot(N, fragToLight), 0.0);
+        float spotSpecular = pow(max(dot(E, reflect(-fragToLight, N)), 0.0), 32.0);
+
+        diffuse += vec3(texColor) * spotDiffuse * intensity;
+        specular += spotSpecular * intensity;
+    }
+
     if (u_lightOn) {
         gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
     } else {
@@ -133,6 +154,11 @@ let g_verticalAngle = 0.0;
 let isLightPosSliderActive = false;
 //let isNightMode = false;
 //let isSunriseMode = false;
+
+let u_spotLightPos;
+let u_spotLightDir;
+let u_spotLightCutoff;
+let u_spotLightOuterCutoff;
 
 // Global Variables Related to UI Elements
 let g_selectedColor=[1.0,1.0,1.0,1.0];
@@ -304,6 +330,30 @@ const connectVariablesToGLSL = () => {
     console.log('Failed to get the storage location of u_lightOn');
     return;
   }
+
+    u_spotLightPos = gl.getUniformLocation(gl.program, 'u_spotLightPos');
+    if (!u_spotLightPos) {
+        console.log('Failed to get the storage location of u_spotLightPos');
+        return;
+    }
+
+    u_spotLightDir = gl.getUniformLocation(gl.program, 'u_spotLightDir');
+    if (!u_spotLightDir) {
+        console.log('Failed to get the storage location of u_spotLightDir');
+        return;
+    }
+
+    u_spotLightCutoff = gl.getUniformLocation(gl.program, 'u_spotLightCutoff');
+    if (!u_spotLightCutoff) {
+        console.log('Failed to get the storage location of u_spotLightCutoff');
+        return;
+    }
+
+    u_spotLightOuterCutoff = gl.getUniformLocation(gl.program, 'u_spotLightOuterCutoff');
+    if (!u_spotLightOuterCutoff) {
+        console.log('Failed to get the storage location of u_spotLightOuterCutoff');
+        return;
+    }
 }
 
 const addActionsForHtmlUI = () => {
@@ -690,6 +740,17 @@ function renderSunriseSky() {
 
   // Pass the light status
   gl.uniform1i(u_lightOn, g_lightOn);
+
+    // Set the values for the spotlight
+    gl.uniform3f(u_spotLightPos, 5.0, 1.0, 1.0); 
+    gl.uniform3f(u_spotLightDir, -1.0, -1.0, -1.0); 
+    gl.uniform1f(u_spotLightCutoff, Math.cos(radians(12.5))); 
+    gl.uniform1f(u_spotLightOuterCutoff, Math.cos(radians(15.0))); 
+
+// You can define a function to convert degrees to radians
+function radians(degrees) {
+    return degrees * Math.PI / 180.0;
+}
   
   // Draw the light
   var light = new Cube();
