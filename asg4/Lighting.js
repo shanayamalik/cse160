@@ -36,56 +36,56 @@ void main() {
 
   // Pass the texture coordinates and normal vector to the fragment shader
   v_UV = a_UV;
-  //mat4 NormalMatrix = transpose(inverse(u_ModelMatrix));
   v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 1.0)));
-  //v_Normal = normalize(vec3(u_ModelMatrix * vec4(a_Normal, 1.0)));
-  //v_Normal = a_Normal;
 
   // Calculate the vertex position in world space
   v_VertPos = u_ModelMatrix * a_Position;
-}`
+}`;
 
 var FSHADER_SOURCE = `
-  precision mediump float;
-  varying vec2 v_UV;
-  varying vec3 v_Normal;
-  uniform vec4 u_FragColor;
-  uniform sampler2D u_Sampler0;
-  uniform sampler2D u_Sampler1;
-  uniform sampler2D u_Sampler2;
-  uniform sampler2D u_Sampler3;
-  uniform sampler2D u_Sampler4;  // Existing sampler for the night sky texture
-  uniform sampler2D u_Sampler5;  // Existing sampler for the sunrise sky texture
-  uniform sampler2D u_Sampler6;  // New sampler for the additional texture
-  uniform int u_whichTexture;
-  uniform vec3 u_lightPos;  // Correct declaration
-  uniform vec3 u_cameraPos;  // Declaration added
-  varying vec4 v_VertPos;
-  uniform bool u_lightOn;
+precision mediump float;
 
-  void main() {
+varying vec2 v_UV;
+varying vec3 v_Normal;
+uniform vec4 u_FragColor;
+uniform sampler2D u_Sampler0;
+uniform sampler2D u_Sampler1;
+uniform sampler2D u_Sampler2;
+uniform sampler2D u_Sampler3;
+uniform sampler2D u_Sampler4;
+uniform sampler2D u_Sampler5;
+uniform sampler2D u_Sampler6;
+uniform int u_whichTexture;
+uniform vec3 u_lightPos;
+uniform vec3 u_cameraPos;
+uniform bool u_lightOn; 
+varying vec4 v_VertPos;
+
+void main() {
+    vec4 texColor;
+
     if (u_whichTexture == -3) {
-      gl_FragColor = vec4((v_Normal + 1.0) / 2.0, 1.0); // Fixed error here
+        texColor = vec4((v_Normal + 1.0) / 2.0, 1.0); // Normal visualization
     } else if (u_whichTexture == -2) {
-      gl_FragColor = u_FragColor;  // Use plain color
+        texColor = u_FragColor;  // Use plain color
     } else if (u_whichTexture == -1) {
-      gl_FragColor = vec4(v_UV, 1.0, 1.0); // Display texture coordinates
+        texColor = vec4(v_UV, 1.0, 1.0); // Display texture coordinates
     } else if (u_whichTexture == 0) {
-      gl_FragColor = texture2D(u_Sampler0, v_UV); // Texture 0
+        texColor = texture2D(u_Sampler0, v_UV); // Texture 0
     } else if (u_whichTexture == 1) {
-      gl_FragColor = texture2D(u_Sampler1, v_UV); // Texture 1
+        texColor = texture2D(u_Sampler1, v_UV); // Texture 1
     } else if (u_whichTexture == 2) {
-      gl_FragColor = texture2D(u_Sampler2, v_UV); // Texture 2
+        texColor = texture2D(u_Sampler2, v_UV); // Texture 2
     } else if (u_whichTexture == 3) {
-      gl_FragColor = texture2D(u_Sampler3, v_UV); // Texture 3
+        texColor = texture2D(u_Sampler3, v_UV); // Texture 3
     } else if (u_whichTexture == 4) {
-      gl_FragColor = texture2D(u_Sampler4, v_UV); // Texture 4 (night sky)
+        texColor = texture2D(u_Sampler4, v_UV); // Texture 4 (night sky)
     } else if (u_whichTexture == 5) {
-      gl_FragColor = texture2D(u_Sampler5, v_UV); // Texture 5 (sunrise sky)
+        texColor = texture2D(u_Sampler5, v_UV); // Texture 5 (sunrise sky)
     } else if (u_whichTexture == 6) {
-      gl_FragColor = texture2D(u_Sampler6, v_UV); // Texture 6 (new texture)
+        texColor = texture2D(u_Sampler6, v_UV); // Texture 6 (new texture)
     } else {
-      gl_FragColor = vec4(1.0, 0.2, 0.2, 1.0); // Fallback color for errors
+        texColor = vec4(1.0, 0.2, 0.2, 1.0); // Fallback color for errors
     }
 
     vec3 lightVector = u_lightPos - vec3(v_VertPos);
@@ -104,11 +104,15 @@ var FSHADER_SOURCE = `
     // Specular
     float specular = pow(max(dot(E, R), 0.0), 64.0) * 0.8;
 
-    vec3 diffuse = vec3(gl_FragColor) * nDotL * 0.7;
-    vec3 ambient = vec3(gl_FragColor) * 0.3;
-    gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
-  }
-`;
+    vec3 diffuse = vec3(texColor) * nDotL * 0.7;
+    vec3 ambient = vec3(texColor) * 0.3;
+
+    if (u_lightOn) {
+        gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
+    } else {
+        gl_FragColor = texColor;
+    }
+}`;
 
 // Global Variables (UI or data passed to GLSL)
 let canvas;
@@ -141,7 +145,7 @@ let g_magentaAngle=0;
 let g_yellowAnimation=false;
 let g_magentaAnimation=false;
 let g_NormalOn=false;
-
+let g_lightOn=true;
 let g_lightPos=[0, 1, -2];
 
 const setupWebGL = () => {
@@ -296,11 +300,11 @@ const connectVariablesToGLSL = () => {
     return false;
   }
 
-  // Get the storage location of u_whichTexture
+  // Get the storage location of u_lightOn
   u_lightOn = gl.getUniformLocation(gl.program, 'u_lightOn');
   if (!u_lightOn) {
-      console.log('Failed to get the storage location of u_lightOn');
-      return;
+    console.log('Failed to get the storage location of u_lightOn');
+    return;
   }
 }
 
@@ -340,6 +344,10 @@ const addActionsForHtmlUI = () => {
       dragging = false;
   });
 
+// Toggle light visualization
+document.getElementById('lightOn').onclick = function() { g_lightOn = true; };
+document.getElementById('lightOff').onclick = function() { g_lightOn = false; };
+  
 // Toggle normal visualization
 document.getElementById('normalOn').onclick = function() { g_NormalOn = true; };
 document.getElementById('normalOff').onclick = function() { g_NormalOn = false; };
@@ -659,6 +667,12 @@ function renderSunriseSky() {
 
   // Pass the light position to GLSL
   gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
+
+  // Pass the camera position to GLSL
+  gl.uniform3f(u_cameraPos, g_camera.eye.x, g_camera.eye.y, g_camera.eye.z);
+
+  // Pass the light status
+  gl.uniform1i(u_lightOn, g_lightOn);
 
   // Draw the light
   var light = new Cube();
