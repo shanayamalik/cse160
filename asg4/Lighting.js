@@ -2,7 +2,6 @@
 
 //TODO: Created a sphere.
 //TODO: Lighting (ambient+diffuse+specular) works correctly and the lighting color changes correctly with slider.
-//TODO: A user interface button to turn on and off lighting
 //TODO: The point light moves around the world over time and also using the slider.
 //TODO: Your blocky animal or your world exists and is lighted.
 //TODO: A spot light is added.
@@ -37,6 +36,7 @@ void main() {
   // Pass the texture coordinates and normal vector to the fragment shader
   v_UV = a_UV;
   v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 1.0)));
+  v_Normal = a_Normal;
 
   // Calculate the vertex position in world space
   v_VertPos = u_ModelMatrix * a_Position;
@@ -357,7 +357,7 @@ document.getElementById('yellowSlide').addEventListener('mousemove', function() 
   document.getElementById('magentaSlide').addEventListener('mousemove', function() { g_magentaAngle = this.value; renderAllShapes(); });
 
   // Adjust light position with sliders
-  document.getElementById('lightSlideX').addEventListener('mousemove', function(ev) { 
+document.getElementById('lightSlideX').addEventListener('mousemove', function(ev) { 
     if (ev.buttons == 1) { 
       g_lightPos[0] = this.value / 100; 
       renderAllShapes(); 
@@ -485,7 +485,7 @@ function updateAnimationAngles() {
     //g_earsAngle = (5 * Math.sin(4 * g_seconds));
     //g_tailAngle = (5 * Math.sin(4 * g_seconds));
   
-    g_lightPos[0] = Math.cos(g_seconds);
+    g_lightPos[0] = 1.3 * Math.cos(g_seconds);
 }
 
 function keydown(ev) {
@@ -665,6 +665,9 @@ function renderSunriseSky() {
   }
 */
 
+  // Set the correct texture mode
+  gl.uniform1i(u_whichTexture, g_NormalOn ? -3 : -2);
+
   // Pass the light position to GLSL
   gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
 
@@ -686,8 +689,7 @@ function renderSunriseSky() {
   // Draw Sphere
   var sp = new Sphere();
   sp.textureNum = g_NormalOn ? -3 : -2;
-  if (g_NormalOn) sp.textureNum = -3;
-  sp.matrix.translate(-5, -2.75, -1.5);
+  sp.matrix.translate(-4, -1.5, -1.5);
   //sp.matrix.scale(.4, .4, .4);
   sp.render();
   
