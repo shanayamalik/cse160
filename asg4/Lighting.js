@@ -28,6 +28,7 @@ uniform mat4 u_ModelMatrix;
 uniform mat4 u_GlobalRotateMatrix;
 uniform mat4 u_ViewMatrix;
 uniform mat4 u_ProjectionMatrix;
+uniform mat4 u_NormalMatrix;
 
 void main() {
   // Calculate the final vertex position by applying all transformation matrices
@@ -35,7 +36,10 @@ void main() {
 
   // Pass the texture coordinates and normal vector to the fragment shader
   v_UV = a_UV;
-  v_Normal = a_Normal;
+  //mat4 NormalMatrix = transpose(inverse(u_ModelMatrix));
+  v_Normal = normalize(vec3(u_NormalMatrix * vec4(a_Normal, 1.0)));
+  //v_Normal = normalize(vec3(u_ModelMatrix * vec4(a_Normal, 1.0)));
+  //v_Normal = a_Normal;
 
   // Calculate the vertex position in world space
   v_VertPos = u_ModelMatrix * a_Position;
@@ -100,18 +104,6 @@ var FSHADER_SOURCE = `
     // Specular
     float specular = pow(max(dot(E, R), 0.0), 64.0) * 0.8;
 
-    /*
-    vec3 diffuse = vec3(1.0, 1.0, 0.9) * vec3(gl_FragColor) * nDotL * 0.7;
-    vec3 ambient = vec3(gl_FragColor) * 0.2;
-    if (u_lightOn) {
-      if (u_whichTexture == 0) {
-        gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
-      } else {
-        gl_FragColor = vec4(diffuse + ambient, 1.0);
-      }
-    }
-    */
-
     vec3 diffuse = vec3(gl_FragColor) * nDotL * 0.7;
     vec3 ambient = vec3(gl_FragColor) * 0.3;
     gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
@@ -130,6 +122,7 @@ let u_ModelMatrix;
 let u_GlobalRotateMatrix;
 let u_ProjectionMatrix;
 let u_ViewMatrix;
+let u_NormalMatrix;
 let u_Samplers = [];
 let u_whichTexture;
 let u_lightPos;
@@ -233,6 +226,12 @@ const connectVariablesToGLSL = () => {
   u_ViewMatrix = gl.getUniformLocation(gl.program, 'u_ViewMatrix');
   if (!u_ViewMatrix) {
     console.log('Failed to get the storage location of u_ViewMatrix');
+    return;
+  }
+
+  u_NormalMatrix = gl.getUniformLocation(gl.program, 'u_NormalMatrix');
+  if (!u_NormalMatrix) {
+    console.log('Failed to get the storage location of u_NormalMatrix');
     return;
   }
 
@@ -591,6 +590,13 @@ const renderAllShapes = () => {
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
 
   /*
+  var normalMatrix = new Matrix4();
+  normalMatrix.setInverseOf(modelMatrix);
+  normalMatrix.transpose();
+  gl.uniformMatrix4fv(u_NormalMatrix, false, normalMatrix.elements);
+*/
+  
+  /*
   // Pass the view matrix
   var viewMat = new Matrix4();
   // viewMat.setLookAt(g_eye[0], g_eye[1], g_eye[2], g_at[0], g_at[1], g_at[2], g_up[0], g_up[1], g_up[2]);
@@ -678,6 +684,7 @@ function renderSunriseSky() {
   body.matrix.translate(-0.25, -0.75, 0.0);
   body.matrix.rotate(-5,1,0,0);
   body.matrix.scale(0.5, .3, .5);
+  body.normalMatrix.setInverseOf(body.matrix).transpose();
   body.render();
 
   // Draw a left arm
@@ -690,8 +697,9 @@ function renderSunriseSky() {
   var yellowCoordinatesMat=new Matrix4(yellow.matrix);
   yellow.matrix.scale(0.25, 0.7, 0.5);
   yellow.matrix.translate(-0.5,0,0);
+  yellow.normalMatrix.setInverseOf(yellow.matrix).transpose();
   yellow.render();
-
+  
   // Test box
   var box = new Cube();
   box.color = [1, 0, 1, 1];
@@ -701,6 +709,7 @@ function renderSunriseSky() {
   box.matrix.rotate(g_magentaAngle, 0, 0, 1);
   box.matrix.scale(0.3, 0.3, 0.3);
   box.matrix.translate(-0.5, 0, -0.001);
+  box.normalMatrix.setInverseOf(box.matrix).transpose();
   box.render();
   
   let duration = performance.now() - startTime;

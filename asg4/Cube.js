@@ -6,6 +6,7 @@ class Cube {
         // this.size = 5.0;
         // this.rotation = 0.0;
         this.matrix = new Matrix4();
+        this.normalMatrix = new Matrix4();
         this.vertices = null;
         this.buffer = null;
         this.uvBuffer = null;
