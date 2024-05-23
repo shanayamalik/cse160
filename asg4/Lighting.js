@@ -1,8 +1,6 @@
 //TODO: drawTriangle3DUVNormal
 
 //TODO: Created a sphere.
-//TODO: Lighting (ambient+diffuse+specular) works correctly and the lighting color changes correctly with slider.
-//TODO: The point light moves around the world over time and also using the slider.
 //TODO: Your blocky animal or your world exists and is lighted.
 //TODO: A spot light is added.
 
@@ -133,6 +131,7 @@ let u_lightPos;
 let u_CameraPos;
 let g_horizontalAngle = 175.0;
 let g_verticalAngle = 0.0;
+let isLightPosSliderActive = false;
 //let isNightMode = false;
 //let isSunriseMode = false;
 
@@ -356,24 +355,38 @@ document.getElementById('normalOff').onclick = function() { g_NormalOn = false; 
 document.getElementById('yellowSlide').addEventListener('mousemove', function() { g_yellowAngle = this.value; renderAllShapes(); });
   document.getElementById('magentaSlide').addEventListener('mousemove', function() { g_magentaAngle = this.value; renderAllShapes(); });
 
-  // Adjust light position with sliders
-document.getElementById('lightSlideX').addEventListener('mousemove', function(ev) { 
-    if (ev.buttons == 1) { 
+// Event listeners for light position sliders
+document.getElementById('lightSlideX').addEventListener('mousedown', function() { 
+      isLightPosSliderActive = true; 
+  });
+  document.getElementById('lightSlideX').addEventListener('mouseup', function() { 
+      isLightPosSliderActive = false; 
+  });
+  document.getElementById('lightSlideX').addEventListener('input', function(ev) { 
       g_lightPos[0] = this.value / 100; 
       renderAllShapes(); 
-    } 
   });
-  document.getElementById('lightSlideY').addEventListener('mousemove', function(ev) { 
-    if (ev.buttons == 1) { 
+
+  document.getElementById('lightSlideY').addEventListener('mousedown', function() { 
+      isLightPosSliderActive = true; 
+  });
+  document.getElementById('lightSlideY').addEventListener('mouseup', function() { 
+      isLightPosSliderActive = false; 
+  });
+  document.getElementById('lightSlideY').addEventListener('input', function(ev) { 
       g_lightPos[1] = this.value / 100; 
       renderAllShapes(); 
-    } 
   });
-  document.getElementById('lightSlideZ').addEventListener('mousemove', function(ev) { 
-    if (ev.buttons == 1) { 
+
+  document.getElementById('lightSlideZ').addEventListener('mousedown', function() { 
+      isLightPosSliderActive = true; 
+  });
+  document.getElementById('lightSlideZ').addEventListener('mouseup', function() { 
+      isLightPosSliderActive = false; 
+  });
+  document.getElementById('lightSlideZ').addEventListener('input', function(ev) { 
       g_lightPos[2] = this.value / 100; 
       renderAllShapes(); 
-    } 
   });
 
   // Toggle animation for yellow and magenta
@@ -485,7 +498,9 @@ function updateAnimationAngles() {
     //g_earsAngle = (5 * Math.sin(4 * g_seconds));
     //g_tailAngle = (5 * Math.sin(4 * g_seconds));
   
-    g_lightPos[0] = 1.3 * Math.cos(g_seconds);
+  if (!isLightPosSliderActive) {
+      g_lightPos[0] = 1.3 * Math.cos(g_seconds);
+  }
 }
 
 function keydown(ev) {
