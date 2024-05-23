@@ -70,60 +70,65 @@ class Cube {
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-        if (!this.buffer) {
-            this.buffer = gl.createBuffer();
-            if (!this.buffer) {
-                console.log('Failed to create the buffer object');
-                return -1;
-            }
-        }
-        if (!this.uvBuffer) {
-            this.uvBuffer = gl.createBuffer();
-            if (!this.uvBuffer) {
-                console.log('Failed to create the uvbuffer object');
-                return -1;
-            }
-        }
-        if (!this.vertices) {
-            this.generateCubeVertices();
-        }
-        if (!this.uv) {
-            this.generateCubeUV();
-        }
-        if (!this.colors) {
-            this.generateColors(rgba);
-        }
+        // if (!this.buffer) {
+        //     this.buffer = gl.createBuffer();
+        //     if (!this.buffer) {
+        //         console.log('Failed to create the buffer object');
+        //         return -1;
+        //     }
+        // }
+        // if (!this.uvBuffer) {
+        //     this.uvBuffer = gl.createBuffer();
+        //     if (!this.uvBuffer) {
+        //         console.log('Failed to create the uvbuffer object');
+        //         return -1;
+        //     }
+        // }
+        // if (!this.vertices) {
+        //     this.generateCubeVertices();
+        // }
+        // if (!this.uv) {
+        //     this.generateCubeUV();
+        // }
+        // if (!this.colors) {
+        //     this.generateColors(rgba);
+        // }
 
         gl.uniform1i(u_whichTexture, this.textureNum);
         // drawCube(this.buffer, this.vertices, this.colors);
-        drawCubeUV(this.buffer, this.uvBuffer, this.vertices, this.uv, this.colors);
-    }
+        //drawCubeUV(this.buffer, this.uvBuffer, this.vertices, this.uv, this.colors);
 
-    /*
+    // Front of cube
+    drawTriangle3DUVNormal([0,0,0 , 1,1,0 , 1,0,0 ],[0,0,1, 1,1,1, 1,0,1],[0,0,-1, 0,0,-1, 0,0,-1]);
+    drawTriangle3DUVNormal([0,0,0, 0,1,0, 1,1,0 ], [0,0, 0,1, 1,1], [0,0,-1, 0,0,-1, 0,0,-1]);
+
+    // Pass the color of a point to u_FragColor uniform variable
+    gl.uniform4f(u_FragColor, rgba[0]*.9, rgba[1]*.9, rgba[2]*.9, rgba[3]);
+
     // Top of cube
-    drawTriangle3DUVNormal([0,1,0, 0,1,1, 1,1,1], [0,1, 0,0, 1,0]);
-    drawTriangle3DUVNormal([0,1,0, 1,1,1, 1,1,0], [0,1, 1,0, 1,1]);
+        drawTriangle3DUVNormal([0,1,0, 0,1,1, 1,1,1], [0,0, 0,1, 1,1], [0,1,0, 0,1,0, 0,1,0]);
+        drawTriangle3DUVNormal([0,1,0, 1,1,1, 1,1,0], [0,0, 1,1, 1,0], [0,1,0, 0,1,0, 0,1,0]);
 
     // Back of cube
     gl.uniform4f(u_FragColor, rgba[0]*.8, rgba[1]*.8, rgba[2]*.8, rgba[3]);
-    drawTriangle3DUVNormal([1,0,1, 0,1,1, 0,0,1], [1,0, 0,1, 0,0]);
-    drawTriangle3DUVNormal([1,0,1, 1,1,1, 0,1,1], [1,0, 1,1, 0,1]);
-
-    // Bottom of cube
+    drawTriangle3DUVNormal([0,0,1, 1,1,1, 1,0,1], [0,0, 0,1, 1,1], [0,0,1, 0,0,1, 0,0,1]);
+    drawTriangle3DUVNormal([0,0,1, 0,1,1, 1,1,1], [0,0, 1,1, 1,0], [0,0,1, 0,0,1, 0,0,1]);
+        
+    // // Bottom of cube
     gl.uniform4f(u_FragColor, rgba[0]*.7, rgba[1]*.7, rgba[2]*.7, rgba[3]);
-    drawTriangle3DUVNormal([0,0,0, 1,0,1, 1,0,0], [0,0, 1,0, 1,0]);
-    drawTriangle3DUVNormal([0,0,0, 0,0,1, 1,0,1], [0,0, 0,0, 1,0]);
+    drawTriangle3DUVNormal([0,0,0, 0,0,1, 1,0,1], [0,0, 0,1, 1,1], [0,-1,0, 0,-1,0, 0,-1,0]);
+    drawTriangle3DUVNormal([0,0,0, 1,0,1, 1,0,0], [0,0, 1,1, 1,0], [0,-1,0, 0,-1,0, 0,-1,0]);
 
-    // Left side of cube
+    // // Left side of cube
     gl.uniform4f(u_FragColor, rgba[0]*.6, rgba[1]*.6, rgba[2]*.6, rgba[3]);
-    drawTriangle3DUVNormal([0,0,0, 0,0,1, 0,1,1], [0,0, 0,1, 0,1]);
-    drawTriangle3DUVNormal([0,0,0, 0,1,1, 0,1,0], [0,0, 0,1, 0,0]);
+    drawTriangle3DUVNormal([0,1,0, 0,1,1, 0,0,0], [0,0, 0,1, 1,1], [-1,0,0, -1,0,0, -1,0,0]);
+    drawTriangle3DUVNormal([0,0,0, 0,1,1, 0,0,1], [0,0, 1,1, 1,0], [-1,0,0, -1,0,0, -1,0,0]);
 
-    // Right side of cube
+    // // Right side of cube
     gl.uniform4f(u_FragColor, rgba[0]*.5, rgba[1]*.5, rgba[2]*.5, rgba[3]);
-    drawTriangle3DUVNormal([1,0,0, 1,1,1, 1,1,0], [1,0, 1,1, 1,1]);
-    drawTriangle3DUVNormal([1,0,0, 1,0,1, 1,1,1], [1,0, 1,0, 1,1]);
-*/
+    drawTriangle3DUVNormal([1,1,0, 1,1,1, 1,0,0], [0,0, 0,1, 1,1], [1,0,0, 1,0,0, 1,0,0]);
+    drawTriangle3DUVNormal([1,0,0, 1,1,1, 1,1,0], [0,0, 1,1, 1,0], [1,0,0, 1,0,0, 1,0,0]);
+    }
     
     renderFast() {
         let rgba = this.color;
