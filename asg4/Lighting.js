@@ -8,28 +8,40 @@
 //TODO: Button to visualize normals with color
 
 // ColoredPoint.js (c) 2012 matsuda
+
 // Vertex shader program
 var VSHADER_SOURCE = `
-  precision mediump float;
-  attribute vec4 a_Position;
-  attribute vec2 a_UV;
-  attribute vec3 a_Normal;
-  varying vec2 v_UV;
-  varying vec3 v_Normal;
-  varying vec4 v_VertPos;
-  attribute vec4 a_Color;
-  uniform mat4 u_ModelMatrix;
-  uniform mat4 u_GlobalRotateMatrix;
-  uniform mat4 u_ViewMatrix;
-  uniform mat4 u_ProjectionMatrix;
-  void main() {
-    gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
-    v_UV = a_UV;
-    v_Normal = a_Normal;
-    v_VertPos = u_ModelMatrix * a_Position;
-  }`
+precision mediump float;
 
-// Fragment shader program
+// Attributes from the vertex buffer
+attribute vec4 a_Position;  // Vertex position
+attribute vec2 a_UV;        // Texture coordinates
+attribute vec3 a_Normal;    // Normal vector
+attribute vec4 a_Color;     
+
+// Varyings to pass data to the fragment shader
+varying vec2 v_UV;
+varying vec3 v_Normal;
+varying vec4 v_VertPos;
+
+// Uniforms for transformation matrices
+uniform mat4 u_ModelMatrix;
+uniform mat4 u_GlobalRotateMatrix;
+uniform mat4 u_ViewMatrix;
+uniform mat4 u_ProjectionMatrix;
+
+void main() {
+  // Calculate the final vertex position by applying all transformation matrices
+  gl_Position = u_ProjectionMatrix * u_ViewMatrix * u_GlobalRotateMatrix * u_ModelMatrix * a_Position;
+
+  // Pass the texture coordinates and normal vector to the fragment shader
+  v_UV = a_UV;
+  v_Normal = a_Normal;
+
+  // Calculate the vertex position in world space
+  v_VertPos = u_ModelMatrix * a_Position;
+}`
+
 var FSHADER_SOURCE = `
   precision mediump float;
   varying vec2 v_UV;
@@ -50,7 +62,7 @@ var FSHADER_SOURCE = `
 
   void main() {
     if (u_whichTexture == -3) {
-      gl_FragColor -= vec4((v_Normal + 1.0) / 2.0, 1.0);
+      gl_FragColor = vec4((v_Normal + 1.0) / 2.0, 1.0); // Fixed error here
     } else if (u_whichTexture == -2) {
       gl_FragColor = u_FragColor;  // Use plain color
     } else if (u_whichTexture == -1) {
@@ -75,16 +87,6 @@ var FSHADER_SOURCE = `
 
     vec3 lightVector = u_lightPos - vec3(v_VertPos);
     float r = length(lightVector);
-
-    // Red/Green Distance Visualization
-    // if (r<1.0) {
-    //   gl_FragColor= vec4(1,0,0,1);
-    // } else if (r<2.0) {
-    //   gl_FragColor= vec4(0,1,0,1);
-    // }
-
-    // Light Falloff Visualization 1/r^2
-    // gl_FragColor= vec4(vec3(gl_FragColor)/(r*r),1);
 
     // N dot L
     vec3 L = normalize(lightVector);
@@ -140,7 +142,7 @@ let g_yellowAngle=0;
 let g_magentaAngle=0;
 let g_yellowAnimation=false;
 let g_magentaAnimation=false;
-let g_NormalOn=true;
+let g_NormalOn=false;
 
 let g_lightPos=[0, 1, -2];
 
@@ -299,11 +301,13 @@ const connectVariablesToGLSL = () => {
 }
 
 const addActionsForHtmlUI = () => {
+  // Update camera angle on input
   document.getElementById('cameraAngle').addEventListener('input', (event) => {
       g_horizontalAngle = parseFloat(event.target.value);
       renderAllShapes();
   });
 
+  // Enable mouse dragging for canvas
   canvas.addEventListener('mousedown', (ev) => {
       ev.preventDefault();
       let rect = ev.target.getBoundingClientRect();
@@ -314,6 +318,7 @@ const addActionsForHtmlUI = () => {
       }
   });
 
+  // Handle mouse movement for dragging
   canvas.addEventListener('mousemove', (ev) => {
       if (dragging) {
           let dx = (ev.clientX - lastX) * 10.0 * Math.PI / canvas.width;
@@ -326,24 +331,46 @@ const addActionsForHtmlUI = () => {
       }
   });
 
+  // Disable dragging on mouse up
   canvas.addEventListener('mouseup', () => {
       dragging = false;
   });
 
-document.getElementById('normalOn').onclick = function() { g_normalOn = true; };
-document.getElementById('normalOff').onclick = function() { g_normalOn = false; };
-  document.getElementById('yellowSlide').addEventListener('mousemove', function() {g_yellowAngle = this.value; renderAllShapes(); });
-document.getElementById('magentaSlide').addEventListener('mousemove', function() {g_magentaAngle = this.value; renderAllShapes(); });
-  document.getElementById('lightSlideX').addEventListener('mousemove', function(ev) { if (ev.buttons == 1) { g_lightPos[0] = this.value / 100; renderAllShapes(); } });
-  document.getElementById('lightSlideY').addEventListener('mousemove', function(ev) { if (ev.buttons == 1) { g_lightPos[1] = this.value / 100; renderAllShapes(); } });
-  document.getElementById('lightSlideZ').addEventListener('mousemove', function(ev) { if (ev.buttons == 1) { g_lightPos[2] = this.value / 100; renderAllShapes(); } });
-  
-document.getElementById('animationYellowOnButton').onclick = function() {g_yellowAnimation=true;};
-document.getElementById('animationYellowOffButton').onclick = function() {g_yellowAnimation=false;};
-document.getElementById('animationMagentaOnButton').onclick = function() {g_magentaAnimation=true;};
-document.getElementById('animationMagentaOffButton').onclick = function() {g_magentaAnimation=false;};
-  
+// Toggle normal visualization
+document.getElementById('normalOn').onclick = function() { g_NormalOn = true; };
+document.getElementById('normalOff').onclick = function() { g_NormalOn = false; };
+
+// Adjust angles with sliders
+document.getElementById('yellowSlide').addEventListener('mousemove', function() { g_yellowAngle = this.value; renderAllShapes(); });
+  document.getElementById('magentaSlide').addEventListener('mousemove', function() { g_magentaAngle = this.value; renderAllShapes(); });
+
+  // Adjust light position with sliders
+  document.getElementById('lightSlideX').addEventListener('mousemove', function(ev) { 
+    if (ev.buttons == 1) { 
+      g_lightPos[0] = this.value / 100; 
+      renderAllShapes(); 
+    } 
+  });
+  document.getElementById('lightSlideY').addEventListener('mousemove', function(ev) { 
+    if (ev.buttons == 1) { 
+      g_lightPos[1] = this.value / 100; 
+      renderAllShapes(); 
+    } 
+  });
+  document.getElementById('lightSlideZ').addEventListener('mousemove', function(ev) { 
+    if (ev.buttons == 1) { 
+      g_lightPos[2] = this.value / 100; 
+      renderAllShapes(); 
+    } 
+  });
+
+  // Toggle animation for yellow and magenta
+  document.getElementById('animationYellowOnButton').onclick = function() { g_yellowAnimation = true; };
+  document.getElementById('animationYellowOffButton').onclick = function() { g_yellowAnimation = false; };
+  document.getElementById('animationMagentaOnButton').onclick = function() { g_magentaAnimation = true; };
+  document.getElementById('animationMagentaOffButton').onclick = function() { g_magentaAnimation = false; };
 }
+
 
 let images = {
   0: 'ground.jpg',
@@ -570,7 +597,7 @@ const renderAllShapes = () => {
   );
   // viewMat.setLookAt(0,0,3, 0,0,-100, 0,1,0); // (eye, at, up)
   gl.uniformMatrix4fv(u_ViewMatrix, false, viewMat.elements);
-  */
+*/
   
   /*
   if (isNightMode) {
@@ -619,33 +646,29 @@ function renderSunriseSky() {
   }
 */
 
-
   // Pass the light position to GLSL
   gl.uniform3f(u_lightPos, g_lightPos[0], g_lightPos[1], g_lightPos[2]);
 
-  /*
   // Draw the light
   var light = new Cube();
   light.color = [2, 2, 0, 1];
   light.matrix.translate(g_lightPos[0], g_lightPos[1], g_lightPos[2]);
   light.matrix.scale(.1, .1, .1);
-  light.matrix.translate(-.5, -.5, -.5);
+  light.matrix.translate(-1, -1, -1);
   light.render();
 
   // Draw Sphere
   var sp = new Sphere();
-  //sp.textureNum = -1;
-  if (g_normalOn) sp.textureNum = -3;
-  sp.matrix.translate(-1, -1.5, -1.5);
+  sp.textureNum = g_NormalOn ? -3 : -2;
+  if (g_NormalOn) sp.textureNum = -3;
+  sp.matrix.translate(-5, -2.75, -1.5);
   //sp.matrix.scale(.4, .4, .4);
   sp.render();
-*/
   
   // Draw the body cube
   var body = new Cube();
   body.color = [1.0, 0.0, 0.0, 1.0];
-  //if (g_NormalOn) body.textureNum = -3;
-  body.textureNum = -2;
+  body.textureNum = g_NormalOn ? -3 : -2;
   body.matrix.translate(-0.25, -0.75, 0.0);
   body.matrix.rotate(-5,1,0,0);
   body.matrix.scale(0.5, .3, .5);
@@ -654,8 +677,7 @@ function renderSunriseSky() {
   // Draw a left arm
   var yellow = new Cube();
   yellow.color = [1, 1, 0, 1];
-  //if (g_NormalOn) yellow.textureNum = -2;
-  yellow.textureNum = -2;
+  yellow.textureNum = g_NormalOn ? -3 : -2;
   yellow.matrix.setTranslate(0, -0.5, 0.0); 
   yellow.matrix.rotate(-5,1,0,0);
   yellow.matrix.rotate(-g_yellowAngle,0,0,1);
@@ -667,8 +689,7 @@ function renderSunriseSky() {
   // Test box
   var box = new Cube();
   box.color = [1, 0, 1, 1];
-  //if (g_NormalOn) box.textureNum = -3;
-  box.textureNum = -2;
+  box.textureNum = g_NormalOn ? -3 : -2;
   box.matrix = yellowCoordinatesMat;
   box.matrix.translate(0, 0.65, 0);
   box.matrix.rotate(g_magentaAngle, 0, 0, 1);
