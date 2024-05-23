@@ -1,14 +1,13 @@
+//TODO: drawTriangle3DUVNormal
+
 //TODO: Created a sphere.
 //TODO: Lighting (ambient+diffuse+specular) works correctly and the lighting color changes correctly with slider.
-//TODO: A visual marker of light location exists.
 //TODO: A user interface button to turn on and off lighting
 //TODO: The point light moves around the world over time and also using the slider.
 //TODO: Your blocky animal or your world exists and is lighted.
 //TODO: A spot light is added.
-//TODO: Button to visualize normals with color
 
 // ColoredPoint.js (c) 2012 matsuda
-
 // Vertex shader program
 var VSHADER_SOURCE = `
 precision mediump float;
@@ -652,9 +651,10 @@ function renderSunriseSky() {
   // Draw the light
   var light = new Cube();
   light.color = [2, 2, 0, 1];
+  light.textureNum = g_NormalOn ? -3 : -2;
   light.matrix.translate(g_lightPos[0], g_lightPos[1], g_lightPos[2]);
-  light.matrix.scale(.1, .1, .1);
-  light.matrix.translate(-1, -1, -1);
+  light.matrix.scale(.08, .08, .08);
+  light.matrix.translate(0, -6, 20);
   light.render();
 
   // Draw Sphere
