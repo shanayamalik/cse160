@@ -1,7 +1,3 @@
-//TODO: drawTriangle3DUVNormal
-//TODO: Your blocky animal or your world exists and is lighted.
-//TODO: A spot light is added.
-
 // ColoredPoint.js (c) 2012 matsuda
 // Vertex shader program
 var VSHADER_SOURCE = `
@@ -59,8 +55,9 @@ varying vec4 v_VertPos;
 
 uniform vec3 u_spotLightPos;
 uniform vec3 u_spotLightDir;
-uniform float u_spotLightCutoff; // Cosine of cutoff angle
-uniform float u_spotLightOuterCutoff; // Cosine of outer cutoff angle
+uniform float u_spotLightCutoff;
+uniform float u_spotLightOuterCutoff;
+uniform float u_spotLightIntensity;
 
 void main() {
     vec4 texColor;
@@ -116,13 +113,13 @@ void main() {
     float epsilon = u_spotLightCutoff - u_spotLightOuterCutoff;
     float intensity = clamp((theta - u_spotLightOuterCutoff) / epsilon, 0.0, 1.0);
 
-    if (theta > u_spotLightOuterCutoff) {
-        float spotDiffuse = max(dot(N, fragToLight), 0.0);
-        float spotSpecular = pow(max(dot(E, reflect(-fragToLight, N)), 0.0), 32.0);
+if (theta > u_spotLightOuterCutoff) {
+    float spotDiffuse = max(dot(N, fragToLight), 0.0);
+    float spotSpecular = pow(max(dot(E, reflect(-fragToLight, N)), 0.0), 32.0);
 
-        diffuse += vec3(texColor) * spotDiffuse * intensity;
-        specular += spotSpecular * intensity;
-    }
+    diffuse += vec3(texColor) * spotDiffuse * intensity * 2.0; 
+    specular += spotSpecular * intensity * 2.0;  
+}
 
     if (u_lightOn) {
         gl_FragColor = vec4(specular + diffuse + ambient, 1.0);
@@ -167,14 +164,12 @@ let g_lightOn=true;
 let g_lightPos=[0, 1, -2];
 
 // Global Variables for Spotlight
+let spotlightIntensity = 1.0;
 let u_spotLightPos;
 let u_spotLightDir;
 let u_spotLightCutoff;
 let u_spotLightOuterCutoff;
-let spotlightPosition = [1.0, 2.0, 2.0];
-let spotlightDirection = [0.0, -1.0, -1.0];
-let spotlightCutoff = Math.cos(radians(12.5));
-let spotlightOuterCutoff = Math.cos(radians(17.5));
+let u_spotLightIntensity;
 
 function radians(degrees) {
     return degrees * Math.PI / 180.0;
@@ -343,9 +338,9 @@ const connectVariablesToGLSL = () => {
     u_spotLightDir = gl.getUniformLocation(gl.program, 'u_spotLightDir');
     u_spotLightCutoff = gl.getUniformLocation(gl.program, 'u_spotLightCutoff');
     u_spotLightOuterCutoff = gl.getUniformLocation(gl.program, 'u_spotLightOuterCutoff');
-
-    if (!u_spotLightPos || !u_spotLightDir || !u_spotLightCutoff || !u_spotLightOuterCutoff) {
-        console.log('Failed to get the storage location for spotlight uniforms');
+    u_spotLightIntensity = gl.getUniformLocation(gl.program, 'u_spotLightIntensity');
+    
+    if (!u_spotLightPos || !u_spotLightDir || !u_spotLightCutoff || !u_spotLightOuterCutoff || !u_spotLightIntensity) {
         return;
     }
 }
@@ -500,8 +495,8 @@ const tick = () => {
   // console.log(g_seconds);
   updateAnimationAngles();
   renderAllShapes();
-  //renderLlama(0, 0, 0, 1.0);
-  //renderLlama(1, 0, 0, 0.5); 
+  renderLlama(0, 0, 0, 1.0);
+  renderLlama(1, 0, 0, 0.5); 
   //if (Math.random() > 0.250) {
     //x = Math.floor(Math.random()*32);
     //y = Math.floor(Math.random()*32);
@@ -735,13 +730,16 @@ function renderSunriseSky() {
 
   // Pass the light status
   gl.uniform1i(u_lightOn, g_lightOn);
-    
-  // Set spotlight parameters
-  gl.uniform3f(u_spotLightPos, spotlightPosition[0], spotlightPosition[1], spotlightPosition[2]);
-  gl.uniform3f(u_spotLightDir, spotlightDirection[0], spotlightDirection[1], spotlightDirection[2]);
-  gl.uniform1f(u_spotLightCutoff, spotlightCutoff);
-gl.uniform1f(u_spotLightOuterCutoff, spotlightOuterCutoff);
-  
+
+  gl.uniform1f(u_spotLightIntensity, spotlightIntensity);
+
+  // Set uniform values
+  gl.uniform3f(u_spotLightPos, 1.0, 1.0, 1.0); 
+  gl.uniform3f(u_spotLightDir, 0.0, -1.0, 0.0); 
+  gl.uniform1f(u_spotLightCutoff, Math.cos(12.5 * Math.PI / 180.0)); 
+  gl.uniform1f(u_spotLightOuterCutoff, Math.cos(15.0 * Math.PI / 180.0)); 
+  gl.uniform1f(u_spotLightIntensity, 1.0); 
+
   // Draw the light
   var light = new Cube();
   light.color = [2, 2, 0, 1];
@@ -750,14 +748,15 @@ gl.uniform1f(u_spotLightOuterCutoff, spotlightOuterCutoff);
   light.matrix.scale(.08, .08, .08);
   light.matrix.translate(0, -6, 20);
   light.render();
-
+    
   // Draw Sphere
   var sp = new Sphere();
   sp.textureNum = g_NormalOn ? -3 : -2;
   sp.matrix.translate(0, 0, -1.5); // Adjust translation to move sphere into view
   sp.matrix.scale(0.15, 0.15, 0.15); // Adjust scale to appropriate size
   sp.render();
-    
+
+/*
   // Draw the body cube
   var body = new Cube();
   body.color = [1.0, 0.0, 0.0, 1.0];
@@ -792,7 +791,8 @@ gl.uniform1f(u_spotLightOuterCutoff, spotlightOuterCutoff);
   box.matrix.translate(-0.5, 0, -0.001);
   box.normalMatrix.setInverseOf(box.matrix).transpose();
   box.render();
-    
+*/
+
   let duration = performance.now() - startTime;
   sendTextToHTML(`ms: ${Math.floor(duration)} fps: ${Math.floor(10000/duration)/10}`, 'info');
 }
