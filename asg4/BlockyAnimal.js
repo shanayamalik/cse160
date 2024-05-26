@@ -61,7 +61,7 @@ function cloneMatrix4(matrix) {
 }
 
 
-function renderLlama(scale, textureNumBody, textureNumTail) {
+function renderLlama(scale) {
     const scalePercent = scale / 100; // Convert percentage scale to decimal
 
     // Initialize the base matrix for the entire llama
@@ -70,6 +70,7 @@ function renderLlama(scale, textureNumBody, textureNumTail) {
 
     // Draw the body
     var body = new Cube();
+    //body.textureNum = g_NormalOn ? -3 : -2;
     body.color = [0.776, 0.525, 0.259, 1.0];
     body.textureNum = textureNumBody;
     body.matrix = new Matrix4(baseMatrix).translate(-0.25, -0.25, 0);
@@ -169,7 +170,8 @@ function renderLlama3(x, y, scale, textureNumBody, textureNumTail, z = 0) {
     // Draw the body
     var body = new Cube();
     body.color = [0.776, 0.525, 0.259, 1.0];
-    body.textureNum = textureNumBody;
+    body.textureNum = g_NormalOn ? -3 : textureNumBody;
+    //body.textureNum = textureNumBody;
     body.matrix = new Matrix4(baseMatrix);
     body.matrix.translate(-0.25, -0.25, 0);
     body.matrix.scale(0.5, 0.5, 0.75);
@@ -178,7 +180,8 @@ function renderLlama3(x, y, scale, textureNumBody, textureNumTail, z = 0) {
     // Draw the tail
     var tail = new Cube();
     tail.color = [1, 0.65, 0.65, 1.0];
-    tail.textureNum = textureNumTail;
+    tail.textureNum = g_NormalOn ? -3 : textureNumTail;
+    //tail.textureNum = textureNumTail;
     tail.matrix = new Matrix4(baseMatrix);
     tail.matrix.translate(-0.05, 0.2, 0.75);
     tail.matrix.scale(0.15, 0.2, 0.15);
@@ -187,7 +190,8 @@ function renderLlama3(x, y, scale, textureNumBody, textureNumTail, z = 0) {
     // Draw the neck
     var neck = new Cube();
     neck.color = [0.992, 0.961, 0.886, 1.0];
-    neck.textureNum = -2;
+    neck.textureNum = g_NormalOn ? -3 : -2;
+    //neck.textureNum = -2;
     neck.matrix = new Matrix4(baseMatrix);
     neck.matrix.translate(-0.2, 0.2, 0);
     neck.matrix.scale(0.25, 0.45, 0.25);
@@ -196,16 +200,27 @@ function renderLlama3(x, y, scale, textureNumBody, textureNumTail, z = 0) {
     // Draw the head
     var head = new Cube();
     head.color = [0.945, 0.761, 0.490, 1.0];
-    head.textureNum = -2;
+    head.textureNum = g_NormalOn ? -3 : -2;
+    //head.textureNum = -2;
     head.matrix = new Matrix4(baseMatrix);
     head.matrix.translate(-0.25, 0.45, -0.05);
     head.matrix.scale(0.35, 0.3, 0.45);
     head.render();
 
+    // Draw the nose
+    var nose = new Cube();
+    nose.color = [0.35, 0.35, 0.35, 1.0];
+    nose.textureNum = g_NormalOn ? -3 : -2;
+    //nose.textureNum = -2;
+    nose.matrix = new Matrix4(baseMatrix).translate(-0.15, 0.5, -0.20);
+    nose.matrix.scale(0.1, 0.1, 0.2);
+    nose.render();
+
     // Draw the ears
     var ear = new Cube(); // Left ear
     ear.color = [0.851, 0.475, 0.043, 1.0];
-    ear.textureNum = -2;
+    ear.textureNum = g_NormalOn ? -3 : -2;
+    //ear.textureNum = -2;
     ear.matrix = new Matrix4(baseMatrix);
     ear.matrix.translate(0.05, 0.7, -0.05);
     ear.matrix.scale(0.1, 0.2, 0.1);
@@ -213,7 +228,8 @@ function renderLlama3(x, y, scale, textureNumBody, textureNumTail, z = 0) {
 
     var ear2 = new Cube(); // Right ear
     ear2.color = [0.851, 0.475, 0.043, 1.0];
-    ear2.textureNum = -2;
+    ear2.textureNum = g_NormalOn ? -3 : -2;
+    //ear2.textureNum = -2;
     ear2.matrix = new Matrix4(baseMatrix);
     ear2.matrix.translate(-0.3, 0.7, -0.05);
     ear2.matrix.scale(0.1, 0.2, 0.1);
@@ -229,7 +245,8 @@ function renderLlama3(x, y, scale, textureNumBody, textureNumTail, z = 0) {
     legPositions.forEach(pos => {
         var leg = new Cube();
         leg.color = [0.992, 0.961, 0.886, 1.0];
-        leg.textureNum = -2;
+        leg.textureNum = g_NormalOn ? -3 : -2;
+        //leg.textureNum = -2;
         leg.matrix = new Matrix4(baseMatrix);
         leg.matrix.translate(pos[0], pos[1], pos[2]);
         leg.matrix.scale(0.1, 0.5, 0.1);

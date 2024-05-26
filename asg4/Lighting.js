@@ -740,6 +740,24 @@ function renderSunriseSky() {
   gl.uniform1f(u_spotLightOuterCutoff, Math.cos(15.0 * Math.PI / 180.0)); 
   gl.uniform1f(u_spotLightIntensity, 1.0); 
 
+  const ground = new Cube();
+  ground.color = [1,0,0,1];
+  ground.textureNum = g_NormalOn ? -3 : 0;
+  //ground.textureNum = 0;
+  ground.matrix.translate(0, -0.5, 0);
+  ground.matrix.scale(128, 0, 128);
+  ground.matrix.translate(-0.5, 0, -0.5);
+  ground.render();
+    
+  const sky = new Cube();
+  sky.textureNum = g_NormalOn ? -3 : 1;
+  //sky.color = [1,1,1,1];
+  sky.textureNum = g_NormalOn ? -3 : 1;
+  //sky.textureNum = 1;
+  sky.matrix.scale(-128, -128, -128);
+  sky.matrix.translate(-0.5, -0.5, -0.5);
+  sky.render();
+    
   // Draw the light
   var light = new Cube();
   light.color = [2, 2, 0, 1];
@@ -752,8 +770,8 @@ function renderSunriseSky() {
   // Draw Sphere
   var sp = new Sphere();
   sp.textureNum = g_NormalOn ? -3 : -2;
-  sp.matrix.translate(0, 0, -1.5); // Adjust translation to move sphere into view
-  sp.matrix.scale(0.15, 0.15, 0.15); // Adjust scale to appropriate size
+  sp.matrix.translate(0, 0, -1.5); 
+  sp.matrix.scale(0.15, 0.15, 0.15); 
   sp.render();
 
 /*
