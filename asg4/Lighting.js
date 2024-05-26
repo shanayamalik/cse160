@@ -339,14 +339,13 @@ const connectVariablesToGLSL = () => {
     return;
   }
 
-      u_spotLightPos = gl.getUniformLocation(gl.program, 'u_spotLightPos');
-      u_spotLightDir = gl.getUniformLocation(gl.program, 'u_spotLightDir');
-      u_spotLightCutoff = gl.getUniformLocation(gl.program, 'u_spotLightCutoff');
-      u_spotLightOuterCutoff = gl.getUniformLocation(gl.program, 'u_spotLightOuterCutoff');
-    
-    // Check if locations are valid
+    u_spotLightPos = gl.getUniformLocation(gl.program, 'u_spotLightPos');
+    u_spotLightDir = gl.getUniformLocation(gl.program, 'u_spotLightDir');
+    u_spotLightCutoff = gl.getUniformLocation(gl.program, 'u_spotLightCutoff');
+    u_spotLightOuterCutoff = gl.getUniformLocation(gl.program, 'u_spotLightOuterCutoff');
+
     if (!u_spotLightPos || !u_spotLightDir || !u_spotLightCutoff || !u_spotLightOuterCutoff) {
-    console.log('Failed to get the storage location for spotlight uniforms');
+        console.log('Failed to get the storage location for spotlight uniforms');
         return;
     }
 }
@@ -737,12 +736,11 @@ function renderSunriseSky() {
   // Pass the light status
   gl.uniform1i(u_lightOn, g_lightOn);
     
-   // Set spotlight parameters
-   gl.uniform3f(u_spotLightPos, 1.0, 2.0, 2.0);
-   gl.uniform3f(u_spotLightDir, 0.0, -1.0, -1.0);
-   gl.uniform1f(u_spotLightCutoff, Math.cos(radians(12.5)));
-   gl.uniform1f(u_spotLightOuterCutoff,
-    Math.cos(radians(17.5)));
+  // Set spotlight parameters
+  gl.uniform3f(u_spotLightPos, spotlightPosition[0], spotlightPosition[1], spotlightPosition[2]);
+  gl.uniform3f(u_spotLightDir, spotlightDirection[0], spotlightDirection[1], spotlightDirection[2]);
+  gl.uniform1f(u_spotLightCutoff, spotlightCutoff);
+gl.uniform1f(u_spotLightOuterCutoff, spotlightOuterCutoff);
   
   // Draw the light
   var light = new Cube();
