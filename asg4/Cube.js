@@ -1,250 +1,124 @@
 class Cube {
     constructor() {
         this.type = 'cube';
-        // this.position = [0.0, 0.0, 0.0];
         this.color = [1.0, 1.0, 1.0, 1.0];
-        // this.size = 5.0;
-        // this.rotation = 0.0;
         this.matrix = new Matrix4();
-        this.normalMatrix = new Matrix4();
-        this.vertices = null;
-        this.buffer = null;
-        this.uvBuffer = null;
-        this.colors = null;
-        
         this.textureNum = -3;
-    }
-
-    generateCubeVertices() {
-        // Define the vertices for the faces
-        const faces = [
-            [[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [1.0, 1.0, 0.0]],
-            [[1.0, 0.0, 1.0], [1.0, 1.0, 1.0], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]],
-            [[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 1.0]],
-            [[1.0, 0.0, 0.0], [1.0, 0.0, 1.0], [1.0, 1.0, 0.0], [1.0, 1.0, 1.0]],
-            [[0.0, 1.0, 0.0], [1.0, 1.0, 0.0], [0.0, 1.0, 1.0], [1.0, 1.0, 1.0]],
-            [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [1.0, 0.0, 1.0]]
-        ];
-
-        this.vertices = {
-            front: new Float32Array(faces[0].flat()),
-            top: new Float32Array(faces[1].flat()),
-            back: new Float32Array(faces[2].flat()),
-            bottom: new Float32Array(faces[3].flat()),
-            left: new Float32Array(faces[4].flat()),
-            right: new Float32Array(faces[5].flat()),
-        }
-    }
-
-    generateCubeUV() {
-        const uv = [
-            0, 0,
-            0, 1,
-            1, 0,
-            1, 1
-        ];
-        this.uv = {
-            front: new Float32Array(uv),
-            top: new Float32Array(uv),
-            back: new Float32Array(uv),
-            bottom: new Float32Array(uv),
-            left: new Float32Array(uv),
-            right: new Float32Array(uv),
-        }
-    }
-
-    generateColors(rgba) {
-        // Define the colors for the faces
-        const colors = [
-            [rgba[0], rgba[1], rgba[2], rgba[3]], // Front face
-            [rgba[0]*0.9, rgba[1]*0.9, rgba[2]*0.9, rgba[3]], // Top face
-            [rgba[0]*0.8, rgba[1]*0.8, rgba[2]*0.8, rgba[3]], // Back face
-            [rgba[0]*0.7, rgba[1]*0.7, rgba[2]*0.7, rgba[3]], // Bottom face
-            [rgba[0]*0.6, rgba[1]*0.6, rgba[2]*0.6, rgba[3]], // Left face
-            [rgba[0]*0.5, rgba[1]*0.5, rgba[2]*0.5, rgba[3]], // Right face 
-        ];
-        this.colors = colors;
     }
 
     render() {
         let rgba = this.color;
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-
-        // if (!this.buffer) {
-        //     this.buffer = gl.createBuffer();
-        //     if (!this.buffer) {
-        //         console.log('Failed to create the buffer object');
-        //         return -1;
-        //     }
-        // }
-        // if (!this.uvBuffer) {
-        //     this.uvBuffer = gl.createBuffer();
-        //     if (!this.uvBuffer) {
-        //         console.log('Failed to create the uvbuffer object');
-        //         return -1;
-        //     }
-        // }
-        // if (!this.vertices) {
-        //     this.generateCubeVertices();
-        // }
-        // if (!this.uv) {
-        //     this.generateCubeUV();
-        // }
-        // if (!this.colors) {
-        //     this.generateColors(rgba);
-        // }
-
         gl.uniform1i(u_whichTexture, this.textureNum);
-        // drawCube(this.buffer, this.vertices, this.colors);
-        //drawCubeUV(this.buffer, this.uvBuffer, this.vertices, this.uv, this.colors);
 
-    // Front of cube
-    drawTriangle3DUVNormal([0,0,0 , 1,1,0 , 1,0,0 ],[0,0,1, 1,1,1, 1,0,1],[0,0,-1, 0,0,-1, 0,0,-1]);
-    drawTriangle3DUVNormal([0,0,0, 0,1,0, 1,1,0 ], [0,0, 0,1, 1,1], [0,0,-1, 0,0,-1, 0,0,-1]);
+        // Front
+        drawTriangle3DUVNormal(
+            [0, 0, 0, 1, 1, 0, 1, 0, 0], [0, 0, 1, 1, 1, 1, 1, 0],
+            [0, 0, -1, 0, 0, -1, 0, 0, -1]
+        );
+        drawTriangle3DUVNormal(
+            [0, 0, 0, 0, 1, 0, 1, 1, 0], [0, 0, 0, 1, 1, 1],
+            [0, 0, -1, 0, 0, -1, 0, 0, -1]
+        );
 
-    // Pass the color of a point to u_FragColor uniform variable
-    gl.uniform4f(u_FragColor, rgba[0]*.9, rgba[1]*.9, rgba[2]*.9, rgba[3]);
+        // Top
+        drawTriangle3DUVNormal(
+            [0, 1, 0, 0, 1, 1, 1, 1, 1], [0, 0, 0, 1, 1, 1],
+            [0, 1, 0, 0, 1, 0, 0, 1, 0]
+        );
+        drawTriangle3DUVNormal(
+            [0, 1, 0, 1, 1, 1, 1, 1, 0], [0, 0, 1, 1, 1, 0],
+            [0, 1, 0, 0, 1, 0, 0, 1, 0]
+        );
 
-    // Correct UV coordinates and order
-    drawTriangle3DUVNormal([0,1,0, 0,1,1, 1,1,1], [0,0, 0,1, 1,1], [0,1,0, 0,1,0, 0,1,0]);
-    drawTriangle3DUVNormal([0,1,0, 1,1,1, 1,1,0], [0,0, 1,1, 1,0], [0,1,0, 0,1,0, 0,1,0]);
+        // Back
+        drawTriangle3DUVNormal(
+            [0, 0, 1, 1, 1, 1, 1, 0, 1], [0, 0, 1, 1, 1, 0],
+            [0, 0, 1, 0, 0, 1, 0, 0, 1]
+        );
+        drawTriangle3DUVNormal(
+            [0, 0, 1, 0, 1, 1, 1, 1, 1], [0, 0, 0, 1, 1, 1],
+            [0, 0, 1, 0, 0, 1, 0, 0, 1]
+        );
 
-    // Back of cube
-    gl.uniform4f(u_FragColor, rgba[0]*.8, rgba[1]*.8, rgba[2]*.8, rgba[3]);
-    drawTriangle3DUVNormal([0,0,1, 1,1,1, 1,0,1], [0,0, 0,1, 1,1], [0,0,1, 0,0,1, 0,0,1]);
-    drawTriangle3DUVNormal([0,0,1, 0,1,1, 1,1,1], [0,0, 1,1, 1,0], [0,0,1, 0,0,1, 0,0,1]);
-        
-    // Bottom of cube
-    gl.uniform4f(u_FragColor, rgba[0]*.7, rgba[1]*.7, rgba[2]*.7, rgba[3]);
-    drawTriangle3DUVNormal([0,0,0, 0,0,1, 1,0,1], [0,0, 0,1, 1,1], [0,-1,0, 0,-1,0, 0,-1,0]);
-    drawTriangle3DUVNormal([0,0,0, 1,0,1, 1,0,0], [0,0, 1,1, 1,0], [0,-1,0, 0,-1,0, 0,-1,0]);
+        // Bottom
+        drawTriangle3DUVNormal(
+            [0, 0, 0, 0, 0, 1, 1, 0, 1], [0, 0, 0, 1, 1, 1],
+            [0, -1, 0, 0, -1, 0, 0, -1, 0]
+        );
+        drawTriangle3DUVNormal(
+            [0, 0, 0, 1, 0, 1, 1, 0, 0], [0, 0, 1, 1, 1, 0],
+            [0, -1, 0, 0, -1, 0, 0, -1, 0]
+        );
 
-    // Left side of cube
-    gl.uniform4f(u_FragColor, rgba[0]*.6, rgba[1]*.6, rgba[2]*.6, rgba[3]);
-    drawTriangle3DUVNormal([0,1,0, 0,1,1, 0,0,0], [0,0, 0,1, 1,1], [-1,0,0, -1,0,0, -1,0,0]);
-    drawTriangle3DUVNormal([0,0,0, 0,1,1, 0,0,1], [0,0, 1,1, 1,0], [-1,0,0, -1,0,0, -1,0,0]);
+        // Left
+        drawTriangle3DUVNormal(
+            [0, 1, 0, 0, 1, 1, 0, 0, 0], [0, 0, 0, 1, 1, 1],
+            [-1, 0, 0, -1, 0, 0, -1, 0, 0]
+        );
+        drawTriangle3DUVNormal(
+            [0, 0, 0, 0, 1, 1, 0, 0, 1], [0, 0, 0, 1, 1, 1],
+            [-1, 0, 0, -1, 0, 0, -1, 0, 0]
+        );
 
         // Right
-        gl.uniform4f(u_FragColor, rgba[0]*.5, rgba[1]*.5, rgba[2]*.5, rgba[3]);
-        drawTriangle3DUVNormal([1,1,0, 1,1,1, 1,0,1], [0,0, 0,1, 1,1], [1,0,0, 1,0,0, 1,0,0]);
-        drawTriangle3DUVNormal([1,1,0, 1,0,1, 1,0,0], [0,0, 1,1, 0,0], [1,0,0, 1,0,0, 1,0,0]);
-    }
-    
-    renderFast() {
-        let rgba = this.color;
-
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-
-        if (!this.buffer) {
-            this.buffer = gl.createBuffer();
-            if (!this.buffer) {
-                console.log('Failed to create the buffer object');
-                return -1;
-            }
-        }
-
-        const allVertices = new Float32Array([
-            // Front face
-            0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0,
-            // Top face
-            1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
-            // Back face
-            0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
-            // Bottom face
-            1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0,
-            // Left face
-            0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-            // Right face
-            0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0
-        ]);
-
-
-        const allUV = new Float32Array([
-            // Front face
-            0, 0, 0, 1, 1, 0, 1, 1,
-            // Top face
-            0, 0, 0, 1, 1, 0, 1, 1,
-            // Back face
-            0, 0, 0, 1, 1, 0, 1, 1,
-            // Bottom face
-            0, 0, 0, 1, 1, 0, 1, 1,
-            // Left face
-            0, 0, 0, 1, 1, 0, 1, 1,
-            // Right face
-            0, 0, 0, 1, 1, 0, 1, 1
-        ]);
-
-        this.vertices = allVertices;
-
-        gl.uniform1i(u_whichTexture, this.textureNum);
-        drawVertices(this.buffer, this.vertices);
+        drawTriangle3DUVNormal(
+            [1, 1, 0, 1, 1, 1, 1, 0, 1], [0, 0, 1, 1, 1, 0],
+            [1, 0, 0, 1, 0, 0, 1, 0, 0]
+        );
+        drawTriangle3DUVNormal(
+            [1, 1, 0, 1, 0, 1, 1, 0, 0], [0, 0, 1, 1, 0, 0],
+            [1, 0, 0, 1, 0, 0, 1, 0, 0]
+        );
     }
 }
 
-const drawCube = (buffer, vertices, rgba) => {
-    for (let i = 0; i < 6; i++) {
-        gl.uniform4f(u_FragColor, rgba[i][0], rgba[i][1], rgba[i][2], rgba[i][3]);
-        drawQuadrilateral3D(buffer, vertices[Object.keys(vertices)[i]]);
+function drawTriangle3DUVNormal(vertices, uv, normals) {
+    var vertexBuffer = gl.createBuffer();
+    if (!vertexBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
     }
-}
 
-const drawCubeUV = (buffer, uvBuffer, vertices, uv, rgba) => { 
-    for (let i = 0; i < 6; i++) {
-        gl.uniform4f(u_FragColor, rgba[i][0], rgba[i][1], rgba[i][2], rgba[i][3]);
-        drawQuadrilateral3DUV(buffer, uvBuffer, vertices[Object.keys(vertices)[i]], uv[Object.keys(uv)[i]]);
+    var uvBuffer = gl.createBuffer();
+    if (!uvBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
     }
-}
 
-const drawVertices = (buffer, vertices) => {
-    let n = vertices.length;
-    // console.log(n)
+    var normalBuffer = gl.createBuffer();
+    if (!normalBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+    }
+
     // Bind the buffer object to target
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     // Write date into the buffer object
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
-
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     // Assign the buffer object to a_Position variable
     gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
     // Enable the assignment to a_Position variable
     gl.enableVertexAttribArray(a_Position);
 
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-}
-
-const drawQuadrilateral3D = (buffer, vertices) => {
-    let n = 4;
-    // console.log(vertices, buffer);
     // Bind the buffer object to target
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    // Write date into the buffer object
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
-
-    // Assign the buffer object to a_Position variable
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
-    // Enable the assignment to a_Position variable
-    gl.enableVertexAttribArray(a_Position);
-
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);
-}
-
-const drawQuadrilateral3DUV = (buffer, uvBuffer, vertices, uv) => {
-    let n = 4;
-    // Bind the buffer object to target
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    // Write date into the buffer object
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.DYNAMIC_DRAW);
-
-    // Assign the buffer object to a_Position variable
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
-    // Enable the assignment to a_Position variable
-    gl.enableVertexAttribArray(a_Position);
-
     gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, uv, gl.DYNAMIC_DRAW);
+    // Write date into the buffer object
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(uv), gl.STATIC_DRAW);
+    // Assign the buffer object to a_UV variable
     gl.vertexAttribPointer(a_UV, 2, gl.FLOAT, false, 0, 0);
+    // Enable the assignment to a_UV variable
     gl.enableVertexAttribArray(a_UV);
 
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, n);
+    // Bind the buffer object to target
+    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+    // Write date into the buffer object
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normals), gl.STATIC_DRAW);
+    // Assign the buffer object to a_Normal variable
+    gl.vertexAttribPointer(a_Normal, 3, gl.FLOAT, false, 0, 0);
+    // Enable the assignment to a_Normal variable
+    gl.enableVertexAttribArray(a_Normal);
+
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 3);
 }
