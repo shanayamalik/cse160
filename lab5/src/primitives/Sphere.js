@@ -130,11 +130,26 @@ export default class Sphere {
     if (this.program === null) {
       this.program = createProgram(gl, this.vertexShader, this.fragmentShader);
 
-      if (!this.program) console.error("could not compile shader");
+      if (!this.program) {
+        console.error("could not compile shader");
+        return;
+      }
     }
 
     // tell webGL to use this objects program
     gl.useProgram(this.program);
+
+    if (!(this.program instanceof WebGLProgram)) {
+      console.error("this.program is not a WebGLProgram", this.program);
+      return;
+    }
+
+    const uTime = gl.getUniformLocation(this.program, "uTime");
+    if (uTime === -1) {
+      console.error("uTime uniform not found");
+      return;
+    }
+    gl.uniform1f(uTime, performance.now() / 1000);
 
     if (this.vertexBuffer === null) this.vertexBuffer = gl.createBuffer();
     if (this.indexBuffer === null) this.indexBuffer = gl.createBuffer();
