@@ -38,6 +38,7 @@
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.05;
+    controls.maxPolarAngle = Math.PI / 2; // Limit the camera to not look below the ground plane
 
     const ambientLight = new THREE.AmbientLight(0x404040);
     scene.add(ambientLight);
@@ -56,7 +57,6 @@
 
     const textureLoaderBox = new THREE.TextureLoader();
 
-/*
     // Ground Plane
     const groundGeometry = new THREE.PlaneGeometry(100, 100);
     const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
@@ -64,7 +64,6 @@
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -5;
     scene.add(ground);
-*/
 
     // Function to create a detailed bird using basic shapes
     function createDetailedBird() {
@@ -134,6 +133,86 @@
         birds.push(bird);
     }
 
+    // Create mountains
+    function createMountain(width, height, color) {
+        const mountainGeometry = new THREE.ConeGeometry(width, height, 4);
+        const mountainMaterial = new THREE.MeshPhongMaterial({ color: color });
+        const mountain = new THREE.Mesh(mountainGeometry, mountainMaterial);
+        mountain.position.y = height / 2 - 5; // Adjusted to sit on the ground
+        mountain.rotation.y = Math.PI / 4; // Rotate to look more like a pyramid
+        return mountain;
+    }
+
+    // Reposition existing mountains and add new ones
+    const mountain1 = createMountain(10, 20, 0x8B4513); // Brown mountain
+    mountain1.position.set(-10, 0, -25);
+    scene.add(mountain1);
+
+    const mountain2 = createMountain(14, 30, 0x8B4513); // Larger brown mountain
+    mountain2.position.set(10, 0, -35);
+    scene.add(mountain2);
+
+    const mountain3 = createMountain(8, 18, 0x8B4513); // Medium brown mountain
+    mountain3.position.set(-20, 0, -30);
+    scene.add(mountain3);
+
+    const mountain4 = createMountain(12, 25, 0x8B4513); // Another large brown mountain
+    mountain4.position.set(20, 0, -40);
+    scene.add(mountain4);
+
+    const mountain5 = createMountain(6, 12, 0x8B4513); // Small brown mountain
+    mountain5.position.set(0, 0, -20);
+    scene.add(mountain5);
+
+    const mountain6 = createMountain(15, 35, 0x8B4513); // New large mountain
+    mountain6.position.set(-25, 0, -45);
+    scene.add(mountain6);
+
+    const mountain7 = createMountain(9, 22, 0x8B4513); // New medium mountain
+    mountain7.position.set(15, 0, -25);
+    scene.add(mountain7);
+
+    // Create trees
+    function createTree(trunkHeight, trunkRadius, foliageHeight, foliageRadius) {
+        const tree = new THREE.Group();
+
+        // Trunk
+        const trunkGeometry = new THREE.CylinderGeometry(trunkRadius, trunkRadius, trunkHeight, 16);
+        const trunkMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 }); // Brown trunk
+        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+        trunk.position.y = trunkHeight / 2;
+        tree.add(trunk);
+
+        // Foliage
+        const foliageGeometry = new THREE.ConeGeometry(foliageRadius, foliageHeight, 16);
+        const foliageMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 }); // Green foliage
+        const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
+        foliage.position.y = trunkHeight + foliageHeight / 2;
+        tree.add(foliage);
+
+        return tree;
+    }
+
+    const tree1 = createTree(5, 0.5, 4, 2);
+    tree1.position.set(-15, -5, -10);
+    scene.add(tree1);
+
+    const tree2 = createTree(6, 0.6, 5, 2.5);
+    tree2.position.set(10, -5, 15);
+    scene.add(tree2);
+
+    const tree3 = createTree(4, 0.4, 3.5, 1.8);
+    tree3.position.set(-10, -5, 20);
+    scene.add(tree3);
+
+    const tree4 = createTree(5.5, 0.55, 4.5, 2.2);
+    tree4.position.set(20, -5, -15);
+    scene.add(tree4);
+
+    const tree5 = createTree(6.5, 0.65, 5.5, 2.8);
+    tree5.position.set(-25, -5, 5);
+    scene.add(tree5);
+
     // Raycaster for detecting clicks
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
@@ -176,7 +255,7 @@
                         part.material.color.setHex(rainbowColors[colorIndex]);
                     });
                     colorIndex = (colorIndex + 1) % rainbowColors.length;
-                }, 100); // Change color every 2 seconds
+                }, 100); // Change color every 0.1 seconds
 
             } else {
                 clickedBird.userData.isChangingColor = false;
