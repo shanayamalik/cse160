@@ -3,24 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js OBJ Viewer</title>
+    <title>Three.js Multiple Birds</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
-        #textureSelector {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 100;
-        }
     </style>
 </head>
-
 <body>
-
 <script type="module">
     import * as THREE from './js/three.module.js';
-    import { OBJLoader } from './js/OBJLoader.js';
     import { OrbitControls } from './js/OrbitControls.js';
 
     const scene = new THREE.Scene();
@@ -45,7 +36,7 @@
     document.body.appendChild(renderer.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // optional, for smoother control interaction
+    controls.enableDamping = true;
     controls.dampingFactor = 0.05;
 
     const ambientLight = new THREE.AmbientLight(0x404040);
@@ -59,222 +50,87 @@
     pointLight.position.set(10, 10, 10);
     scene.add(pointLight);
 
-    // Hemisphere Light
     const hemisphereLight = new THREE.HemisphereLight(0xB1E1FF, 0xB97A20, 0.75);
-    hemisphereLight.position.set(0, 50, 0);  // Position is not critical as it affects the whole scene equally
+    hemisphereLight.position.set(0, 50, 0);
     scene.add(hemisphereLight);
 
-    // Texture Loader
     const textureLoaderBox = new THREE.TextureLoader();
 
-    // Function to create a cloud with multiple spheres
-    function createCloud() {
-        const cloud = new THREE.Group();
-        const geometry = new THREE.SphereGeometry(1, 32, 32);
-        const material = new THREE.MeshPhongMaterial({ color: 0xFFFFFF, opacity: 0.8, transparent: true });
-
-        // Create several spheres to form a cloud
-        for (let i = 0; i < 5; i++) {
-            const sphere = new THREE.Mesh(geometry, material);
-            sphere.position.x = Math.random() * 5;
-            sphere.position.y = Math.random() * 2;
-            sphere.position.z = Math.random() * 5;
-            sphere.scale.setScalar(0.5 + Math.random() * 0.5);
-            cloud.add(sphere);
-        }
-
-        return cloud;
-    }
-
-    // Add clouds to the scene
-    for (let i = 0; i < 3; i++) {
-        const cloud = createCloud();
-        cloud.position.set(
-            Math.random() * 50 - 25, // X position
-            10 + Math.random() * 10, // Y position (above the ground)
-            Math.random() * 50 - 25  // Z position
-        );
-        scene.add(cloud);
-    }
-
-    // Function to create a rock
-    function createRock() {
-        const geometry = new THREE.SphereGeometry(1, 16, 16);
-        const material = new THREE.MeshPhongMaterial({ color: 0x888888 });
-        const rock = new THREE.Mesh(geometry, material);
-
-        // Scale the geometry for a non-uniform, more natural rock shape
-        rock.scale.x = 0.5 + Math.random() * 1.5; // Random scaling in X
-        rock.scale.y = 0.5 + Math.random() * 1.5; // Random scaling in Y
-        rock.scale.z = 0.5 + Math.random() * 1.5; // Random scaling in Z
-
-        // Optional: random rotation for varied orientation
-        rock.rotation.x = Math.random() * Math.PI;
-        rock.rotation.y = Math.random() * Math.PI;
-        rock.rotation.z = Math.random() * Math.PI;
-
-        return rock;
-    }
-
-    // Add rocks to the scene
-    for (let i = 0; i < 10; i++) {
-        const rock = createRock();
-        rock.position.set(
-            Math.random() * 50 - 25, // X position within a range
-            -4,                      // Y position just above the ground
-            Math.random() * 50 - 25  // Z position within a range
-        );
-        scene.add(rock);
-    }
-
-    function createTree() {
-        const trunkHeight = 2;
-        const trunkGeometry = new THREE.CylinderGeometry(0.3, 0.3, trunkHeight, 32);
-        const trunkMaterial = new THREE.MeshPhongMaterial({ color: 0x8B4513 });
-        const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
-        trunk.position.y = trunkHeight / 2 - 5;  // Positioning trunk base at ground level
-
-        const foliageHeight = 3;
-        const foliageGeometry = new THREE.ConeGeometry(1, foliageHeight, 32);
-        const foliageMaterial = new THREE.MeshPhongMaterial({ color: 0x228B22 });
-        const foliage = new THREE.Mesh(foliageGeometry, foliageMaterial);
-        foliage.position.y = trunkHeight - 5 + foliageHeight / 2;  // Positioning foliage on top of the trunk
-
-        const tree = new THREE.Group();
-        tree.add(trunk);
-        tree.add(foliage);
-
-        return tree;
-    }
-
-    // Add trees to the scene
-    for (let i = 0; i < 10; i++) {
-        const tree = createTree();
-        tree.position.set(
-            Math.random() * 50 - 25, // X position
-            0,                       // Y position adjusted in createTree function
-            Math.random() * 50 - 25  // Z position
-        );
-        scene.add(tree);
-    }
-
-    function createMountain() {
-        const geometry = new THREE.ConeGeometry(5, 10, 32); // Base radius, height, radial segments
-        const material = new THREE.MeshPhongMaterial({ color: 0x8B8989 });
-        const mountain = new THREE.Mesh(geometry, material);
-
-        mountain.scale.x = 1 + Math.random() * 2; // Random scaling in X to make the mountain wider
-        mountain.scale.z = 1 + Math.random() * 2; // Random scaling in Z
-
-        // Ensure the base of the mountain is at y = -5
-        mountain.position.y = 5 - 5; // Half of the mountain's height to align its base with y = -5
-
-        return mountain;
-    }
-
-    // Add mountains to the scene
-    for (let i = 0; i < 5; i++) {
-        const mountain = createMountain();
-        mountain.position.set(
-            Math.random() * 100 - 50, // X position
-            0, // Y position; adjusted in the function
-            -50 - Math.random() * 50  // Z position (behind the scene)
-        );
-        scene.add(mountain);
-    }
-
     // Ground Plane
-    const groundGeometry = new THREE.PlaneGeometry(100, 100);  // Size of the ground
+    const groundGeometry = new THREE.PlaneGeometry(100, 100);
     const groundMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-    ground.rotation.x = -Math.PI / 2; // Rotate the plane to be horizontal
+    ground.rotation.x = -Math.PI / 2;
     ground.position.y = -5;
     scene.add(ground);
 
-    // Box (Rectangle)
-    /*
-    const boxGeometry = new THREE.BoxGeometry(2, 2, 2);
-    const texture = textureLoaderBox.load('one.jpg', function(texture) {
-        texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-        texture.offset.set(0, 0);
-        texture.repeat.set(1, 1);
-    });
-    const boxMaterial = new THREE.MeshPhongMaterial({ map: texture });
-    const box = new THREE.Mesh(boxGeometry, boxMaterial);
-    box.scale.set(5, 5, 5); // Scale the box
-    box.position.set(-20, 0, 0);
-    scene.add(box);
-    */
+    // Function to create a detailed bird using basic shapes
+    function createDetailedBird() {
+        const bird = new THREE.Group();
 
-    // Sphere
-    /*
-    const sphereGeometry = new THREE.SphereGeometry(1, 128, 128);
-    const sphereMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000 });
-    const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-    sphere.scale.set(4, 4, 4); // Scale the sphere 4 times its original size
-    sphere.position.set(-40, 0, 0); // Position the sphere to the left
-    scene.add(sphere);
-    */
+        // Body
+        const bodyGeometry = new THREE.SphereGeometry(1, 16, 16);
+        const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff }); // Blue body
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        bird.add(body);
 
-    // Cylinder
-    /*
-    const cylinderGeometry = new THREE.CylinderGeometry(1, 1, 3, 32);
-    const cylinderMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff });
-    const cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
-    cylinder.position.set(20, 0, 0); // Position the cylinder next to the box
-    cylinder.scale.set(5, 5, 5); // Scale the sphere 4 times its original size
-    scene.add(cylinder);
-    */
+        // Head
+        const headGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+        const headMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff }); // Blue head
+        const head = new THREE.Mesh(headGeometry, headMaterial);
+        head.position.set(0, 1.2, 0);
+        bird.add(head);
 
-    // Object Loader
-    /*
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load('Ocean_Mask_2K.png', function(texture) {
-        const loader = new OBJLoader();
-        loader.load(
-            'earth.obj',
-            function (object) {
-                object.traverse(function (child) {
-                    if (child instanceof THREE.Mesh) {
-                        child.material.map = texture;
-                        child.material.needsUpdate = true;
-                    }
-                });
-                object.position.set(2, 0, 0); // Adjust position to the right, next to other shapes
-                object.scale.set(2, 2, 2);
-                scene.add(object);
-                renderer.render(scene, camera);
-            },
-            function (xhr) {
-                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-            },
-            function (error) {
-                console.error('An error happened during the loading of the OBJ:', error);
-            }
-        );
-    });
-    */
+        // Beak
+        const beakGeometry = new THREE.ConeGeometry(0.2, 0.5, 8);
+        const beakMaterial = new THREE.MeshPhongMaterial({ color: 0xffa500 }); // Orange beak
+        const beak = new THREE.Mesh(beakGeometry, beakMaterial);
+        beak.position.set(0, 1.2, 0.5);
+        beak.rotation.x = Math.PI / 2;
+        bird.add(beak);
 
-    function applyTexture(textureFile) {
-        if (textureFile) {
-            textureLoader.load(
-                textureFile,
-                function (texture) {
-                    scene.children.forEach(function (child) {
-                        if (child instanceof THREE.Mesh && child !== sphere && child !== box && child !== cylinder) {
-                            child.material.map = texture;
-                            child.material.needsUpdate = true;
-                        }
-                    });
-                    renderer.render(scene, camera);
-                }
-            );
-        }
+        // Wings
+        const wingGeometry = new THREE.BoxGeometry(2, 0.1, 1);
+        const wingMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 }); // Dark gray wings
+        const leftWing = new THREE.Mesh(wingGeometry, wingMaterial);
+        leftWing.position.set(-1.5, 0, 0);
+        leftWing.rotation.z = Math.PI / 4;
+        bird.add(leftWing);
+
+        const rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
+        rightWing.position.set(1.5, 0, 0);
+        rightWing.rotation.z = -Math.PI / 4;
+        bird.add(rightWing);
+
+        // Tail
+        const tailGeometry = new THREE.ConeGeometry(0.5, 1, 8);
+        const tailMaterial = new THREE.MeshPhongMaterial({ color: 0x0000ff }); // Blue tail
+        const tail = new THREE.Mesh(tailGeometry, tailMaterial);
+        tail.position.set(0, -0.5, -1); // Adjusted position to be behind the body
+        tail.rotation.x = Math.PI; // Adjusted rotation
+        bird.add(tail);
+
+        return bird;
     }
 
-    let amplitude = 5; // Maximum extent of movement up and down
-    let frequency = 0.5; // Speed of the up and down movement
-    let clock = new THREE.Clock(); // Clock to track the elapsed time for movement
+    // Create multiple birds
+    const birds = [];
+    for (let i = 0; i < 4; i++) {
+        const bird = createDetailedBird();
+        bird.position.set(Math.random() * 40 - 20, Math.random() * 10 + 15, Math.random() * 40 - 20);
+        bird.userData = { 
+            speedX: Math.random() * 0.02 + 0.01,
+            speedY: Math.random() * 0.02 + 0.01,
+            speedZ: Math.random() * 0.02 + 0.01,
+            directionX: Math.random() < 0.5 ? 1 : -1,
+            directionY: Math.random() < 0.5 ? 1 : -1,
+            directionZ: Math.random() < 0.5 ? 1 : -1
+        };
+        scene.add(bird);
+        birds.push(bird);
+    }
+
+    let clock = new THREE.Clock();
 
     function animate() {
         requestAnimationFrame(animate);
@@ -282,15 +138,27 @@
         // Update controls
         controls.update();
 
-        // Calculate the new y position of the sphere using a sine wave
+        // Animate each bird
         let time = clock.getElapsedTime();
-        // sphere.position.y = amplitude * Math.sin(frequency * time); // Comment out sphere animation
+        birds.forEach((bird, index) => {
+            bird.children[3].rotation.z = Math.sin(time * 5 + index) * 0.5; // Left wing
+            bird.children[4].rotation.z = -Math.sin(time * 5 + index) * 0.5; // Right wing
+
+            // Move each bird in a more random path
+            bird.position.x += bird.userData.speedX * bird.userData.directionX;
+            bird.position.y += bird.userData.speedY * bird.userData.directionY;
+            bird.position.z += bird.userData.speedZ * bird.userData.directionZ;
+
+            // Change direction if the bird reaches a certain limit
+            if (bird.position.x > 40 || bird.position.x < -40) bird.userData.directionX *= -1;
+            if (bird.position.y > 30 || bird.position.y < 10) bird.userData.directionY *= -1;
+            if (bird.position.z > 40 || bird.position.z < -40) bird.userData.directionZ *= -1;
+        });
 
         renderer.render(scene, camera);
     }
     animate();
 
 </script>
-
 </body>
 </html>
