@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Three.js Multiple Birds</title>
+    <title>Three.js Multiple Birds with Flocking Behavior</title>
     <style>
         body { margin: 0; }
         canvas { display: block; }
@@ -110,27 +110,166 @@
         tail.rotation.x = Math.PI; // Adjusted rotation
         bird.add(tail);
 
+        bird.userData = {
+            velocity: new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1),
+            acceleration: new THREE.Vector3()
+        };
+
         return bird;
     }
 
-    // Create multiple birds
+    // Function to create a butterfly
+    function createButterfly() {
+        const butterfly = new THREE.Group();
+
+        // Body
+        const bodyGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 8);
+        const bodyMaterial = new THREE.MeshPhongMaterial({ color: 0x333333 });
+        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+        body.rotation.x = Math.PI / 2;
+        butterfly.add(body);
+
+        // Wings
+        const wingGeometry = new THREE.PlaneGeometry(1, 1);
+        const wingMaterial = new THREE.MeshPhongMaterial({ color: 0xff0000, side: THREE.DoubleSide });
+        const leftWing = new THREE.Mesh(wingGeometry, wingMaterial);
+        leftWing.position.set(-0.5, 0, 0);
+        leftWing.rotation.y = Math.PI / 4;
+        butterfly.add(leftWing);
+
+        const rightWing = new THREE.Mesh(wingGeometry, wingMaterial);
+        rightWing.position.set(0.5, 0, 0);
+        rightWing.rotation.y = -Math.PI / 4;
+        butterfly.add(rightWing);
+
+        return butterfly;
+    }
+
     const birds = [];
     for (let i = 0; i < 4; i++) {
         const bird = createDetailedBird();
         bird.position.set(Math.random() * 40 - 20, Math.random() * 10 + 15, Math.random() * 40 - 20);
-        bird.userData = { 
-            speedX: Math.random() * 0.02 + 0.01,
-            speedY: Math.random() * 0.02 + 0.01,
-            speedZ: Math.random() * 0.02 + 0.01,
-            directionX: Math.random() < 0.5 ? 1 : -1,
-            directionY: Math.random() < 0.5 ? 1 : -1,
-            directionZ: Math.random() < 0.5 ? 1 : -1
-        };
         scene.add(bird);
         birds.push(bird);
     }
 
-    let clock = new THREE.Clock();
+    const butterflies = [];
+    for (let i = 0; i < 5; i++) {
+        const butterfly = createButterfly();
+        butterfly.position.set(Math.random() * 40 - 20, Math.random() * 20 + 10, Math.random() * 40 - 20);
+        butterfly.userData = { 
+            speedX: Math.random() * 0.01 + 0.01,
+            speedY: Math.random() * 0.01 + 0.01,
+            speedZ: Math.random() * 0.01 + 0.01,
+            directionX: Math.random() < 0.5 ? 1 : -1,
+            directionY: Math.random() < 0.5 ? 1 : -1,
+            directionZ: Math.random() < 0.5 ? 1 : -1
+        };
+        scene.add(butterfly);
+        butterflies.push(butterfly);
+    }
+
+    const maxSpeed = 1;
+    const maxForce = 0.05;
+
+    function flock(bird) {
+        const separation = separate(bird);
+        const alignment = align(bird);
+        const cohesion = cohere(bird);
+
+        separation.multiplyScalar(1.5);
+        alignment.multiplyScalar(1.0);
+        cohesion.multiplyScalar(1.0);
+
+        bird.userData.acceleration.add(separation);
+        bird.userData.acceleration.add(alignment);
+        bird.userData.acceleration.add(cohesion);
+    }
+
+    function separate(bird) {
+        const desiredSeparation = 5.0;
+        const steer = new THREE.Vector3();
+        let count = 0;
+
+        birds.forEach(other => {
+            const distance = bird.position.distanceTo(other.position);
+            if (distance > 0 && distance < desiredSeparation) {
+                const diff = new THREE.Vector3().subVectors(bird.position, other.position);
+                diff.normalize();
+                diff.divideScalar(distance);
+                steer.add(diff);
+                count++;
+            }
+        });
+
+        if (count > 0) {
+            steer.divideScalar(count);
+        }
+
+        if (steer.length() > 0) {
+            steer.normalize();
+            steer.multiplyScalar(maxSpeed);
+            steer.sub(bird.userData.velocity);
+            steer.clampLength(0, maxForce);
+        }
+
+        return steer;
+    }
+
+    function align(bird) {
+        const neighborDist = 25.0;
+        const sum = new THREE.Vector3();
+        let count = 0;
+
+        birds.forEach(other => {
+            const distance = bird.position.distanceTo(other.position);
+            if (distance > 0 && distance < neighborDist) {
+                sum.add(other.userData.velocity);
+                count++;
+            }
+        });
+
+        if (count > 0) {
+            sum.divideScalar(count);
+            sum.normalize();
+            sum.multiplyScalar(maxSpeed);
+            const steer = new THREE.Vector3().subVectors(sum, bird.userData.velocity);
+            steer.clampLength(0, maxForce);
+            return steer;
+        } else {
+            return new THREE.Vector3();
+        }
+    }
+
+    function cohere(bird) {
+        const neighborDist = 25.0;
+        const sum = new THREE.Vector3();
+        let count = 0;
+
+        birds.forEach(other => {
+            const distance = bird.position.distanceTo(other.position);
+            if (distance > 0 && distance < neighborDist) {
+                sum.add(other.position);
+                count++;
+            }
+        });
+
+        if (count > 0) {
+            sum.divideScalar(count);
+            return seek(bird, sum);
+        } else {
+            return new THREE.Vector3();
+        }
+    }
+
+    function seek(bird, target) {
+        const desired = new THREE.Vector3().subVectors(target, bird.position);
+        desired.normalize();
+        desired.multiplyScalar(maxSpeed);
+        const steer = new THREE.Vector3().subVectors(desired, bird.userData.velocity);
+        steer.clampLength(0, maxForce);
+        return steer;
+    }
 
     function animate() {
         requestAnimationFrame(animate);
@@ -138,21 +277,29 @@
         // Update controls
         controls.update();
 
-        // Animate each bird
-        let time = clock.getElapsedTime();
-        birds.forEach((bird, index) => {
-            bird.children[3].rotation.z = Math.sin(time * 5 + index) * 0.5; // Left wing
-            bird.children[4].rotation.z = -Math.sin(time * 5 + index) * 0.5; // Right wing
+        // Apply flocking behavior
+        birds.forEach(bird => {
+            flock(bird);
+        });
 
-            // Move each bird in a more random path
-            bird.position.x += bird.userData.speedX * bird.userData.directionX;
-            bird.position.y += bird.userData.speedY * bird.userData.directionY;
-            bird.position.z += bird.userData.speedZ * bird.userData.directionZ;
+        // Update birds' positions
+        birds.forEach(bird => {
+            bird.userData.velocity.add(bird.userData.acceleration);
+            bird.userData.velocity.clampLength(0, maxSpeed);
+            bird.position.add(bird.userData.velocity);
+            bird.userData.acceleration.set(0, 0, 0);
+        });
 
-            // Change direction if the bird reaches a certain limit
-            if (bird.position.x > 40 || bird.position.x < -40) bird.userData.directionX *= -1;
-            if (bird.position.y > 30 || bird.position.y < 10) bird.userData.directionY *= -1;
-            if (bird.position.z > 40 || bird.position.z < -40) bird.userData.directionZ *= -1;
+        // Animate butterflies
+        butterflies.forEach((butterfly) => {
+            butterfly.position.x += butterfly.userData.speedX * butterfly.userData.directionX;
+            butterfly.position.y += butterfly.userData.speedY * butterfly.userData.directionY;
+            butterfly.position.z += butterfly.userData.speedZ * butterfly.userData.directionZ;
+
+            // Change direction if the butterfly reaches a certain limit
+            if (butterfly.position.x > 40 || butterfly.position.x < -40) butterfly.userData.directionX *= -1;
+            if (butterfly.position.y > 30 || butterfly.position.y < 10) butterfly.userData.directionY *= -1;
+            if (butterfly.position.z > 40 || butterfly.position.z < -40) butterfly.userData.directionZ *= -1;
         });
 
         renderer.render(scene, camera);
