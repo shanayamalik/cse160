@@ -128,7 +128,7 @@
 
     // Create multiple birds
     const birds = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < 8; i++) {
         const bird = createDetailedBird();
         bird.position.set(Math.random() * 40 - 20, Math.random() * 10 + 15, Math.random() * 40 - 20);
         bird.userData = { 
@@ -145,7 +145,7 @@
         birds.push(bird);
     }
 
-    // Create mountains
+    // Function to create mountains
     function createMountain(width, height, color) {
         const mountainGeometry = new THREE.ConeGeometry(width, height, 4);
         const mountainMaterial = new THREE.MeshPhongMaterial({ color: color });
@@ -155,52 +155,16 @@
         return mountain;
     }
 
-    // Reposition existing mountains and add new ones
-    const mountain1 = createMountain(10, 20, 0x8B4513); // Brown mountain
-    mountain1.position.set(-10, 0, -25);
-    scene.add(mountain1);
+    // Create multiple mountains
+    for (let i = 0; i < 12; i++) {
+        const width = Math.random() * 10 + 5;
+        const height = Math.random() * 20 + 15;
+        const mountain = createMountain(width, height, 0x8B4513);
+        mountain.position.set(Math.random() * 60 - 30, 0, Math.random() * 60 - 30);
+        scene.add(mountain);
+    }
 
-    const mountain2 = createMountain(14, 30, 0x8B4513); // Larger brown mountain
-    mountain2.position.set(10, 0, -35);
-    scene.add(mountain2);
-
-    const mountain3 = createMountain(8, 18, 0x8B4513); // Medium brown mountain
-    mountain3.position.set(-20, 0, -30);
-    scene.add(mountain3);
-
-    const mountain4 = createMountain(12, 25, 0x8B4513); // Another large brown mountain
-    mountain4.position.set(20, 0, -40);
-    scene.add(mountain4);
-
-    const mountain5 = createMountain(6, 12, 0x8B4513); // Small brown mountain
-    mountain5.position.set(0, 0, -20);
-    scene.add(mountain5);
-
-    const mountain6 = createMountain(15, 35, 0x8B4513); // New large mountain
-    mountain6.position.set(-25, 0, -45);
-    scene.add(mountain6);
-
-    const mountain7 = createMountain(9, 22, 0x8B4513); // New medium mountain
-    mountain7.position.set(15, 0, -25);
-    scene.add(mountain7);
-
-    const mountain8 = createMountain(12, 28, 0x8B4513); // Additional mountain on the left
-    mountain8.position.set(-30, 0, -20);
-    scene.add(mountain8);
-
-    const mountain9 = createMountain(11, 24, 0x8B4513); // Additional mountain on the right
-    mountain9.position.set(25, 0, -30);
-    scene.add(mountain9);
-
-    const mountain10 = createMountain(8, 18, 0x8B4513); // Small mountain on the left
-    mountain10.position.set(-15, 0, -15);
-    scene.add(mountain10);
-
-    const mountain11 = createMountain(10, 22, 0x8B4513); // Small mountain on the right
-    mountain11.position.set(20, 0, -10);
-    scene.add(mountain11);
-
-    // Create trees
+    // Function to create trees
     function createTree(trunkHeight, trunkRadius, foliageHeight, foliageRadius) {
         const tree = new THREE.Group();
 
@@ -221,25 +185,16 @@
         return tree;
     }
 
-    const tree1 = createTree(5, 0.5, 4, 2);
-    tree1.position.set(-15, -5, -10);
-    scene.add(tree1);
-
-    const tree2 = createTree(6, 0.6, 5, 2.5);
-    tree2.position.set(10, -5, 15);
-    scene.add(tree2);
-
-    const tree3 = createTree(4, 0.4, 3.5, 1.8);
-    tree3.position.set(-10, -5, 20);
-    scene.add(tree3);
-
-    const tree4 = createTree(5.5, 0.55, 4.5, 2.2);
-    tree4.position.set(20, -5, -15);
-    scene.add(tree4);
-
-    const tree5 = createTree(6.5, 0.65, 5.5, 2.8);
-    tree5.position.set(-25, -5, 5);
-    scene.add(tree5);
+    // Create multiple trees
+    for (let i = 0; i < 20; i++) {
+        const trunkHeight = Math.random() * 3 + 3;
+        const trunkRadius = Math.random() * 0.2 + 0.3;
+        const foliageHeight = Math.random() * 2 + 2;
+        const foliageRadius = Math.random() * 1 + 1;
+        const tree = createTree(trunkHeight, trunkRadius, foliageHeight, foliageRadius);
+        tree.position.set(Math.random() * 60 - 30, -5, Math.random() * 60 - 30);
+        scene.add(tree);
+    }
 
     // Raycaster for detecting clicks
     const raycaster = new THREE.Raycaster();
