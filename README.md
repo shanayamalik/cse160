@@ -1,1 +1,1 @@
-# CSE160
+# CSE160: Computer Graphics
